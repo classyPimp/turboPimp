@@ -1,4 +1,5 @@
 require 'native'
+
 `
 window.Router = ReactRouter.Router
 window.Route = ReactRouter.Route

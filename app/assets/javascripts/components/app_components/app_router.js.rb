@@ -9,11 +9,11 @@ module AppComponents
 	  end
 
 	  def component_will_mount
-	    p "router will mount"
+	    AppController.check_credentials
 	  end
 
 	  def component_will_update
-	    p "router will update"
+	    AppController.check_credentials
 	  end
 
 	  def component_will_unmount
