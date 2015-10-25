@@ -1,0 +1,19 @@
+.container
+  %div.row
+    = form_for(@user) do |f|
+      - if @user.errors.any?
+        .alert.alert-danger
+          - @user.errors.full_messages.each do |message|
+            %li
+              = message
+      = f.label :email
+      = f.text_field :email
+      %br
+      = f.label :password
+      = f.password_field :password
+      %br
+      = f.label :password_confirmation
+      = f.password_field :password_confirmation
+      %br
+      = f.submit "sign up"
+    

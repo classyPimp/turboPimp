@@ -1,0 +1,15 @@
+
+%div
+  reset password
+.row
+  = form_for @user, url: password_reset_path(params[:id]) do |f|
+    
+    = hidden_field_tag :email, @user.email
+
+    = f.label          :password
+    = f.password_field :password
+    %br
+    = f.label          :password_confirmation, "confirmation"
+    = f.password_field :password_confirmation
+    %br
+    = f.submit "update password"

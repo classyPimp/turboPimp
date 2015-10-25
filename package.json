@@ -1,0 +1,14 @@
+
+	{
+	  "name": "myApp",
+	  "dependencies" : {
+	    "browserify": "~> 10.2.4",
+	    "browserify-incremental": "^3.0.1",
+	    "history": "1.12.5",
+	    "react-router": "1.0.0-rc3"
+	  },
+	  "license": "MIT",
+	  "engines": {
+	    "node": ">= 0.10"
+	  }
+	}

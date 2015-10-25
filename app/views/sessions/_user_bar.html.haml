@@ -1,0 +1,6 @@
+
+- if logged_in?
+  youre logged in as #{current_user.email}
+  = link_to "logout", logout_path, method: :delete
+- else
+  = link_to "login", login_path
