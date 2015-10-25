@@ -1,6 +1,6 @@
 module UserComponents
 
-	class Show < Bar
+	class Show < RW
 		
 		def init
 			@user_id = self.props.params.id

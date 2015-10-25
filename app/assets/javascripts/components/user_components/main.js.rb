@@ -1,6 +1,9 @@
 module	UserComponents
 
-	class Main < Bar
+	BaseLink = "/users"
+
+
+	class Main < RW
 			
 		def render
 			t(:div, {}, 

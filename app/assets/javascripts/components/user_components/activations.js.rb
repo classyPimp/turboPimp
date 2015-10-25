@@ -1,6 +1,6 @@
 module UserComponents
 
-	class Activations < Bar
+	class Activations < RW
 		
 		def init
 			if id = props.location.query.id

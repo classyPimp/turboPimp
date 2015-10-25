@@ -1,4 +1,4 @@
-class About < Bar
+class About < RW
   
   expose_as_native_component
 
@@ -41,7 +41,7 @@ class About < Bar
   end
 end
 
-class Mock < Bar
+class Mock < RW
   expose_as_native_component
   def render
     t(:div, {}, 
@@ -63,7 +63,7 @@ class Mock < Bar
   end
 end
 
-class MockS < Bar
+class MockS < RW
 
   expose_as_native_component
 
@@ -88,9 +88,13 @@ class MockS < Bar
 end
 
 
-class App < Bar
+class App < RW
 
   expose_as_native_component
+
+  def component_will_update
+    p "app updated"
+  end
  
   def render
     t(:div, {onClick: ->(){handler}},
@@ -125,7 +129,7 @@ class App < Bar
   end
 end
 
-class Depot < Bar
+class Depot < RW
 
   expose_as_native_component
 
@@ -140,7 +144,7 @@ class Depot < Bar
 end
 
 
-class Home < Bar
+class Home < RW
   expose_as_native_component  
 
   def render
@@ -156,36 +160,9 @@ end
 
 
 
-class Routie < Bar
 
-  expose_as_native_component
 
-  def init
-    @controller = AppController.new(self)
-  end
 
-  def render
-    t(`Router`, {history: Native(`History()`)},
-      t(`Route`, {path: "/", component: App.create_class},
-        t(`Route`, {path: "/about", component: About.create_class}),
-        t(`Route`, {path: "/home", component: Home.create_class},
-          t(`Route`, {path: "depot", component: Depot.create_class},
-          )
-        ),
-        t(`Route`, {path: "/users", component: UserComponents::Main.create_class}, 
-          t(`Route`, {path: "new", component: UserComponents::CreateUser.create_class },
-          ),
-          t(`Route`, {path: "activations", component: UserComponents::Activations.create_class},
-          ),
-          t(`Route`, {path: ":id", component: UserComponents::Show.create_class})
-        )
-      )
-    )
-  end
-
-end
-
-`window["Routie"] = #{Routie.create_class}`
 
 
 

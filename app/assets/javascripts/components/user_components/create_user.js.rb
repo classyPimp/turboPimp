@@ -1,6 +1,10 @@
 module UserComponents
 
-  class CreateUser < Bar
+  class CreateUser < RW
+
+    def self.link(options={})
+      link = "#{UserComponents::BaseLink}/create_user"
+    end 
 
     attr_accessor :blank_errors
 
