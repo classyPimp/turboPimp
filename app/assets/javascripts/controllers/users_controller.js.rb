@@ -42,4 +42,16 @@ class UsersController < BaseController
     errors
   end
 
+
+  def login
+    email = c.ref(:email_input).value
+    password = c.ref(:password_input).value
+    if email != "" || password != ""
+      CurrentUser.login({}, session: {email: email, password: password}).then do |variable|
+        App.history.replaceState(nil, "/users/#{CurrentUser.user_instance.id}")
+        AppController.user_logged_in
+      end
+    end 
+  end
+
 end

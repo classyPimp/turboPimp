@@ -4,37 +4,25 @@ module AppComponents
 
 	  expose_as_native_component
 
-	  def init
-	    @controller = AppController.new(self)
-	  end
-
-	  def component_will_mount
-	    AppController.check_credentials
-	  end
-
-	  def component_will_update
-	    AppController.check_credentials
-	  end
-
-	  def component_will_unmount
+    def component_will_unmount
 	    p "router will unmount"
 	  end
+
+    def component_did_mount
+      
+    end
 
 	  def render
 	    t(`Router`, {history: Native(`History()`)},
 	      t(`Route`, {path: "/", component: App.create_class},
-	        t(`Route`, {path: "/about", component: About.create_class}),
-	        t(`Route`, {path: "/home", component: Home.create_class},
-	          t(`Route`, {path: "depot", component: Depot.create_class},
-	          )
-	        ),
+
 	        t(`Route`, {path: "/users", component: UserComponents::Main.create_class}, 
-	          t(`Route`, {path: "new", component: UserComponents::CreateUser.create_class },
-	          ),
-	          t(`Route`, {path: "activations", component: UserComponents::Activations.create_class},
-	          ),
-	          t(`Route`, {path: ":id", component: UserComponents::Show.create_class})
+	          t(`Route`, {path: "signup", component: UserComponents::Signup.create_class }),
+	          t(`Route`, {path: "activations", component: UserComponents::Activations.create_class}),
+	          t(`Route`, {path: ":id", component: UserComponents::Show.create_class}),
+	          t(`Route`, {path: "login"}, component: UserComponents::Login.create_class)
 	        )
+
 	      )
 	    )
 	  end
@@ -42,3 +30,4 @@ module AppComponents
 
 	end
 end
+

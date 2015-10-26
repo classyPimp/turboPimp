@@ -2,7 +2,6 @@ module	UserComponents
 
 	BaseLink = "/users"
 
-
 	class Main < RW
 			
 		def render

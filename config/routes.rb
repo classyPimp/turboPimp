@@ -1,8 +1,7 @@
 Rails.application.routes.draw do
   
   scope "api" do
-
-    get "users/current_user" => "users#expose_current_user"  
+    post "users/current_user" => "users#expose_current_user"  
     # BASIC AUTH
     get "sign_up" => "users#new"
     resources :users, except: [:new]
@@ -13,9 +12,7 @@ Rails.application.routes.draw do
     resources :account_activations, only: [:edit]
     #PASSWORD RESETS
     resources :password_resets, only: [:new, :create, :edit, :update]
-  # END BASIC AUTH
-    
-        
+  # END BASIC AUTH     
   end
 
   root "faker#home"

@@ -173,12 +173,18 @@ class RW
     #creates react element
     # if _klass not string counts _klass as react component else counts
     #it as string tag
-    
+
     unless _klass.is_a? String
       _klass = `window[#{_klass.native_name}]` unless _klass.is_a?(Proc)
     end
-    args = args.compact
-    params = [_klass, _props.to_n, *args]
+
+    if args.length == 0
+      params = [_klass, _props.to_n]
+    else
+      args.compact!
+      params = [_klass, _props.to_n, *args]
+    end
+
     (%x{
       React.createElement.apply(null, #{params})
     })

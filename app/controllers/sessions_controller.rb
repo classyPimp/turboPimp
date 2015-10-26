@@ -10,27 +10,25 @@ class SessionsController < ApplicationController
         if user.activated?
           log_in user
           params[:session][:remember_me] == '1' ? remember(user) : forget(user)
-          redirect_back_or user
+          cookies[:l] = 1
+          render json: user.as_json(only: [:id, :email])
         else
-          message  = "Account not activated. "
-          message += "Check your email for the activation link."
-          flash[:warning] = message
-          redirect_to root_url
+          render json: {errors: ["not activated"]}
         end
       else
         log_in user
         params[:session][:remember_me] == '1' ? remember(user) : forget(user)
-        redirect_back_or user
+        render json: user.as_json(only: [:id, :email])
       end
     else  
       flash.now[:danger] = "invalid credentials"
-      render :new
+      render json: {errors: ["invalid credentials"]}
     end
   end
 
   def destroy
     log_out if logged_in?
-    redirect_to login_path
+    render json: {status: "ok"}
   end
   
 end

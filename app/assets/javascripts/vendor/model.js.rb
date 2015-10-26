@@ -1,3 +1,5 @@
+require "opal"
+require "promise"
 class Model
 
   
