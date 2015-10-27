@@ -193,6 +193,40 @@ class RW
   def update!
     @native.forceUpdate
   end
+  
+  def link_to(body, link, options = nil)
+   # this method shall be used with react router and native global `Link` should be defined
+   # link_to("foo", Bar::Baz::Cux) => href would be /bar/baz/cux
+   # if not modified means that you should follow the convention that your routes correspond components, and nesting corresponds
+   # the modules. Eg "/" - "/users" - "/show" || "index" your component should be Users::Show || Users::Index
+    unless link.is_a? String
+      query = ""
+      if options
+        `
+          var serialize = function(obj, prefix) {
+            var str = [];
+            for(var p in obj) {
+              if (obj.hasOwnProperty(p)) {
+                var k = prefix ? prefix + "[" + p + "]" : p, v = obj[p];
+                str.push(typeof v == "object" ?
+                  serialize(v, k) :
+                  encodeURIComponent(k) + "=" + encodeURIComponent(v));
+              }
+            }
+            return str.join("&");
+          }
+          #{query} = serialize(#{options.to_n})
+        `
+        query = "?#{query}"
+      end
+      link = ('/' + link + query).downcase
+    end
+    t(`Link`, {to: link}, body)    
+  end
+
+  def self.link_path(options)
+    (name.split('::').join('/') + options)
+  end
 
 end
 
