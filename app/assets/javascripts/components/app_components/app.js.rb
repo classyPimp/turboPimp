@@ -34,7 +34,8 @@ class App < RW
           t(`Link`, {to: "/users/new"}, 
             "create new user"
           ),
-          t(:br,{})
+          t(:br,{}),
+          link_to("the dummy component", "/test")
         )
       ),
       t(:div, {},
@@ -47,10 +48,6 @@ class App < RW
     
   end
 end
-
-
-
-
 
 
 

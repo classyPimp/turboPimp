@@ -17,12 +17,13 @@ module AppComponents
 	      t(`Route`, {path: "/", component: App.create_class},
 
 	        t(`Route`, {path: "/users", component: UserComponents::Main.create_class}, 
-	          t(`Route`, {path: "signup", component: UserComponents::Signup.create_class }),
+	          t(`Route`, {path: "signup", component: UserComponents::SignUp.create_class }),
 	          t(`Route`, {path: "activations", component: UserComponents::Activations.create_class}),
 	          t(`Route`, {path: ":id", component: UserComponents::Show.create_class}),
-	          t(`Route`, {path: "login"}, component: UserComponents::Login.create_class)
-	        )
+	          t(`Route`, {path: "login", component: UserComponents::Login.create_class})
+	        ),
 
+	        t(`Route`, {path: "/test", component: Dummy.create_class})
 	      )
 	    )
 	  end

@@ -49,8 +49,8 @@ module UserComponents
         else
           t(:div, {}, "you are not logged in",
             t(`Link`, {to: "/users/login"}, "login"),
-            t(:br, {})
-            t(`Link`, {to: "users/signup", "don't have an account yet?"})
+            t(:br, {}),
+            t(`Link`, {to: "users/signup"}, "don't have an account yet?")
           )
         end
       )
