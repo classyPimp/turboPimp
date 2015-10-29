@@ -1,4 +1,4 @@
-module UserComponents
+module Users
 
   class Login < RW
 

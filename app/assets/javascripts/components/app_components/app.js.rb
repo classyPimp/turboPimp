@@ -24,18 +24,12 @@ class App < RW
       if false
         "false"
       end,
-      t(UserComponents::LoginInfo, {}),
+      t(Users::LoginInfo, {}),
       t(:div, {},
         t(:p, {}, 
-          t(`Link`, {to: "/login"}, 
-            "login"
-          ),
+          link_to("login", "/users/login"),
           t(:br, {}),
-          t(`Link`, {to: "/users/new"}, 
-            "create new user"
-          ),
-          t(:br,{}),
-          link_to("the dummy component", "/test")
+          link_to("signup", "/users/signup")
         )
       ),
       t(:div, {},

@@ -1,4 +1,4 @@
-module UserComponents
+module Users
 
 	class Activations < RW
 		
@@ -17,7 +17,7 @@ module UserComponents
 			t(:div, {}, 
 				t(:p,{}, @message),
 				if @ok
-					t(`Link`, {to: "/users/#{@id}"}, "go to my settings")
+					link_to("to users::show", "/users/#{@id}")
 				end
 			)
 		end

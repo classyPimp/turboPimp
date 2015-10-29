@@ -44,6 +44,7 @@ class UsersController < BaseController
 
 
   def login
+    p "#{self}.login"
     email = c.ref(:email_input).value
     password = c.ref(:password_input).value
     if email != "" || password != ""

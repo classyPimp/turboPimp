@@ -1,10 +1,9 @@
-module UserComponents
+module Users
 
 	class Show < RW
 		
 		def init
-			@user_id = self.props.params.id
-			`console.log(#{props.params.id})`
+			@user_id = props.params.id
 		end
 
     def initial_state
@@ -20,8 +19,7 @@ module UserComponents
 				t(:p, {}, 
 					@user_id
 				),
-        t(:p, {onClick: ->(){logout_user}}, "click here to logout"),
-        t(:p, {onClick: ->(){App.history.replaceState(nil, "/about")}}, "click to relocate")
+        t(:p, {onClick: ->(){logout_user}}, "click here to logout")
 			)
 		end
 

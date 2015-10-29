@@ -1,4 +1,4 @@
-module UserComponents
+module Users
 
   class LoginInfo < RW
 
@@ -45,12 +45,14 @@ module UserComponents
     def render
       t(:div, {}, 
         if state.logged_in
-          t(:p, {}, "you are logged_in as #{state.current_user.email}")
+          link_to("you are logged_in as #{state.current_user.email}", "/users/#{CurrentUser.user_instance.id}")
         else
           t(:div, {}, "you are not logged in",
-            t(`Link`, {to: "/users/login"}, "login"),
+            t(:br,{}),
+            link_to("login", "/users/login"),
             t(:br, {}),
-            t(`Link`, {to: "users/signup"}, "don't have an account yet?")
+            link_to("signup", "/users/signup"),
+            t(:br, {})
           )
         end
       )

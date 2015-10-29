@@ -1,6 +1,4 @@
-module	UserComponents
-
-	BaseLink = "/users"
+module	Users
 
 	class Main < RW
 			

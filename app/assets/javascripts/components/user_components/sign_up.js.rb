@@ -1,6 +1,6 @@
 require "controllers/users_controller"
 
-module UserComponents
+module Users
 
   class SignUp < RW
 

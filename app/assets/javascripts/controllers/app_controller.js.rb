@@ -18,7 +18,7 @@ class AppController < BaseController
     	if lic = @login_info_component
     		lic.on_user_logout
     	end
-      App.history.replaceState(nil, "/home")
+      App.history.replaceState(nil, "/users/login")
     end.fail do |r|
       p "logout failed"
     end
