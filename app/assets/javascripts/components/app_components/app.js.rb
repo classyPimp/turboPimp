@@ -1,5 +1,5 @@
 class App < RW
-
+  
   expose_as_native_component
 
   class << self
@@ -29,8 +29,9 @@ class App < RW
         t(:p, {}, 
           link_to("login", "/users/login"),
           t(:br, {}),
-          link_to("signup", "/users/signup")
-        )
+          link_to("signup", "/users/signup"),
+        ),
+        t(Shared::Spinner, {ref: "spinner"})
       ),
       t(:div, {},
         children
@@ -39,7 +40,7 @@ class App < RW
   end
 
   def handler
-    
+    ref(:spinner).__opalInstance.off
   end
 end
 

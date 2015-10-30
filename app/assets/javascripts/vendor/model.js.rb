@@ -1,13 +1,67 @@
+=begin
+  HOW THIS WORKS
+        MODELS
+  your models should inherit from Model
+  Model has parse class method tha traverses Hash || Array or stringified JSON and
+  instantiates meeting models.
+  Rails, should respond with json root eg {user: {id: 1}}
+  When Model.parse if it will meet {model_name: {atr: "some", foo: "some"}} it will instantiate that #{model_name} and [:model_name] wll
+  go to attribtes if in attributes there is model it will also be instantiated.
+  if array of models given to model parse it will retun ModelAssociation wich is basicaly the arry of models
+  attributes are stored in @attributes wich are passed on init
+  each model has .attributes runtime called method that defines getter setter methods on @attributes
+  to update attributes call update_attributes({hash}) which will merge it to attributes TODO implement deep_merge on ::Hash
+
+        HTTP REQUESTS
+  in your model you define routes as:
+  route :find => will define method #find
+  for class method routes route shall be capitalized
+  route :Find => will define method .find
+  second arg is url
+  route :find, "/users"
+  so model.find will make request to /users
+  also you can pass wilds to url
+  route :find, "users/:id"
+  this works as expected
+  to add the payload to request you should pass hash as 2nd arg
+  .find {}, {user: {email: user.email}} => will result in payload: {users: {email: user.email}}
+  if you had wild in route definition, you have to supply it in first arg as
+  .find {id: 1}, {payload : Hash}
+  you can pass {defaults: [:your wild, :your 2nd wild]} in route definition option
+  route :find, "users/:id", {defaults: [:id]} =>
+  so if you will not supply wild when calling wild will be taken from return value of Model || model.__send__ #{wild}
+  
+  if you need to handle response in .then .fail customly, supply {yield_response: true} as first arg; as
+  .find {yield_response: true, id: 2}.then {|response| do somethind with esponse}.fail {|response| do spmething else} 
+
+  when you call defined route request is handled by RequestHandler class
+
+  RequestHandler has everything needed (passed from invoking model) as: response , urld and etc Model || model from which RequestHadler was
+  initialized; you can call it by request_handler.caller
+
+  to define custom scenarios of response automatic handling you should define
+  responses_on_#{your route name} methods that accepts RequestHandler instance
+  that instance has accessors on everything you need e.g. .response .promise and etc
+  example:
+      def self.responses_on_find(request_handler)
+        if request_handler.response.ok?
+          request_handler.promise.resolve Model.parse(request_handler.response.json)
+        else
+          "raise http error"
+        end
+      end
+
+  to provide default actions on response there is RequestHandler#defaults_on_response where you put code that should run
+  for any response
+
+=end
+
 require "opal"
 require "promise"
 class Model
- 
-  def emit_anuthorized(response)
-    #EXAMPLE AppController.launch_anauthorized_precedures(repsonse)
-  end
 
   @attributes_list
-  @associations_list
+  #@associations_list not yet implemented
 
   class << self
     attr_accessor :attributes_list
@@ -51,6 +105,7 @@ class Model
   def self.objectify_single_model(data)
     if (data.is_a? Hash) && (data.size == 1) 
       data.each_with_index do |(i, value), index|
+        #TODO raise on constant missing, rescue with parse on value, and passing k as symbol to model 
         data = HelperStuff.constantize(i = i.capitalize).new(value) if value.is_a? Hash
       end
     end
@@ -68,7 +123,7 @@ class Model
 
   #######INSTANCE
 
-  attr_accessor :attributes
+  attr_accessor :attribute 
   attr_accessor :errors
 
   def initialize(data = {})
@@ -225,7 +280,7 @@ class RequestHandler
     HTTP.__send__(@http_method, @url, @req_options) do |response|
       p "#{self}.send_request"
       @response = response
-      authorize! @response
+      defaults_on_response 
       if @should_yield_response
         yield_response
       elsif @caller.respond_to? "responses_on_#{@name.downcase}"
@@ -255,12 +310,8 @@ class RequestHandler
     end
   end
 
-  def defaults_if_ok 
-
-  end
-
-  def defaults_if_not_ok
-    authorize!(@response)
+  def default_on_response
+    authorize!
   end
 
   def authorize!
