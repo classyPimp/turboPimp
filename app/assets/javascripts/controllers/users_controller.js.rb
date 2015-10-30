@@ -1,6 +1,6 @@
 class UsersController < BaseController
 
-	def submit_form
+  def submit_form
     ->(e){
       e = Native(e)
       e.prevent
@@ -12,7 +12,7 @@ class UsersController < BaseController
       if errors == c.blank_errors
         c.state.errors = c.blank_errors
         c.set_state loading: true
-        c.state.user.sign_up({yield_response: true}, c.state_to_h(:inputs)).then do |response|
+        c.state.user.sign_up({yield_response: true}, user: c.state_to_h(:inputs)).then do |response|
           c.state.loading = false
           if e = response[:user][:errors]
           	c.set_state errors: e 
@@ -53,6 +53,15 @@ class UsersController < BaseController
         AppController.user_logged_in
       end
     end 
+  end
+
+  def send_password_reset
+    email = c.ref(:email_input).value
+    if email
+      CurrentUser.request_password_reset({}, password_reset: email).then do |response|
+        
+      end
+    end
   end
 
 end
