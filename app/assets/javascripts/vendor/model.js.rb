@@ -1,17 +1,7 @@
 require "opal"
 require "promise"
 class Model
-
-  
-  @@authorizible = true
-  @@prefix = 'api'
-
-  def self.authorize!(response)
-    if @@authorizible && response.status_code == "401"
-      self.class.emit_anuthorized(response.json)
-    end
-  end
-
+ 
   def emit_anuthorized(response)
     #EXAMPLE AppController.launch_anauthorized_precedures(repsonse)
   end
@@ -76,14 +66,6 @@ class Model
     data
   end
 
-  def self.route(*args)
-    args.each do |arg|
-      if arg.is_a? Hash
-        arg
-      end
-    end
-  end
-
   #######INSTANCE
 
   attr_accessor :attributes
@@ -96,8 +78,6 @@ class Model
   end
 
   def update_attributes(data)
-    #update attributes on instantiated object
-    #simply replaces @attributes.
     attrs = self.class.objectify(data, nil, true)
     @attributes.merge! attrs
   end
@@ -128,80 +108,40 @@ class Model
     end
   end
 
-  def self.route(name, method_and_url, options)
-    if name == "Find"
+  def self.route(name, method_and_url, options ={})
+    if name[0] == name.capitalize[0]
       self.define_singleton_method(name.downcase) do | wilds = {}, req_options = {}|
-
-        url = prepare_http_url_from(method_and_url, wilds)
-
-        req_options = {payload: req_options}
-        
-        promise = Promise.new
-        HTTP.__send__(method_and_url.keys[0], url, req_options) do |response|
-          if response.ok?
-            promise.resolve Model.parse(response.json)
-          else
-            authorize!(response)
-            "raise http error"
-          end
-        end
-        promise
+        RequestHandler.new(self, name, method_and_url, options, wilds, req_options).promise
       end
     else
       #route :save, post: "pages/:id", defaults: [:id]
       self.define_method(name) do |wilds = {}, req_options = {}|
-        
-        should_yield_response = wilds[:yield_response]
-
-        url = self.class.prepare_http_url_from(method_and_url, wilds)
-        
-        req_options = {self.class.name.downcase => req_options}
-        req_options = {payload: req_options}
-        
-        promise = Promise.new
-        HTTP.__send__(method_and_url.keys[0], url, req_options) do |response|        
-          if response.ok?
-            if name == "destroy"
-              _id = self.id
-              promise.resolve status: "ok", destroyed: _id              
-            else
-              if should_yield_response
-                promise.resolve response.json
-              else
-                self.update_attributes response.json[self.class.name.downcase]
-                promise.resolve self
-              end
-            end
-          else
-            self.class.authorize!(response.json)
-            self.errors << "response error"
-            promise.reject self
-          end
-        end
-        promise
-      end
+        RequestHandler.new(self, name, method_and_url, options, wilds, req_options).promise
+      end  
     end
   end
 
-  def self.prepare_http_url_from(method_and_url, wilds)
-  #prepares passed method_and_url from self.route
-  url = method_and_url[method_and_url.keys[0]].split('/')
-  url.map! do |part|
-    if part[0] == ":"
-      if wilds[part[1..-1]]
-        wilds[part[1..-1]]
-      end
+  def self.responses_on_find(request_handler)
+    p "#{self}.reponses on find"
+    if request_handler.response.ok?
+      request_handler.promise.resolve Model.parse(request_handler.response.json)
     else
-      part
+      "raise http error"
     end
   end
-  #url[-1] = "#{url[-1]}.json"
-  #adds prefix to url as apiv1/url
-  url.unshift(@@prefix)
-  "/#{url.join('/')}"
 
-  #returns full url
-end
+  def responses_on_destroy(request_handler)
+    p "#{self}.responses_on_destroy"
+    if request_handler.response.ok?
+      _id = self.id
+      request_handler.promise.resolve status: "ok", destroyed: _id              
+    else
+      self.errors << "response error"
+      request_handler.promise.reject self
+    end
+  end
+
+ 
 
 end
 
@@ -244,14 +184,86 @@ class ModelAssociation
   end
 end
 
+class RequestHandler
+  
+  attr_accessor :caller, :promise, :name, :response
 
+  def initialize(caller, name, method_and_url, options, wilds, req_options)
+    @caller = caller
+    @name = name
+    @options = options
+    @wilds = wilds
+    @should_yield_response = wilds[:yield_response]
+    @url = prepare_http_url_for(method_and_url)
+    @http_method = method_and_url.keys[0]
+    @req_options = {payload: req_options}
+    send_request
+  end
 
+  def prepare_http_url_for(method_and_url)
+    url = method_and_url[method_and_url.keys[0]].split('/')
+    url.map! do |part|
+      if part[0] == ":"
+        if @wilds[part[1..-1]]
+          @wilds[part[1..-1]]
+        elsif  (@options[:defaults].find_index(part[1..-1]) if @options[:defaults].is_a?(Array))
+          @caller.send part[1..-1]
+        end
+      else
+        part
+      end
+    end
+    #url[-1] = "#{url[-1]}.json"
+    #adds prefix to url as apiv1/url
+    url.unshift('api')
+    "/#{url.join('/')}"
+    #returns full url
+  end
 
+  def send_request
+    @promise = Promise.new
+    HTTP.__send__(@http_method, @url, @req_options) do |response|
+      p "#{self}.send_request"
+      @response = response
+      authorize! @response
+      if @should_yield_response
+        yield_response
+      elsif @caller.respond_to? "responses_on_#{@name.downcase}"
+        @caller.send "responses_on_#{@name.downcase}", self
+      else
+        default_response
+      end
+    end
+    @promise
+  end
 
+  def yield_response(response, promise)
+    p "#{self} yield response"
+    if @response.ok?
+      @promise.resolve @response.json
+    else
+      @promise.reject @response.json
+    end
+  end
 
+  def default_response(response, promise)
+    "p #{self}.default_response"
+    if @response.ok?
+      @promise.resolve @response.json
+    else
+      @promise.reject @response.json
+    end
+  end
 
+  def defaults_if_ok 
 
+  end
 
+  def defaults_if_not_ok
+    authorize!(@response)
+  end
 
-
-
+  def authorize!
+    #LOGIC ON 401 RESPONSE
+  end
+end
