@@ -84,7 +84,7 @@ gem "auth", path: "~/dev/my_gems/auth"
 
 ######### MY ADDED GEMS
 
-	gem "twitter-bootstrap-rails"
+	gem "pure-css-rails"
 
 ######### END MY ADDED GEMS
 

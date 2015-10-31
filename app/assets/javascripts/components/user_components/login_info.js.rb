@@ -31,7 +31,7 @@ module Users
     end
 
     def request_credentials
-      CurrentUser.get_current_user.then do |response|
+      CurrentUser.get_current_user({component: self}).then do |response|
         if CurrentUser.logged_in == true
           state.current_user = CurrentUser.user_instance
           set_state(logged_in: CurrentUser.logged_in)

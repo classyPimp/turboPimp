@@ -1,3 +1,13 @@
+=begin
+For safe custom additions there is helpers module.
+You can monkey patch RW, Model there or anything else there. (reminder it was hard for me to make RW as module that is included in each component
+, beacuse in some cases to modify RW (by including module in it was not possible because of dependecy loading), the exit was either including
+other methods, like include RW; include Helpers; include Etc in each component but that is more typing; so I decided to stay with monkey 
+patching everything in hepers file)
+
+=end
+
+
 require 'native'
 
 `

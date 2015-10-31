@@ -16,11 +16,11 @@ module Shared
 		end
 
 		def on
-			set_state on: "inline"
+			set_state(on: "inline") if state.on == "none"
 		end
 
 		def off
-			set_state on: "none"
+			set_state(on: "none") unless state.on == "none" 
 		end
 	end
 end

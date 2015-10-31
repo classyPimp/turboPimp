@@ -39,6 +39,9 @@
   RequestHandler has everything needed (passed from invoking model) as: response , urld and etc Model || model from which RequestHadler was
   initialized; you can call it by request_handler.caller
 
+  If you call Model model route from component, or any other object you can pass components self to RequestHandler in first arg (wilds)
+  as render; User.find({component: self}, {payload: {foo: "bar"}}); then the component will be available as instance var @component
+
   to define custom scenarios of response automatic handling you should define
   responses_on_#{your route name} methods that accepts RequestHandler instance
   that instance has accessors on everything you need e.g. .response .promise and etc
@@ -53,6 +56,10 @@
 
   to provide default actions on response there is RequestHandler#defaults_on_response where you put code that should run
   for any response
+
+  You can monkeypatch Model in Helpers, (you mostly will need it for defaults modethods); now they are
+  #defaults_before_request (as expected)
+  #defaults_on_response (just add if @response.ok else and will run defaultly)
 
 =end
 
@@ -248,6 +255,7 @@ class RequestHandler
     @name = name
     @options = options
     @wilds = wilds
+    @component = wilds[:component]
     @should_yield_response = wilds[:yield_response]
     @url = prepare_http_url_for(method_and_url)
     @http_method = method_and_url.keys[0]
@@ -277,6 +285,7 @@ class RequestHandler
 
   def send_request
     @promise = Promise.new
+    defaults_before_request
     HTTP.__send__(@http_method, @url, @req_options) do |response|
       p "#{self}.send_request"
       @response = response
@@ -310,11 +319,5 @@ class RequestHandler
     end
   end
 
-  def defaults_on_response
-    authorize!
-  end
-
-  def authorize!
-    #LOGIC ON 401 RESPONSE
-  end
+  
 end
