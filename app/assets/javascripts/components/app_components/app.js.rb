@@ -31,7 +31,7 @@ class App < RW
           t(:br, {}),
           link_to("signup", "/users/signup"),
         ),
-        t(Shared::Spinner, {ref: "spinner"})
+        spinner
       ),
       t(:div, {},
         children

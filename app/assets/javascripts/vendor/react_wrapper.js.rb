@@ -203,17 +203,6 @@ class RW
     @native.forceUpdate
   end
   
-
-  def link_to(body, link, options = nil)
-   if block_given?
-    body = yield
-   end
-    t(`Link`, {to: link, query: options}, body)    
-  end
-
-  #def spinner
-  #  t(Shared::Spinner, {ref: "spinner"})
-  #end
 end
 
 

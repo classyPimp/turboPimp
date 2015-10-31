@@ -1,10 +1,11 @@
+require "vendor/react_wrapper"
 module Shared
 	class Spinner	< RW
 		expose_as_native_component
 
 		def initial_state
 			{
-				on: false
+				on: "none"
 			}
 		end
 

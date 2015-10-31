@@ -310,7 +310,7 @@ class RequestHandler
     end
   end
 
-  def default_on_response
+  def defaults_on_response
     authorize!
   end
 
