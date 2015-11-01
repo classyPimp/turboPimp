@@ -23,16 +23,12 @@ module Users
         user: User.new,
         errors: blank_errors,
         inputs: {},
-        loading: false,
         submitted: false
       }
     end
 
     def render
       t(:div, {className: "create_user_form"},
-        if state.loading
-          t(:h1, {}, "Loading")
-        end,
         if state.submitted
           t(:h1, {}, "Confirmation letter was sent to #{self.state.inputs[:email]}")
         end,

@@ -1,10 +1,11 @@
 class PasswordResetsController < ApplicationController
 
-before_action :get_user         , only: [:edit , :update]
+  before_action :get_user         , only: [:edit , :update]
   before_action :valid_user       , only: [:edit , :update]
   before_action :check_expiration , only: [:edit , :update]
 
   def new
+    
   end
 
   def create
@@ -12,11 +13,9 @@ before_action :get_user         , only: [:edit , :update]
     if @user
       @user.create_reset_digest
       @user.send_password_reset_email
-      flash[:info] = "email sent with password reset instructions"
-      redirect_to root_url
+      render json: {status: "ok"}
     else
-      flash.now[:danger] = "error occured"
-      render :new
+      render json: {errors: ["error occured"]}, status: 400
     end
   end
 
@@ -27,13 +26,12 @@ before_action :get_user         , only: [:edit , :update]
   def update
     if params[:user][:password].empty?
       @user.errors.add(:password, "can't be empty")
-      render :edit
+      render json: @user.as_json(only: [:errors]), status: 400
     elsif @user.update_attributes(user_params)
       log_in @user
-      flash[:success] = "password has been reset successflly"
-      redirect_to @user
+      render json: @user.as_json(only: [:id, :email])
     else
-      render :new
+      render json: {user: {errors: ["error occured"]}}
     end
   end
 

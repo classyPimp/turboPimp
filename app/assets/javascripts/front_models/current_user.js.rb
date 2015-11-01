@@ -43,10 +43,32 @@ class CurrentUser < User
     end
   end
 
+  def self.responses_on_request_password_reset(request_handler)
+    r = request_handler
+    if r.response.ok?
+      @user_instance = Model.parse(r.response.json)
+      @logged_in = true
+      r.promise.resolve(status: "ok") 
+    else
+      r.promise.reject(errors: r.response.json[:errors])
+    end       
+  end
+
+  def self.responses_on_update_new_password(r)
+    if r.response.ok?      
+      @user_instance = Model.parse(r.response.json)
+      @logged_in = true
+      r.promise.resolve(status: "ok") 
+    else
+      r.promise.reject(statuts: "error")
+    end
+  end
+
   route "Get_current_user", post: "users/current_user"
   route "Logout", delete: "logout"
   route "Login", post: "login"
-  route "Request_password_reset"
+  route "Request_password_reset", post: "password_resets"
+  route "Update_new_password", put: "password_resets/:id"
 
   @user_instance ||= User.new
   @logged_in = false

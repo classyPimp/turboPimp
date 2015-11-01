@@ -16,7 +16,9 @@ module Users
         t(:p, {}, "enter password"),
         t(:input, {type: "password", ref: "password_input"}),
         t(:br, {} ),
-        t(:button, {onClick: ->(){controller.login}}, "login")
+        t(:button, {onClick: ->(){controller.login}}, "login"),
+        t(:br, {}),
+        link_to("Forgot your password? press here to restore", "/users/password_reset")
       )
     end
 

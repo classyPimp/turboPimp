@@ -60,7 +60,8 @@
   You can monkeypatch Model in Helpers, (you mostly will need it for defaults modethods); now they are
   #defaults_before_request (as expected)
   #defaults_on_response (just add if @response.ok else and will run defaultly)
-
+  
+  sorry for my french
 =end
 
 require "opal"
@@ -287,6 +288,7 @@ class RequestHandler
     @promise = Promise.new
     defaults_before_request
     HTTP.__send__(@http_method, @url, @req_options) do |response|
+      begin
       p "#{self}.send_request"
       @response = response
       defaults_on_response 
@@ -296,6 +298,9 @@ class RequestHandler
         @caller.send "responses_on_#{@name.downcase}", self
       else
         default_response
+      end
+      rescue
+        @promise.reject(errors: ["connection error"])
       end
     end
     @promise

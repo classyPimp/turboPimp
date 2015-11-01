@@ -8,7 +8,7 @@ module Helpers
 		end
 	end
 
-	module RRouter
+	class RRouter
 
 	end
 

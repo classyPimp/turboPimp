@@ -196,7 +196,7 @@ class RW
     unless _klass.is_a? String
       _klass = `window[#{_klass.native_name}]` unless _klass.is_a?(Proc)
     end
-    `console.log(#{_klass})`
+
     if args.length == 0
       params = [_klass, _props.to_n]
     else
