@@ -20,7 +20,7 @@ class App < RW
   end
  
   def render
-    t(:div, {onClick: ->(){handler}},
+    t(:div, {},
       if false
         "false"
       end,
@@ -35,16 +35,16 @@ class App < RW
       ),
       t(:div, {},
         children
+      ),
+      t(:p, {onClick: ->(){modal_handler}}, "open modal"),
+      modal({},
+        t(:p, {}, "WHAT UP DOWGS")
       )
     )
   end
 
-  def handler
-    ref(:spinner).__opalInstance.off
+  def modal_handler 
+    ref(:modal).__opalInstance.open(t(:p, {}, "THE HEADER"))
   end
 end
-
-
-
-
 
