@@ -158,6 +158,10 @@ class RW
     Native(`#{@native.to_n}.refs[#{ref}]`)
   end
 
+  def refs
+    @native.refs
+  end
+
   def children
     props.children.to_n
   end

@@ -102,3 +102,136 @@ class MenuItem
 
 end
 
+
+class Page < Model
+	
+	attributes :name, :email
+
+	def init
+		
+	end
+
+	def validation_rules
+		{
+			name: ->{validate_name},
+			email: ->{validate_email}
+		}
+	end
+
+	def reset_errors
+		@errors = {}
+	end
+
+	def validate_name
+	  if name.length < 8
+	  	(@errors[:name] ||= []) << "can't be less than 8 chars long"
+	  end
+	end
+
+	def validate_email
+		if email.length < 6
+			(@errors[:email] ||= []) << "invalid email"
+ 		end
+	end
+
+	def validate
+		@attributes.each do |k, v|
+			if v.is_a? Model
+				v.validate
+				if v.has_errors
+					@errors[:thereareerrors] = true				
+				end
+			else
+				self.send("validate_#{k}") if self.respond_to? "validate_#{k}"
+			end
+		end
+	end
+
+end
+
+class Input < RW
+
+	expose_as_native_component
+
+	def component_will_unmount
+		p "unmounted #{self}"
+	end
+
+	def component_will_update
+		p "will upddate #{self}"
+	end
+
+	def valid_or_not?
+		if props.model.has_errors?
+			"invalid"
+		else
+			"valid"
+		end
+	end
+
+	def render
+		t(:div, {},
+			t(:p, {}, "#{props.adress}"),
+			*if props.model.has_errors?
+				p props.model.errors
+				splat_each(props.model.errors[props.adress]) do |er|
+					t(:div, {},
+						t(:p, {},
+							er
+						),
+						t(:br, {})		
+					)							
+				end
+			end,
+			t(:input, {className: valid_or_not?, defaultValue: props.model.attributes[props.adress], ref: "#{self}", 
+			type: props.type}),
+			children			
+		)		
+	end
+
+	def collect
+		props.model.attributes[props.adress] = ref("#{self}").value
+	end
+	
+end
+
+class Foo < RW
+	expose_as_native_component
+	attr_accessor :inputs
+	def init
+		@inputs_counter = 0
+	end
+
+	def method_name
+		
+	end
+
+	def initial_state	
+		{
+			model: Model.parse(page: {email: "asd", password: "qweasd"})
+		}
+	end
+
+	def render
+		@inputs = []
+		t(:div, {},
+			input(state.model, :email, :text),
+			input(state.model, :password, :text),
+			t(:button, {onClick: ->{handle}}, "collect")
+		)
+	end
+
+	def handle
+		p Hash.new(refs)
+	end
+
+	def input(model, adress, type, options = {})
+		@inputs_counter += 1
+		options[:model] = model
+		options[:adress] = adress
+		options[:type] = type
+		options[:ref] = "_input_#{@inputs_counter}"
+		t(Input, options, (yield if block_given?))
+	end
+end
+

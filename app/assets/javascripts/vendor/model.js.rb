@@ -131,13 +131,22 @@ class Model
 
   #######INSTANCE
 
-  attr_accessor :attribute 
+  attr_accessor :attributes 
   attr_accessor :errors
 
   def initialize(data = {})
     data = self.class.objectify(data, nil, true)
     @attributes = data
-    @errors = []
+    @errors = {}
+    init
+  end
+
+  def has_errors?
+    !@errors.empty?
+  end
+
+  def init
+    
   end
 
   def update_attributes(data)
@@ -199,8 +208,8 @@ class Model
       _id = self.id
       request_handler.promise.resolve status: "ok", destroyed: _id              
     else
-      self.errors << "response error"
-      request_handler.promise.reject self
+      (self.errors[:request] ||= []) << "connection_error"
+       request_handler.promise.reject self
     end
   end
 
