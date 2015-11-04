@@ -105,7 +105,7 @@ end
 
 class Page < Model
 	
-	attributes :name, :email
+	attributes :name, :email, :password, :pages
 
 	def init
 		
@@ -119,6 +119,16 @@ class Page < Model
 	end
 
 	def reset_errors
+    attributes.each do |k,v|
+      if v.is_a? Model
+        v.reset_errors
+      end
+      if v.is_a? Array
+        v.each do |c|
+          c.reset_errors
+        end
+      end
+    end
 		@errors = {}
 	end
 
@@ -136,11 +146,15 @@ class Page < Model
 
 	def validate
 		@attributes.each do |k, v|
-			if v.is_a? Model
-				v.validate
-				if v.has_errors
-					@errors[:thereareerrors] = true				
-				end
+      if v.is_a? Array
+        v.each do |m|  
+          if m.is_a? Model
+    				m.validate
+    				if m.has_errors?
+    					@errors[:thereareerrors] = true				
+    				end
+          end
+        end
 			else
 				self.send("validate_#{k}") if self.respond_to? "validate_#{k}"
 			end
@@ -154,11 +168,11 @@ class Input < RW
 	expose_as_native_component
 
 	def component_will_unmount
-		p "unmounted #{self}"
+		
 	end
 
 	def component_will_update
-		p "will upddate #{self}"
+		ref("#{self}").value = "" if props.reset_value == true
 	end
 
 	def valid_or_not?
@@ -169,11 +183,18 @@ class Input < RW
 		end
 	end
 
+  def default_value
+    if props.reset_value == true
+      nil
+    else
+      props.model.attributes[props.adress]
+    end
+  end
+
 	def render
 		t(:div, {},
-			t(:p, {}, "#{props.adress}"),
-			*if props.model.has_errors?
-				p props.model.errors
+      t(:p, {}, props.adress),
+			*if props.model.errors[props.adress]
 				splat_each(props.model.errors[props.adress]) do |er|
 					t(:div, {},
 						t(:p, {},
@@ -183,14 +204,14 @@ class Input < RW
 					)							
 				end
 			end,
-			t(:input, {className: valid_or_not?, defaultValue: props.model.attributes[props.adress], ref: "#{self}", 
-			type: props.type}),
+			t(:input, {className: valid_or_not?, default_value: props.model.attributes[props.adress], ref: "#{self}", 
+			type: props.type, key: props.keyed}),
 			children			
 		)		
 	end
 
 	def collect
-		props.model.attributes[props.adress] = ref("#{self}").value
+		props.model.attributes[props.adress.to_sym] = ref("#{self}").value
 	end
 	
 end
@@ -199,16 +220,17 @@ class Foo < RW
 	expose_as_native_component
 	attr_accessor :inputs
 	def init
-		@inputs_counter = 0
+		@inputs_counter = -1
 	end
 
-	def method_name
-		
+	def component_will_update 
+		@inputs_counter = -1
 	end
 
 	def initial_state	
 		{
-			model: Model.parse(page: {email: "asd", password: "qweasd"})
+			model: Model.parse(page: {email: "asd", password: "qwe", password_confirmation: "asd",
+                         pages: []})
 		}
 	end
 
@@ -217,12 +239,39 @@ class Foo < RW
 		t(:div, {},
 			input(state.model, :email, :text),
 			input(state.model, :password, :text),
-			t(:button, {onClick: ->{handle}}, "collect")
+      input(state.model, :password_confirmation, nil, {reset_value: true}),
+      *splat_each_with_index(state.model.pages) do |model, index|
+        t(:div, {key: "#{model}"},
+          input(model, :email, :text),
+          input(model, :password, :text),
+          t(:button, {onClick: ->{remove(state.model.pages, index)}}, "remove")
+        ) unless model == nil
+      end,
+      t(:button, {onClick: ->{add(state.model.pages, Page.new)}}, "add"),
+      
+			t(:button, {onClick: ->{collect_inputs}}, "collect")
 		)
 	end
 
-	def handle
-		p Hash.new(refs)
+  def remove(_model, i)
+    _model.delete_at i
+    set_state model: state.model
+  end
+
+  def add(_model, val)
+    _model.push val
+    set_state model: state.model
+  end
+
+	def collect_inputs
+		Hash.new(refs.to_n).each do |k,v|
+      if k.include? "_input"
+        v.__opalInstance.collect
+      end
+    end
+    state.model.reset_errors
+    state.model.validate
+    set_state model: state.model  
 	end
 
 	def input(model, adress, type, options = {})
@@ -231,6 +280,7 @@ class Foo < RW
 		options[:adress] = adress
 		options[:type] = type
 		options[:ref] = "_input_#{@inputs_counter}"
+    options[:keyed] = @inputs_counter
 		t(Input, options, (yield if block_given?))
 	end
 end
