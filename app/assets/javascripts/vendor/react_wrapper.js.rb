@@ -77,6 +77,14 @@ class RW
     
   end
 
+  def __component_will_update__
+    component_will_update
+  end
+
+  def component_will_update__
+    
+  end
+
   def self.create_class()
     (%x{
         React.createClass({
@@ -106,7 +114,7 @@ class RW
           },
           componentWillUpdate: function(next_props, next_state) {
             var instance = this._getOpalInstance.apply(this);
-            return #{`instance`.component_will_update(`next_props`, `next_state`) if self.method_defined? :component_will_update};
+            return #{`instance`.__component_will_update__(`next_props`, `next_state`) if self.method_defined? :__component_will_update__};
           },
           componentDidUpdate: function(prev_props, prev_state) {
             var instance = this._getOpalInstance.apply(this);

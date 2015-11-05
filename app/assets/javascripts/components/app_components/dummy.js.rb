@@ -218,7 +218,8 @@ end
 
 class Foo < RW
 	expose_as_native_component
-	attr_accessor :inputs
+
+	
 	def init
 		@inputs_counter = -1
 	end

@@ -333,5 +333,78 @@ class RequestHandler
     end
   end
 
+  #++++++++++++VALIDATION++++++++++++++++
+  #TODO shall it be moved to includables?
+
+  def validation_rules
+    #in this method you define validation rules for your attributes
+    #IMPORTANT the validation methods' names should be  validate_#{attribute_name}
+    #TODO: consider remakin the #validate to validatin_rules[:attr].call if it's not nil  
+    #your model should implement this method like:
+    # attr_name: ->(options = {}){validate_attr_name}
+    #THIS IS NOT NEEDED NOW THE VALIDATIONS ARE SIMPLY __SEND__ to model if respond_to
+    {
+      
+    }
+  end
+
+  def reset_errors
+    #WRITE DOCS
+    attributes.each do |k,v|
+      if v.is_a? Model
+        v.reset_errors
+      end
+      if v.is_a? Array
+        v.each do |c|
+          c.reset_errors
+        end
+      end
+    end
+    @errors = {}
+  end
+
+  def validate
+    @attributes.each do |k, v|
+      if v.is_a? Array
+        v.each do |m|  
+          if m.is_a? Model
+            m.validate
+            if m.has_errors?
+              @errors[:thereareerrors] = true       
+            end
+          end
+        end
+      else
+        self.send("validate_#{k}") if self.respond_to? "validate_#{k}"
+        #refactor to validation_rules[:attr].call(options) if 
+      end
+    end
+  end
+
+  def add_error(attr_name, error)
+    #attr_name model : Model <attr_name>, error : String
+    #this method is called in validate_#{attr_name} method if your
+    #attr has errors
+    #refer to important! notice  
+    (@errors[attr] ||= []) << error
+  end
+
+  ####
+  #IMPORTANT!
+  #your model should implement validate_attr_name for the attr you need to validate
+  #this method should recieve optional option : Hash arg
+  #and it should result in either add_error(:attr_name, "bad error")
+  #or doing it manually, example
+  #def validate_name
+  # if name.length < 8
+  #   add_error :name, "too short"
+  # end
+  #end
+  #for convinience errors are assumed to have structure
+  #repeating it's attributes hash
+  #model.attributes => {name: "foo"}
+  #model.validate
+  #model.errors => {name: ["too short"]}
+  #model.attributes => {name: "foo"}
   
 end
