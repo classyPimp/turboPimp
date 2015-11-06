@@ -1,8 +1,3 @@
-#require "jquery"
-#require "jquery_ujs"
-#require "twitter/bootstrap"
 require "opal"
-#require "./vendor/zepto"
-#require "./vendor/react"
 require "react_ujs"
 require "components"

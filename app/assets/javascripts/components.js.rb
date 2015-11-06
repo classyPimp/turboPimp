@@ -1,5 +1,3 @@
-#require "opal"
-#require "opal-jquery"
 require_tree "./vendor"
 require "opal-jquery"
 require "./vendor/helpers"
