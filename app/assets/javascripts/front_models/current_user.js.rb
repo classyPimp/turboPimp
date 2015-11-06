@@ -37,7 +37,7 @@ class CurrentUser < User
     if r.response.ok?      
       @user_instance = Model.parse(r.response.json)
       @logged_in = true
-      r.promise.resolve(status: "ok") 
+      r.promise.resolve(r.response.json) 
     else
       r.promise.reject(statuts: "error")
     end
@@ -92,3 +92,4 @@ class CurrentUser < User
   end
 
 end
+

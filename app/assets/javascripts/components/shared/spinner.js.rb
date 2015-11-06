@@ -1,26 +1,26 @@
 require "vendor/react_wrapper"
 module Shared
-	class Spinner	< RW
-		expose_as_native_component
+  class Spinner < RW
+    expose_as_native_component
 
-		def initial_state
-			{
-				on: "none"
-			}
-		end
+    def initial_state
+      {
+        on: "none"
+      }
+    end
 
-		def render
-			t(:div, {className: "cssload-container", style: {display: state.on}}, 
-				t(:div, {className: "cssload-speeding-wheel"})
-			)
-		end
+    def render
+      t(:div, {className: "cssload-container", style: {display: state.on}}, 
+        t(:div, {className: "cssload-speeding-wheel"})
+      )
+    end
 
-		def on
-			set_state(on: "inline") if state.on == "none"
-		end
+    def on
+      set_state(on: "inline") if state.on == "none"
+    end
 
-		def off
-			set_state(on: "none") unless state.on == "none" 
-		end
-	end
+    def off
+      set_state(on: "none") unless state.on == "none" 
+    end
+  end
 end

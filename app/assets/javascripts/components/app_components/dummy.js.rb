@@ -107,182 +107,72 @@ class Page < Model
 	
 	attributes :name, :email, :password, :pages
 
-	def init
-		
-	end
-
-	def validation_rules
-		{
-			name: ->{validate_name},
-			email: ->{validate_email}
-		}
-	end
-
-	def reset_errors
-    attributes.each do |k,v|
-      if v.is_a? Model
-        v.reset_errors
-      end
-      if v.is_a? Array
-        v.each do |c|
-          c.reset_errors
-        end
-      end
-    end
-		@errors = {}
-	end
-
-	def validate_name
+	def validate_name(options = {})
+    p "validating name"
 	  if name.length < 8
 	  	(@errors[:name] ||= []) << "can't be less than 8 chars long"
 	  end
 	end
 
-	def validate_email
+	def validate_email(options = {})
 		if email.length < 6
 			(@errors[:email] ||= []) << "invalid email"
  		end
 	end
 
-	def validate
-		@attributes.each do |k, v|
-      if v.is_a? Array
-        v.each do |m|  
-          if m.is_a? Model
-    				m.validate
-    				if m.has_errors?
-    					@errors[:thereareerrors] = true				
-    				end
-          end
-        end
-			else
-				self.send("validate_#{k}") if self.respond_to? "validate_#{k}"
-			end
-		end
-	end
-
-end
-
-class Input < RW
-
-	expose_as_native_component
-
-	def component_will_unmount
-		
-	end
-
-	def component_will_update
-		ref("#{self}").value = "" if props.reset_value == true
-	end
-
-	def valid_or_not?
-		if props.model.has_errors?
-			"invalid"
-		else
-			"valid"
-		end
-	end
-
-  def default_value
-    if props.reset_value == true
-      nil
-    else
-      props.model.attributes[props.adress]
+  def validate_password(options = {})
+    if password.length < 5
+      add_error(:password, "too short")
     end
   end
 
-	def render
-		t(:div, {},
-      t(:p, {}, props.adress),
-			*if props.model.errors[props.adress]
-				splat_each(props.model.errors[props.adress]) do |er|
-					t(:div, {},
-						t(:p, {},
-							er
-						),
-						t(:br, {})		
-					)							
-				end
-			end,
-			t(:input, {className: valid_or_not?, default_value: props.model.attributes[props.adress], ref: "#{self}", 
-			type: props.type, key: props.keyed}),
-			children			
-		)		
-	end
-
-	def collect
-		props.model.attributes[props.adress.to_sym] = ref("#{self}").value
-	end
-	
 end
 
+
 class Foo < RW
-	expose_as_native_component
-
 	
-	def init
-		@inputs_counter = -1
-	end
+  expose_as_native_component
 
-	def component_will_update 
-		@inputs_counter = -1
-	end
+  include Plugins::Formable
 
 	def initial_state	
 		{
-			model: Model.parse(page: {email: "asd", password: "qwe", password_confirmation: "asd",
+			form_model: Model.parse(page: {email: "asd", password: "qwe", password_confirmation: "asd",
                          pages: []})
 		}
 	end
 
 	def render
-		@inputs = []
 		t(:div, {},
-			input(state.model, :email, :text),
-			input(state.model, :password, :text),
-      input(state.model, :password_confirmation, nil, {reset_value: true}),
-      *splat_each_with_index(state.model.pages) do |model, index|
+			input(Forms::Input, state.form_model, :email, {}),
+			input(Forms::Input, state.form_model, :password, {}),
+      input(Forms::Input, state.form_model, :password_confirmation, {reset_value: true}),
+      *splat_each_with_index(state.form_model.pages) do |model, index|
         t(:div, {key: "#{model}"},
-          input(model, :email, :text),
-          input(model, :password, :text),
-          t(:button, {onClick: ->{remove(state.model.pages, index)}}, "remove")
+          input(Forms::Input, model, :email, {}),
+          input(Forms::Input, model, :password, {}),
+          t(:button, {onClick: ->{remove(state.form_model.pages, index)}}, "remove")
         ) unless model == nil
       end,
-      t(:button, {onClick: ->{add(state.model.pages, Page.new)}}, "add"),
+      t(:button, {onClick: ->{add(state.form_model.pages, Page.new)}}, "add"),
       
-			t(:button, {onClick: ->{collect_inputs}}, "collect")
+			t(:button, {onClick: ->{handle_inputs}}, "collect")
 		)
 	end
 
+  def handle_inputs
+    set_state form_model: collect_inputs
+  end
+
   def remove(_model, i)
     _model.delete_at i
-    set_state model: state.model
+    set_state form_model: state.form_model
   end
 
   def add(_model, val)
     _model.push val
-    set_state model: state.model
+    set_state form_model: state.form_model
   end
 
-	def collect_inputs
-		Hash.new(refs.to_n).each do |k,v|
-      if k.include? "_input"
-        v.__opalInstance.collect
-      end
-    end
-    state.model.reset_errors
-    state.model.validate
-    set_state model: state.model  
-	end
-
-	def input(model, adress, type, options = {})
-		@inputs_counter += 1
-		options[:model] = model
-		options[:adress] = adress
-		options[:type] = type
-		options[:ref] = "_input_#{@inputs_counter}"
-    options[:keyed] = @inputs_counter
-		t(Input, options, (yield if block_given?))
-	end
 end
 

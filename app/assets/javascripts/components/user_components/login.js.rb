@@ -3,18 +3,26 @@ module Users
   class Login < RW
 
     expose_as_native_component
+    include Plugins::Formable
 
     def init
       @controller = UsersController.new(self)
     end
 
+    def initial_state
+      {
+        form_model: CurrentUser.new,
+        message: []
+      }
+    end
+
     def render
       t(:div, {className: "login_form"},
-        t(:p, {}, "enter email"),
-        t(:input, {type: "email", ref: "email_input"}),
-        t(:br, {} ),
-        t(:p, {}, "enter password"),
-        t(:input, {type: "password", ref: "password_input"}),
+        *splat_each(state.message) do |m|
+          t(:h3, {}, m)
+        end,
+        input(Forms::Input, state.form_model, :email, {}),
+        input(Forms::Input, state.form_model, :password, {type: "password"}),
         t(:br, {} ),
         t(:button, {onClick: ->(){controller.login}}, "login"),
         t(:br, {}),
