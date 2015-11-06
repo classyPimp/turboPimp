@@ -214,16 +214,15 @@ class RW
 it's must be changed in react library
 
 in traverseAllChildrenImpl function
-
-if (Array.isArray(children)) {
-    for (var i = 0; i < children.length; i++) {
-      child = children[i];
-      if (child === Opal.nil) {continue}; <<<<<<<<<<< THIS SHOULD BE ADDED
-      nextName = nextNamePrefix + getComponentKey(child, i);
-      subtreeCount += traverseAllChildrenImpl(child, nextName, callback, traverseContext);
-    }
-  }
-
+#
+#  function traverseAllChildrenImpl(children, nameSoFar, callback, traverseContext) {
+#  var type = typeof children;
+#
+#  if (type === 'undefined' || type === 'boolean' || children === Opal.nil) { <<<<<<<<< || children === Opal.nil was added
+#    // All of the above are perceived as null.
+#    children = null;
+#  }
+#
 THE REASON BEHIND:
 before args were compacted! to remove nils (e.g. if in render there was and if statement which returned nil)
 I thought that it's bad to traverse all children each time, so instead I altered react itself.
