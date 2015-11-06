@@ -21,7 +21,7 @@ class RW
    
   class << self
     def native_name
-      @native_name ||= self.name.split('::').join('_') # joins the face lol
+      @native_name ||= self.name.split('::').join('_') # that face is looking right in your soul
     end
   end
 
@@ -77,12 +77,36 @@ class RW
     
   end
 
-  def __component_will_update__
-    component_will_update
+  def __component_will_update__(next_props, next_state)
+    component_will_update(Native(next_props), Native(next_state))
   end
 
   def component_will_update
     
+  end
+
+  def __should_component_update__(next_props, next_state)
+    should_component_update(Native(next_props), Native(next_state))
+  end
+
+  def should_component_update(next_props, next_state)
+    true
+  end
+
+  def __component_will_receive_props__(next_props)
+    component_will_receive_props(Native(next_props))
+  end
+
+  def component_will_receive_props(next_props)
+    
+  end
+
+  def __component_did_update__(prev_props, prev_state)
+    component_did_update(Native(prev_props), Native(prev_state))
+  end
+
+  def component_did_update(prev_props, prev_state)
+
   end
 
   def self.create_class()
@@ -90,53 +114,36 @@ class RW
         React.createClass({
           propselfs: #{self.respond_to?(:prop_selfs) ? self.prop_selfs.to_n : `{}`},
           getDefaultProps: function(){
-            return #{self.respond_to?(:default_props) ? self.default_props.to_n : `{}`};
+            return #{self.default_props.to_n};
           },
           getInitialState: function(){
-            var instance = this._getOpalInstance.apply(this);
-            return #{`instance`.initial_state.to_n if self.method_defined? :initial_state};
+            this.__opalInstance = #{self.new(`this`)}
+            return #{`this.__opalInstance.$initial_state()`.to_n};
           },
           componentWillMount: function() {
-            var instance = this._getOpalInstance.apply(this);
-            return #{`instance`.component_will_mount if self.method_defined? :component_will_mount};
+            return this.__opalInstance.$component_will_mount();
           },
           componentDidMount: function() {
-            var instance = this._getOpalInstance.apply(this);
-            return #{`instance`.component_did_mount if self.method_defined? :component_did_mount};
+            return this.__opalInstance.$component_did_mount();
           },
           componentWillReceiveProps: function(next_props) {
-            var instance = this._getOpalInstance.apply(this);
-            return #{`instance`.component_will_receive_props(`next_props`) if self.method_defined? :component_will_receive_props};
+            return this.__opalInstance.$__component_will_receive_props__(next_props);
           },
           shouldComponentUpdate: function(next_props, next_state) {
-            var instance = this._getOpalInstance.apply(this);
-            return #{`instance`.should_component_update?(`next_props`, `next_state`) if self.method_defined? :should_component_update?};
+            return this.__opalInstance.$__should_component_update__(next_props, next_state);
           },
           componentWillUpdate: function(next_props, next_state) {
-            var instance = this._getOpalInstance.apply(this);
-            return #{`instance`.__component_will_update__(`next_props`, `next_state`) if self.method_defined? :__component_will_update__};
+            return this.__opalInstance.$__component_will_update__(next_props, next_state);
           },
           componentDidUpdate: function(prev_props, prev_state) {
-            var instance = this._getOpalInstance.apply(this);
-            return #{`instance`.component_did_update(`prev_props`, `prev_state`) if self.method_defined? :component_did_update};
+            return this.__opalInstance.$__component_did_update__(prev_props, prev_state);
           },
           componentWillUnmount: function() {
-            var instance = this._getOpalInstance.apply(this);
-            return #{`instance`.__component_will_unmount__};
-          },
-          _getOpalInstance: function() {
-            if (this.__opalInstance == undefined) {
-              var instance = #{self.new(`this`)};
-            } else {
-              var instance = this.__opalInstance;
-            }
-            this.__opalInstance = instance;
-            return instance;
+            return this.__opalInstance.$__component_will_unmount__();
           },
           displayName: #{self.to_s},
           render: function() {
-            var instance = this._getOpalInstance.apply(this);
-            return instance.$render();
+            return this.__opalInstance.$render();
           }
         })
     })
@@ -200,11 +207,10 @@ class RW
 
 
   def t(_klass, _props = {}, *args)
-    #t is short for tag
-    #creates react element
-    # if _klass not string counts _klass as react component else counts
-    #it as string tag
     
+    #t is short for tag
+    #creates react element   
+
     unless _klass.is_a? String
       _klass = `window[#{_klass.native_name}]` unless _klass.is_a?(Proc)
     end
@@ -212,22 +218,15 @@ class RW
     if args.length == 0
       params = [_klass, _props.to_n]
     else
-      args.compact!
       params = [_klass, _props.to_n, *args]
     end
-
     (%x{
       React.createElement.apply(null, #{params})
     })
   end
 
-  def update!
+  def force_update
     @native.forceUpdate
   end
   
 end
-
-
-
-
-
