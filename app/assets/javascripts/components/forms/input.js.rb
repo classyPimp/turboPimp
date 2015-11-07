@@ -1,6 +1,6 @@
 module Forms
   class Input < RW
-    expose_as_native_component
+    expose
 
     def __component_will_update__
       ref("#{self}").value = "" if props.reset_value == true

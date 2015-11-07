@@ -1,7 +1,7 @@
 module Users
   class PasswordResetForm < RW
     
-    expose_as_native_component
+    expose
     include Plugins::Formable
 
     def assign_controller

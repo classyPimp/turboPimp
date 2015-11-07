@@ -2,7 +2,7 @@ module Users
 
   class LoginInfo < RW
 
-    expose_as_native_component
+    expose
 
     def initial_state
       {
@@ -20,7 +20,7 @@ module Users
     end
 
     def update_current_user
-      p "#{self} update_current_user"
+
       state.current_user = CurrentUser.user_instance
       set_state logged_in: CurrentUser.logged_in
     end
@@ -37,7 +37,6 @@ module Users
           set_state(logged_in: CurrentUser.logged_in)
         end
       end.fail do |response|
-        
         set_state logged_in: (CurrentUser.logged_in = false)
       end
     end

@@ -131,7 +131,7 @@ end
 
 class Foo < RW
 	
-  expose_as_native_component
+  expose
 
   include Plugins::Formable
 

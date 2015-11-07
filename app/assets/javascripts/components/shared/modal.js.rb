@@ -1,6 +1,6 @@
 module Shared
 	class Modal < RW
-    expose_as_native_component
+    expose
 
     def initial_state
       {

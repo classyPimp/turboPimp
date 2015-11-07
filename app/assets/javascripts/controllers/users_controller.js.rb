@@ -51,8 +51,7 @@ class UsersController < BaseController
   def update_new_password
     c.collect_inputs(validate_only: [:password, :password_confirmation])
     unless c.state.form_model.has_errors?
-      CurrentUser.update_new_password({id: c.state.id, email: c.state.email}, {user: c.state.form_model.attributes})
-      .then do |response|
+      CurrentUser.update_new_password({id: c.state.id}, {user: c.state.form_model.attributes, email: c.state.email}).then do |response|
         App.history.replaceState(nil, "/users/#{CurrentUser.user_instance.id}")
         AppController.user_logged_in
       end.fail do |response|

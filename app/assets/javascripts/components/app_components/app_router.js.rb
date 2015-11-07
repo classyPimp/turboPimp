@@ -2,7 +2,7 @@ module AppComponents
 
 	class AppRouter < RW
 
-	  expose_as_native_component
+	  expose
 
     def component_will_unmount
 	    p "router will unmount"

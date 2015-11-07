@@ -31,7 +31,7 @@ class PasswordResetsController < ApplicationController
       log_in @user
       render json: @user.as_json(only: [:id, :email])
     else
-      render json: {user: {errors: ["error occured"]}}
+      render json: {user: {errors: ["fuck! occured"]}}
     end
   end
 
@@ -49,13 +49,13 @@ class PasswordResetsController < ApplicationController
   def valid_user
     unless (  @user && @user.activated? &&
               @user.authenticated?(:reset, params[:id]) )
-      render json: {user: {errors: ["error occured"]}}     
+      render json: {user: {errors: [params]}}     
     end
   end
 
   def check_expiration
     if @user.password_reset_expired?
-      flash[:danger] = "password reset expired"
+      render json: {errors: "reset expired"}
       redirect_to new_password_reset_url
     end
   end

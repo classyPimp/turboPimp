@@ -2,7 +2,7 @@ module Users
 
   class Login < RW
 
-    expose_as_native_component
+    expose
     include Plugins::Formable
 
     def init

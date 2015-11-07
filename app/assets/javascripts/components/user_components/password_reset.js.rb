@@ -1,7 +1,7 @@
 module Users
   class PasswordReset < RW
 
-    expose_as_native_component
+    expose
     include Plugins::Formable
 
     def initial_state

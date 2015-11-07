@@ -25,7 +25,7 @@ class RW
     end
   end
 
-  def self.expose_as_native_component
+  def self.expose
     `window[#{native_name}] = #{self.create_class}`
   end
 
@@ -210,10 +210,10 @@ class RW
     
     #t is short for tag
     #creates react element   
-=begin
-it's must be changed in react library
+#=begin
+#it's must be changed in react library
 
-in traverseAllChildrenImpl function
+#in traverseAllChildrenImpl function
 #
 #  function traverseAllChildrenImpl(children, nameSoFar, callback, traverseContext) {
 #  var type = typeof children;
@@ -223,13 +223,13 @@ in traverseAllChildrenImpl function
 #    children = null;
 #  }
 #
-THE REASON BEHIND:
-before args were compacted! to remove nils (e.g. if in render there was and if statement which returned nil)
-I thought that it's bad to traverse all children each time, so instead I altered react itself.
-That's a little hack and I don't think it'll be hard to do with further coming versions of React, beacuse even if
-traverseAllChildrenImpl be implemented in other way there would easily be place for checking if child is Opal.nil
+#THE REASON BEHIND:
+#before args were compacted! to remove nils (e.g. if in render there was and if statement which returned nil)
+#I thought that it's bad to traverse all children each time, so instead I altered react itself.
+#That's a little hack and I don't think it'll be hard to do with further coming versions of React, beacuse even if
+#traverseAllChildrenImpl be implemented in other way there would easily be place for checking if child is Opal.nil
 
-=end
+#=end
     unless _klass.is_a? String
       _klass = `window[#{_klass.native_name}]` unless _klass.is_a?(Proc)
     end

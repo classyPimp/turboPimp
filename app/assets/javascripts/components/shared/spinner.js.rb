@@ -1,7 +1,7 @@
 require "vendor/react_wrapper"
 module Shared
   class Spinner < RW
-    expose_as_native_component
+    expose
 
     def initial_state
       {

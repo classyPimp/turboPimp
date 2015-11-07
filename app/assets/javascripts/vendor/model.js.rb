@@ -382,7 +382,6 @@ class RequestHandler
     defaults_before_request
     HTTP.__send__(@http_method, @url, @req_options) do |response|
       begin
-      p "#{self}.send_request"
       @response = response
       defaults_on_response 
       if @should_yield_response
@@ -400,7 +399,6 @@ class RequestHandler
   end
 
   def yield_response(response, promise)
-    p "#{self} yield response"
     if @response.ok?
       @promise.resolve @response.json
     else
@@ -409,7 +407,6 @@ class RequestHandler
   end
 
   def default_response(response, promise)
-    "p #{self}.default_response"
     if @response.ok?
       @promise.resolve @response.json
     else
@@ -419,6 +416,10 @@ class RequestHandler
 
   def defaults_before_request
     
+  end
+
+  def defaults_on_response
+
   end
   
 end

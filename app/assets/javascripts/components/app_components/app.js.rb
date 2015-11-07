@@ -1,6 +1,6 @@
 class App < RW
   
-  expose_as_native_component
+  expose
 
   class << self
     attr_accessor :history

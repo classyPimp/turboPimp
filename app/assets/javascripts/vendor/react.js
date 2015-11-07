@@ -17050,7 +17050,7 @@ function wrapUserProvidedKey(key) {
 function traverseAllChildrenImpl(children, nameSoFar, callback, traverseContext) {
   var type = typeof children;
 
-  if (type === 'undefined' || type === 'boolean') {
+  if (type === 'undefined' || type === 'boolean' || children === Opal.nil) {
     // All of the above are perceived as null.
     children = null;
   }
