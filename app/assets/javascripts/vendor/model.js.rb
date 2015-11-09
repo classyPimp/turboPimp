@@ -69,7 +69,9 @@ require "promise"
 class Model
 
   @attributes_list
-  #@associations_list not yet implemented
+  #@associations_list not yet implemented; think about it is there a reason to be?
+  #they are handled as attribute now and we're not on backend, 
+  #TODO: think about
 
   class << self
     attr_accessor :attributes_list
@@ -86,19 +88,14 @@ class Model
     end
     parsed_data
   end
-
+## THESE ARE NEEDED FOR PARSE CLASS METHOD
   def self.objectify(data, class_name = "Model", objectify_model = nil)
-    
     data = objectify_array(data)
-
     data = objectify_single_model(data)
-
     if data.is_a? Hash
       data = objectify_from_model(data)
     end
-
     data
-
   end
 
   def self.objectify_array(data)
@@ -128,25 +125,90 @@ class Model
     end
     data
   end
+## END THESE ARE NEEDED FOR PARSE CLASS METHOD
+
+  def self.iterate_for_form(val, form_data, track = nil)
+  #new formData() wrapped in Native shall be passed
+  #val is the normalized attributes (containing no models) of a model
+  #result is populated formData object to be passed to HTTP request with all the pure_attributes attached to it
+  #this is  necessary for sending file though xhr only
+  #TODO: depending if model has file defaultly make ajax data: formData returned from this method (can be done through validation)
+  #TODO: fallback for ie < 10 and other shitty versions via iframe. But is there a true neccessity in such? 
+    if val.is_a? Array
+      val.each_with_index do |v, i| 
+        track = track + "[#{i}]"
+        iterate_for_form(v, form_data, track)  
+      end
+    elsif val.is_a? Hash
+      val.each do |k, v|
+        (track == nil) ? _track = k.to_s : _track = "#{track}[#{k}]"
+        iterate_for_form(v, form_data, _track)
+      end
+    else   
+      form_data.append track, val
+    end
+    form_data
+  end
+
 
   #######INSTANCE
 
-  attr_accessor :attributes 
+  #attr_accessor :attributes 
   attr_accessor :errors
-
+ 
   def initialize(data = {})
     data = self.class.objectify(data, nil, true)
     @attributes = data
     @errors = {}
     init
+    #again this init is needed for you to use intialize without super
+    #looks neatier for me
+  end
+
+  def init
+    #refer to #initialize for info
+  end
+
+  def attributes
+    #in case you need attributes as a hash with models (not their pure attributes) 
+    @attributes
+  end
+
+  def pure_attributes
+    #for example you have a model {user: {id: 1, page: {page: {id: 2}}}}
+    #parsed it ll be user.@attributes {id: 1, <Page instance>}
+    #and you'll need it to pass to server, but @attributes will contain instantiated page not its attributes
+    #this way it will return the pure hash as -> kind of reverse of Model.parse
+    x = {}
+    @attributes.each do |k,v|
+      x[k] = normalize_attributes(v)
+    end
+    {self.class.name.downcase => x}
+  end
+
+  def normalize_attributes(attrs)
+    #THIS METHOD IS ONLY NEEDED FOR #pure_attributes
+    if attrs.is_a? Hash
+      attrs.each do |k,v|
+        if v.is_a? Model
+          attrs[k] = v.attributes
+        else 
+          attrs[k] = normalize_attributes(v)  
+        end
+      end      
+    elsif attrs.is_a? Array 
+      attrs.map! do |val|
+        normalize_attributes(val)
+      end
+    elsif attrs.is_a? Model
+      attrs.attributes
+    else
+      attrs
+    end
   end
 
   def has_errors?
     !@errors.empty?
-  end
-
-  def init
-    
   end
 
   def update_attributes(data)
@@ -168,6 +230,8 @@ class Model
   end
 
   def self.associations(*args)
+    #NOT YET IMPLEMENTED! it's here just beacuse it's here, and someday, some beatifull cloudy day i'll try do do
+    #something with it!
     @associations_list = args
     args.each do |arg|
       self.define_method arg do | |
@@ -193,34 +257,35 @@ class Model
     end
   end
 
-  def self.responses_on_find(request_handler)
-    p "#{self}.reponses on find"
-    if request_handler.response.ok?
-      request_handler.promise.resolve Model.parse(request_handler.response.json)
+  def self.responses_on_find(r)
+    if r.response.ok?
+      r.promise.resolve Model.parse(r.response.json)
     else
-      "raise http error"
+      r.promise.reject response.json
     end
   end
 
-  def responses_on_destroy(request_handler)
-    p "#{self}.responses_on_destroy"
-    if request_handler.response.ok?
+  def on_before_destroy(r)
+    r.req_options = {payload: self.pure_attributes}
+  end
+
+  def responses_on_destroy(r)
+    if r.response.ok?
       _id = self.id
-      request_handler.promise.resolve status: "ok", destroyed: _id              
+      r.promise.resolve destroyed: _id              
     else
-      (self.errors[:request] ||= []) << "connection_error"
-       request_handler.promise.reject self
+       r.promise.reject response.json
     end
   end
 
   #++++++++++++VALIDATION++++++++++++++++
-  #TODO shall it be moved to plugins?
+  #TODO shall it be moved to separate module?
 
   def has_errors?
     !@errors.empty?
   end
 
-  def validation_rules
+  #def validation_rules
     #in this method you define validation rules for your attributes
     #IMPORTANT the validation methods' names should be  validate_#{attribute_name}
     #TODO: consider remakin the #validate to validatin_rules[:attr].call if it's not nil  
@@ -228,13 +293,17 @@ class Model
     # attr_name: ->(options = {}){validate_attr_name}
     #THIS IS NOT NEEDED NOW THE VALIDATIONS ARE SIMPLY __SEND__ to model if respond_to
     #it's left if
-    {
+    #TODO: check if not neede and delete
+    #{
       
-    }
-  end
+    #}
+  #end
 
   def reset_errors
-    #WRITE DOCS
+    #It will set errors to empty hash
+    # if  your view depends on errors (to show them or not)
+    #youll need to reset them before each validation
+    #TODO: recursion is not deep in here, not as deep as Grey's throat, but it needs to be!
     attributes.each do |k,v|
       if v.is_a? Model
         v.reset_errors
@@ -265,8 +334,7 @@ class Model
         end
       else
         self.send("validate_#{k}") if self.respond_to? "validate_#{k}"
-        #p (self.respond_to? "validate_#{k}") ? "has validation method #{k}" : "doesn't has validation method #{k}"
-        #refactor to validation_rules[:attr].call(options) if 
+        #p (self.respond_to? "validate_#{k}") ? "has validation method #{k}" : "doesn't have validation method #{k}"
       end
     end 
   end
@@ -274,7 +342,7 @@ class Model
   def add_error(attr_name, error)
     #attr_name model : Model <attr_name>, error : String
     #this method is called in validate_#{attr_name} method if your
-    #attr has errors
+    #attr has errors and you need to add it, but youre free to not use it
     #refer to important! notice  
     (@errors[attr_name] ||= []) << error
   end
@@ -304,13 +372,15 @@ end
 class HelperStuff
 
   def self.constantize(string)
+    #TODO: shoould move it elsewere?
+    #needed purely for Model.parse method
     string.split('::').inject(Object) {|o,c| o.const_get c}
   end
 
 end
 
 class ModelAssociation
-  
+  #you will get it if will pass array of models to Model.parse 
   include Enumerable
   attr_accessor :data
   def initialize(data = [])
@@ -341,19 +411,48 @@ class ModelAssociation
 end
 
 class RequestHandler
+  #handles your HTTP requests!!! Really! this get's started from your Model.route method, look there
   
-  attr_accessor :caller, :promise, :name, :response
+  attr_accessor :caller, :promise, :name, :response, :req_options
 
   def initialize(caller, name, method_and_url, options, wilds, req_options)
     @caller = caller
+    #the model that called either instance or class
     @name = name
+    #name of the route
     @options = options
     @wilds = wilds
+    #handy little :foo s
+    #as well as options holder like 
+    #yield_response: true => will override default response handlers
+    #component: component's self => will make RW comonent available
+    #TODO: should wilds be renamed now? they're more options now than wilds as back then when they were young and silly little args
     @component = wilds[:component]
-    @should_yield_response = wilds[:yield_response]
+    #if you need to pass component to Http (e.g. turn on spinner before request, swith off after)
+    #or any other sort of that
+    #pass component in first arg like
+    #user.some_route({component: self})
+    #and youll have access to it in automatic response handlers (or anywhere in requesthandler)
+     @should_yield_response = wilds[:yield_response]
+    #handy if you need unprocessed response
+    #e.g. simply pass user.some_route({yield_response: true}, {}) {|response| unprocessed response}
+    @skip_before_handler = wilds[:skip_before_handler]
+    #if you need to override defualts before request is made
+    #pass this option to wild as {skip_before_handler: true}
+    #else it's false by defaul
     @url = prepare_http_url_for(method_and_url)
+    #makes youre route get: "url/:foo",
+    #passes default for wilds, or attaches one from wilds option
     @http_method = method_and_url.keys[0]
-    @req_options = {payload: req_options}
+    if req_options[:data]
+    #ve done it for these reasons:
+    #if passed as payload it will be to_json,
+    #depending on what you're passing it may throw some shit at you because it'll be to_n'ed
+    #the main reason was to be able to pass files via formData
+      @req_options = req_options
+    else
+      @req_options = {payload: req_options}
+    end
     send_request
   end
 
@@ -369,10 +468,11 @@ class RequestHandler
       else
         part
       end
+      #TODO: raise if route is defined with wild but no wild was resolved defaultly or not was given through wild arg
     end
-    #url[-1] = "#{url[-1]}.json"
-    #adds prefix to url as apiv1/url
     url.unshift('api')
+    #adds prefix to url as apiv1/url
+    #TODO: move to as constant of Model 
     "/#{url.join('/')}"
     #returns full url
   end
@@ -380,19 +480,37 @@ class RequestHandler
   def send_request
     @promise = Promise.new
     defaults_before_request
+    #the super defaults app wide.
+    #TODO: need option to override
+    if @caller.respond_to?("on_before#{@name.downcase}") && !!@skip_before_handler
+      @caller.send "on_before#{@name.downcase}", self
+      #JUST BEGAN TO IMPLEMENT AND DIDN't plan yet how to do!
+      #the idea is to provide default prepare for ajax data (payload) on
+      # rest actions e.g. save, update, destroy, etc/
+      #so you wont need to user.destroy({}, payload: user.pure_attributes),
+      #and simply user.destroy and that's it!
+      #and be like responses_on_route_name
+    end
     HTTP.__send__(@http_method, @url, @req_options) do |response|
       begin
       @response = response
-      defaults_on_response 
+      defaults_on_response
+      #SUPER DEFAULTS ON RESPONSE
+      #TODO: make option to override 
       if @should_yield_response
         yield_response
+        #handy if you need unprocessed response
+        #e.g. simply pass user.some_route({yield_response: true}, {}) {|response| unprocessed response}
       elsif @caller.respond_to? "responses_on_#{@name.downcase}"
         @caller.send "responses_on_#{@name.downcase}", self
+        #this will call the default actions on response if they are defined
+        #the convention is that model shall implemenet responses_on_<route_name> method
+        #else defaults will run
       else
         default_response
       end
       rescue
-        @promise.reject(errors: ["connection error"])
+        @promise.reject(errors: ["error"])
       end
     end
     @promise

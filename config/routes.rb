@@ -16,6 +16,7 @@ Rails.application.routes.draw do
   end
 
   root "faker#home"
+  post "api/test" => "faker#test"
   get "/*path" => "faker#home"
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".

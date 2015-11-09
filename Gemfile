@@ -45,7 +45,7 @@ group :development, :test do
 	gem 'hirb'
 	gem 'lol_dba'
 	#gem 'mailcatcher'
-	gem 'meta_request','0.2.1'
+	#gem 'meta_request','0.2.1'
 	#gem 'pry'
 	#gem 'pry-doc'
 	gem 'quiet_assets'
@@ -101,3 +101,5 @@ gem 'haml-rails'
 group :development, :test do
   gem 'letter_opener'
 end
+
+gem 'bootstrap-wysihtml5-rails', github: 'nerian/bootstrap-wysihtml5-rails'

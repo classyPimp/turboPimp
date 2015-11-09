@@ -30,6 +30,7 @@ class App < RW
           link_to("login", "/users/login"),
           t(:br, {}),
           link_to("signup", "/users/signup"),
+          t(:br, {}),
           link_to("test", "/test")
         ),
         spinner
@@ -37,7 +38,6 @@ class App < RW
       t(:div, {},
         children
       ),
-      t(:p, {onClick: ->(){modal_handler}}, "open modal"),
       modal({},
         t(:p, {}, "WHAT UP DOWGS")
       )

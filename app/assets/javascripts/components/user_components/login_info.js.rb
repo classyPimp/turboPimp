@@ -40,22 +40,17 @@ module Users
         set_state logged_in: (CurrentUser.logged_in = false)
       end
     end
-
+    
     def render
       t(:div, {}, 
         if state.logged_in
           link_to("you are logged_in as #{state.current_user.email}", "/users/#{CurrentUser.user_instance.id}")
         else
-          t(:div, {}, "you are not logged in",
-            t(:br,{}),
-            link_to("login", "/users/login"),
-            t(:br, {}),
-            link_to("signup", "/users/signup"),
-            t(:br, {})
-          )
+          
         end
       )
     end
+
   end
 
 end

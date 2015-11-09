@@ -5,6 +5,6 @@ class FakerController < ApplicationController
 	end
 
 	def test
-		
+		render plain: params
 	end
 end
