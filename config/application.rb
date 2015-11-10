@@ -9,6 +9,8 @@ Bundler.require(*Rails.groups)
 module Denty
   class Application < Rails::Application
 
+    config.generators.stylesheets = false
+    config.generators.javascripts = false
 
 ######## OPAL CONFIG
 

@@ -102,7 +102,7 @@ class MenuItem
 
 end
 
-
+=begin
 class Page < Model
 	
 	attributes :name, :email, :password, :pages
@@ -127,8 +127,7 @@ class Page < Model
   end
 
 end
-
-
+=end
 class Foo < RW
 	
   expose
@@ -143,6 +142,7 @@ class Foo < RW
 	end
 
 	def render
+=begin
 		t(:div, {},
 			input(Forms::Input, state.form_model, :email, {}),
 			input(Forms::Input, state.form_model, :password, {}),
@@ -158,6 +158,8 @@ class Foo < RW
       
 			t(:button, {onClick: ->{handle_inputs}}, "collect")
 		)
+=end
+	t(:p, {}, "The foo!")
 	end
 
   def handle_inputs
@@ -174,5 +176,33 @@ class Foo < RW
     set_state form_model: state.form_model
   end
 
+end
+
+
+class Page < Model
+
+	attributes :id, :body, :text, :user
+
+	route "create", post: "pages"
+
+end
+
+
+Document.ready? do
+	page = Page.new
+	page.text = "12345"
+	page.body = "The sexy body!"
+	page.create.then do |r|
+		page.validate
+		p "calling has_errors from response"
+		page.has_errors?
+		p "printin attributes"
+		p page.attributes
+		p "printing errors"
+		p page.errors
+		
+	end.fail do |r|
+		p r
+	end
 end
 

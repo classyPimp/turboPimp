@@ -25,7 +25,7 @@ module AppComponents
 	          t(`Route`, {path: ":id", component: Users::Show.create_class})
 	        ),
 
-	        t(`Route`, {path: "/test", component: Forms::WysiTextarea.create_class}),
+	        t(`Route`, {path: "/test", component: Foo.create_class}),
 
 	        t(`Route`, {path: "*", component: Dummy.create_class})
 	      )

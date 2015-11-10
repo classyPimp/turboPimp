@@ -111,7 +111,16 @@ class Model
     if (data.is_a? Hash) && (data.size == 1) 
       data.each_with_index do |(i, value), index|
         #TODO raise on constant missing, rescue with parse on value, and passing k as symbol to model 
-        data = HelperStuff.constantize(i = i.capitalize).new(value) if value.is_a? Hash
+        begin
+        data = HelperStuff.constantize(i.capitalize).new(value) if value.is_a? Hash
+        rescue
+          p "rescued from #{self}.objectify single model"
+          if i == "errors"
+            
+          else 
+            data[i] = self.objectify(value)
+          end
+        end
       end
     end
     data
@@ -154,7 +163,7 @@ class Model
   #######INSTANCE
 
   #attr_accessor :attributes 
-  attr_accessor :errors
+
  
   def initialize(data = {})
     data = self.class.objectify(data, nil, true)
@@ -207,13 +216,10 @@ class Model
     end
   end
 
-  def has_errors?
-    !@errors.empty?
-  end
-
   def update_attributes(data)
     attrs = self.class.objectify(data, nil, true)
     @attributes.merge! attrs
+    #TODO: implement deep merge
   end
 
   def self.attributes(*args)
@@ -256,12 +262,25 @@ class Model
       end  
     end
   end
+#######MODEL WIDE RESPONSES TODO: add all REST methods and move to module
+  
+  def on_before_create(r)
+    r.req_options = {payload: pure_attributes}
+  end
 
-  def self.responses_on_find(r)
+  def responses_on_create(r)
+    if r.response.ok?
+      self.update_attributes(r.response.json[self.class.name.downcase])
+      r.promise.resolve self
+    end
+  end
+
+
+  def self.responses_on_show(r)
     if r.response.ok?
       r.promise.resolve Model.parse(r.response.json)
     else
-      r.promise.reject response.json
+      r.promise.reject r.response.status_code
     end
   end
 
@@ -277,12 +296,15 @@ class Model
        r.promise.reject response.json
     end
   end
+##### END MODEL WIDE RESPONSES
 
   #++++++++++++VALIDATION++++++++++++++++
   #TODO shall it be moved to separate module?
 
+  attr_accessor :errors
+  #every model must have errors
   def has_errors?
-    !@errors.empty?
+    !@errors.empty? || !(self.attributes[:errors] ||= {}).empty?
   end
 
   #def validation_rules
@@ -315,6 +337,7 @@ class Model
       end
     end
     @errors = {}
+    self.attributes[:errors] = {}
   end
 
   def validate(options = {only: []})
@@ -334,7 +357,13 @@ class Model
         end
       else
         self.send("validate_#{k}") if self.respond_to? "validate_#{k}"
-        #p (self.respond_to? "validate_#{k}") ? "has validation method #{k}" : "doesn't have validation method #{k}"
+        if self.attributes[:errors]
+          @errors ||= {}
+          @errors.merge!(self.attributes[:errors] ||= {})
+          #in case errors teturned from server, but no validation rules for it on fronts
+          #p (self.respond_to? "validate_#{k}") ? "has validation method #{k}" : "doesn't have validation method #{k}"
+        end
+        
       end
     end 
   end
@@ -482,8 +511,8 @@ class RequestHandler
     defaults_before_request
     #the super defaults app wide.
     #TODO: need option to override
-    if @caller.respond_to?("on_before#{@name.downcase}") && !!@skip_before_handler
-      @caller.send "on_before#{@name.downcase}", self
+    if @caller.respond_to?("on_before_#{@name.downcase}") && !@skip_before_handler
+      @caller.send "on_before_#{@name.downcase}", self
       #JUST BEGAN TO IMPLEMENT AND DIDN't plan yet how to do!
       #the idea is to provide default prepare for ajax data (payload) on
       # rest actions e.g. save, update, destroy, etc/
@@ -492,11 +521,7 @@ class RequestHandler
       #and be like responses_on_route_name
     end
     HTTP.__send__(@http_method, @url, @req_options) do |response|
-      begin
-      @response = response
-      defaults_on_response
-      #SUPER DEFAULTS ON RESPONSE
-      #TODO: make option to override 
+      @response = response 
       if @should_yield_response
         yield_response
         #handy if you need unprocessed response
@@ -509,9 +534,9 @@ class RequestHandler
       else
         default_response
       end
-      rescue
-        @promise.reject(errors: ["error"])
-      end
+      defaults_on_response
+      #SUPER DEFAULTS ON RESPONSE
+      #TODO: make option to override
     end
     @promise
   end
@@ -537,7 +562,9 @@ class RequestHandler
   end
 
   def defaults_on_response
-
+    unless @response.ok?
+      @promise.reject(@response.status_code) unless @promise.realized?
+    end
   end
   
 end
