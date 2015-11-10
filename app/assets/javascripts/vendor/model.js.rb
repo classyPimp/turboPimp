@@ -114,12 +114,7 @@ class Model
         begin
         data = HelperStuff.constantize(i.capitalize).new(value) if value.is_a? Hash
         rescue
-          p "rescued from #{self}.objectify single model"
-          if i == "errors"
-            
-          else 
-            data[i] = self.objectify(value)
-          end
+          data[i] = self.objectify(value)
         end
       end
     end
@@ -271,10 +266,22 @@ class Model
   def responses_on_create(r)
     if r.response.ok?
       self.update_attributes(r.response.json[self.class.name.downcase])
+      self.validate
       r.promise.resolve self
     end
   end
 
+  def self.responses_on_index(r)
+    if r.response.ok?
+      r.promise.resolve self.parse(r.response.json)
+    end
+  end
+
+  def responses_on_destroy(r)
+    if r.response.ok?
+      r.promise.resolve self          
+    end
+  end
 
   def self.responses_on_show(r)
     if r.response.ok?
@@ -284,18 +291,19 @@ class Model
     end
   end
 
-  def on_before_destroy(r)
-    r.req_options = {payload: self.pure_attributes}
+  def on_before_update(r)
+    p "#{self} before on update"
+    r.req_options = {payload: pure_attributes}
   end
 
-  def responses_on_destroy(r)
+  def responses_on_update(r)
     if r.response.ok?
-      _id = self.id
-      r.promise.resolve destroyed: _id              
-    else
-       r.promise.reject response.json
+      self.update_attributes(r.response.json[self.class.name.downcase])
+      r.promise.resolve self
     end
   end
+
+  
 ##### END MODEL WIDE RESPONSES
 
   #++++++++++++VALIDATION++++++++++++++++
@@ -304,7 +312,7 @@ class Model
   attr_accessor :errors
   #every model must have errors
   def has_errors?
-    !@errors.empty? || !(self.attributes[:errors] ||= {}).empty?
+    !@errors.empty? #|| !(self.attributes[:errors] ||= {}).empty?
   end
 
   #def validation_rules
@@ -337,10 +345,10 @@ class Model
       end
     end
     @errors = {}
-    self.attributes[:errors] = {}
   end
 
   def validate(options = {only: []})
+    self.reset_errors
     @attributes.each do |k, v|
       unless options[:only].empty?
         next unless options[:only].include? k
@@ -349,21 +357,18 @@ class Model
         v.each do |m|  
           if m.is_a? Model
             m.validate
-            p m.errors
             if m.has_errors?
-              @errors[:thereareerrors] = true       
+              @errors[:nested_errors] = true       
             end
           end
         end
       else
         self.send("validate_#{k}") if self.respond_to? "validate_#{k}"
-        if self.attributes[:errors]
-          @errors ||= {}
-          @errors.merge!(self.attributes[:errors] ||= {})
-          #in case errors teturned from server, but no validation rules for it on fronts
-          #p (self.respond_to? "validate_#{k}") ? "has validation method #{k}" : "doesn't have validation method #{k}"
-        end
-        
+        #p (self.respond_to? "validate_#{k}") ? "has validation method #{k}" : "doesn't have validation method #{k}"
+        @errors ||= {}
+        @errors.merge!(self.attributes[:errors] ||= {})
+        self.attributes[:errors] = {}
+        #in case errors teturned from server, but no validation rules for it on fronts  
       end
     end 
   end
@@ -413,7 +418,10 @@ class ModelAssociation
   include Enumerable
   attr_accessor :data
   def initialize(data = [])
-      @data = data
+    data.map! do |val|
+      Model.parse(val)
+    end
+    @data = data
   end
 
   def <<(val)
@@ -428,14 +436,19 @@ class ModelAssociation
     @data[value]
   end
 
+  def empty?
+    @data.empty?
+  end
+
   def to_s
     "#{self.class}: [#{@data}]"
   end
 
   def remove(obj)
-    @data = @data.reject do |val|
+    @data = @data.delete_if do |val|
       val == obj
     end
+    self
   end
 end
 
@@ -445,6 +458,7 @@ class RequestHandler
   attr_accessor :caller, :promise, :name, :response, :req_options
 
   def initialize(caller, name, method_and_url, options, wilds, req_options)
+    p "req_options: #{req_options}"
     @caller = caller
     #the model that called either instance or class
     @name = name
@@ -480,7 +494,7 @@ class RequestHandler
     #the main reason was to be able to pass files via formData
       @req_options = req_options
     else
-      @req_options = {payload: req_options}
+      @req_options = ({data: (req_options.empty? ? nil : req_options.to_json)})
     end
     send_request
   end
@@ -489,6 +503,7 @@ class RequestHandler
     url = method_and_url[method_and_url.keys[0]].split('/')
     url.map! do |part|
       if part[0] == ":"
+        p @options
         if @wilds[part[1..-1]]
           @wilds[part[1..-1]]
         elsif  (@options[:defaults].find_index(part[1..-1]) if @options[:defaults].is_a?(Array))
