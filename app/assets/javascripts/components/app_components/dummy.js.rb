@@ -129,6 +129,7 @@ class Page < Model
 
 end
 =end
+=begin
 class Page < Model
 
   attributes :id, :body, :text, :user
@@ -292,6 +293,5 @@ class PageEdit < RW
   end
 end
 
-
-
+=end
 

@@ -21,7 +21,7 @@ class UsersController < BaseController
   def login
     c.collect_inputs(validate_only: [nil])
     unless c.state.form_model.has_errors?
-      CurrentUser.login({}, session: c.state.form_model.attributes).then do |response|
+      CurrentUser.login({}, payload: {session: c.state.form_model.attributes}).then do |response|
         if x = response[:errors]
           c.set_state message: x
         else

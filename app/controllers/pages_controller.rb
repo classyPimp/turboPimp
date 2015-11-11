@@ -1,4 +1,5 @@
 class PagesController < ApplicationController
+	
 		
 	def create
 		@page = Page.new(create_params)
@@ -10,7 +11,31 @@ class PagesController < ApplicationController
 
 	end
 
+	def index
+		@pages = Page.all
+		render json: @pages
+	end
+
+	def update
+		@page = Page.find(params[:id])
+		@page.body, @page.text  = update_params[:body], update_params[:text]
+		if @page.save
+			render json: @page
+		else
+			render json: {errors: @page.errors}
+		end
+	end
+
+	def destroy
+		@page = Page.find params[:id]
+		render json: @page
+	end
+
 	def create_params
+		params.require(:page).permit(:text, :body)
+	end
+
+	def update_params
 		params.require(:page).permit(:text, :body)
 	end
 end

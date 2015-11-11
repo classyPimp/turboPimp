@@ -1,4 +1,4 @@
-module Includables
+module Plugins
 	module Formable
 
 		#needs state form_model

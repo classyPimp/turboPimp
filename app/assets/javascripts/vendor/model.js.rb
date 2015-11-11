@@ -230,6 +230,32 @@ class Model
     end
   end
 
+  def where(&block)
+#JUST BEGAN TO IMPLEMENT
+#wanth to have a search method which would traverse model or assciation deeply 
+#and will yield each model it finds and if the conditions in block will match for that model attrs
+#it'll grab that model to result association
+#why the block and not DSL? i thought of implementing sort of DSL for it, and almost wanted to make a separate class for that
+#but fucking with DSL is quite annoying and it'd be harder to maintain it later so what I want is
+#model_association.where do |a|
+#  a[:id] == 1 || a[:name].matches regex || a[:lenght] < 6 && a[:published] = "true"
+#end
+#and it's not a big deal )
+    search_result = []
+    attributes.each do
+      attributes.each do |k,v|
+      if v.is_a? Model
+        v.reset_errors
+      end
+      if v.is_a? Array
+        v.each do |c|
+          c.reset_errors if c.is_a? Model
+        end
+      end
+    end
+    end 
+  end
+
   def self.associations(*args)
     #NOT YET IMPLEMENTED! it's here just beacuse it's here, and someday, some beatifull cloudy day i'll try do do
     #something with it!
@@ -303,31 +329,53 @@ class Model
     end
   end
 
-  
-##### END MODEL WIDE RESPONSES
 
-  #++++++++++++VALIDATION++++++++++++++++
-  #TODO shall it be moved to separate module?
+
+
+#                       __   __  _______  ___      ___   ______   _______  _______  ___   _______  __    _ 
+#                      |  | |  ||   _   ||   |    |   | |      | |   _   ||       ||   | |       ||  |  | |
+#                      |  |_|  ||  |_|  ||   |    |   | |  _    ||  |_|  ||_     _||   | |   _   ||   |_| |
+#                      |       ||       ||   |    |   | | | |   ||       |  |   |  |   | |  | |  ||       |
+#                      |       ||       ||   |___ |   | | |_|   ||       |  |   |  |   | |  |_|  ||  _    |
+#                       |     | |   _   ||       ||   | |       ||   _   |  |   |  |   | |       || | |   |
+#                        |___|  |__| |__||_______||___| |______| |__| |__|  |___|  |___| |_______||_|  |__|
+                                                                
+#that big letter are not for lulz, they are for easily navigate with that sublime all code view feature ;)
+  #TODO: MOVE TO SEPARATE MODULE
 
   attr_accessor :errors
   #every model must have errors
+
+  ############HAS FILE meths
+  def has_file
+    @file ||= false
+  end
+
+  def has_file=(value)
+    @file = value
+  end
+
+  def serialize_attributes_as_form_data
+    form_data = Native(`new FormData()`)
+    self.class.iterate_for_form(self.pure_attributes, form_data)
+  end
+
+  def self.has_file
+    false
+    #for class routes methods todo: need some other wat
+  end
+  #this has file stuff is needed for cases when your model has collected file and wants to send it
+  #to backend. The only way (for xhr of course) is to serialize it's attrs including file holding ones to formModel
+  #that serialization is unnecessary job if model doesn't hold file, of course you could do everything manually but what for?
+  #if your model has file holding attr, it will run validate_file_holing attribute, and that validate method has to set has_file to true
+  #in validate method reset_errors will also assign has_file a false value
+  #HTTP handler will check for that shit in initialize and will call model to serialize it's attrs to form and 
+  #will assign data: that_serialized_form.
+  #this serialize_attributes_for_form_data can be in use elsewhere if you'll needed. 
+
   def has_errors?
     !@errors.empty? #|| !(self.attributes[:errors] ||= {}).empty?
   end
-
-  #def validation_rules
-    #in this method you define validation rules for your attributes
-    #IMPORTANT the validation methods' names should be  validate_#{attribute_name}
-    #TODO: consider remakin the #validate to validatin_rules[:attr].call if it's not nil  
-    #your model should implement this method like:
-    # attr_name: ->(options = {}){validate_attr_name}
-    #THIS IS NOT NEEDED NOW THE VALIDATIONS ARE SIMPLY __SEND__ to model if respond_to
-    #it's left if
-    #TODO: check if not neede and delete
-    #{
-      
-    #}
-  #end
 
   def reset_errors
     #It will set errors to empty hash
@@ -349,6 +397,8 @@ class Model
 
   def validate(options = {only: []})
     self.reset_errors
+    self.has_file = false
+    #for this method refer to itself; needed for serializing to automatic serialization to formData
     @attributes.each do |k, v|
       unless options[:only].empty?
         next unless options[:only].include? k
@@ -452,6 +502,17 @@ class ModelAssociation
   end
 end
 
+
+=begin
+       ______    _______  _______  __   __  _______  _______  _______    __   __  _______  __    _  ______   ___      _______  ______   
+      |    _ |  |       ||       ||  | |  ||       ||       ||       |  |  | |  ||   _   ||  |  | ||      | |   |    |       ||    _ |  
+      |   | ||  |    ___||   _   ||  | |  ||    ___||  _____||_     _|  |  |_|  ||  |_|  ||   |_| ||  _    ||   |    |    ___||   | ||  
+      |   |_||_ |   |___ |  | |  ||  |_|  ||   |___ | |_____   |   |    |       ||       ||       || | |   ||   |    |   |___ |   |_||_ 
+      |    __  ||    ___||  |_|  ||       ||    ___||_____  |  |   |    |       ||       ||  _    || |_|   ||   |___ |    ___||    __  |
+      |   |  | ||   |___ |      | |       ||   |___  _____| |  |   |    |   _   ||   _   || | |   ||       ||       ||   |___ |   |  | |
+      |___|  |_||_______||____||_||_______||_______||_______|  |___|    |__| |__||__| |__||_|  |__||______| |_______||_______||___|  |_|
+=end
+
 class RequestHandler
   #handles your HTTP requests!!! Really! this get's started from your Model.route method, look there
   
@@ -487,15 +548,26 @@ class RequestHandler
     #makes youre route get: "url/:foo",
     #passes default for wilds, or attaches one from wilds option
     @http_method = method_and_url.keys[0]
+
+    @req_options ||= {}
     if req_options[:data]
     #ve done it for these reasons:
     #if passed as payload it will be to_json,
     #depending on what you're passing it may throw some shit at you because it'll be to_n'ed
     #the main reason was to be able to pass files via formData
       @req_options = req_options
+    elsif req_options[:payload]
+      @req_options = req_options
+    elsif @caller.has_file
+      p "CALLER HAS FILE!"
+      @req_options[:data] = @caller.serialize_attributes_as_form_data
+      @req_options[:processData] = false
+      @req_options[:contentType] = false
+      #For info on this method refer to validation part of model
     else
-      @req_options = ({data: (req_options.empty? ? nil : req_options.to_json)})
+      @req_options = {payload: req_options}
     end
+    #TODO: NEED TO THROUGHLY PLAN AND STANDARTIZE THE OPTIONS THAT CAN BE PASSED FOR REQUEST!
     send_request
   end
 

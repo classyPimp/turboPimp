@@ -10,11 +10,10 @@ class Filer < Model
     else
       r.promise.reject(r.response)
     end
-	end
+	end 
 
 	def validate_file
-		string_rep_deepness = "#{passed_deepness}#{self.class.name.downcase}[file]"
-		has_file << "file"
+		self.has_file = true
 	end
 
 end
@@ -60,9 +59,9 @@ module Forms
 			state.file.name = "JOHNATAN!"
 			state.file.id = "WUUURHA"
 			state.file.file = ref(:file).files[0]
-			p state.file.pure_attributes
-			#form_data = Model.iterate_for_form(state.file.pure_attributes, form_data)
-			#state.file.upload({}, {data: form_data, processData: false, contentType: false})
+			state.file.validate
+			form_data = Model.iterate_for_form(state.file.pure_attributes, form_data)
+			state.file.upload()
 			
 		end
 
