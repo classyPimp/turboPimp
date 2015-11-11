@@ -183,9 +183,10 @@ class Model
     #parsed it ll be user.@attributes {id: 1, <Page instance>}
     #and you'll need it to pass to server, but @attributes will contain instantiated page not its attributes
     #this way it will return the pure hash as -> kind of reverse of Model.parse
+    #BUG: CHANGES THE ACTUAL ATTRIBUTES! edit: changed a bit but behaviour needs examination
     x = {}
-    @attributes.each do |k,v|
-      x[k] = normalize_attributes(v)
+    attributes.each do |k,v|
+      x[k] = normalize_attributes(v.dup)
     end
     {self.class.name.downcase => x}
   end
@@ -205,7 +206,7 @@ class Model
         normalize_attributes(val)
       end
     elsif attrs.is_a? Model
-      attrs.attributes
+      attrs.pure_attributes
     else
       attrs
     end
@@ -231,31 +232,33 @@ class Model
   end
 
   def where(&block)
-#JUST BEGAN TO IMPLEMENT
-#wanth to have a search method which would traverse model or assciation deeply 
-#and will yield each model it finds and if the conditions in block will match for that model attrs
-#it'll grab that model to result association
-#why the block and not DSL? i thought of implementing sort of DSL for it, and almost wanted to make a separate class for that
-#but fucking with DSL is quite annoying and it'd be harder to maintain it later so what I want is
-#model_association.where do |a|
-#  a[:id] == 1 || a[:name].matches regex || a[:lenght] < 6 && a[:published] = "true"
-#end
-#and it's not a big deal )
-    search_result = []
-    attributes.each do
-      attributes.each do |k,v|
+    #JUST BEGAN TO IMPLEMENT
+    #wanth to have a search method which would traverse model or assciation deeply 
+    #and will yield each model it finds and if the conditions in block will match for that model attrs
+    #it'll grab that model to result association
+    #why the block and not DSL? i thought of implementing sort of DSL for it, and almost wanted to make a separate class for that
+    #but fucking with DSL is quite annoying and it'd be harder to maintain it later so what I want is
+    #model_association.where do |a|
+    #  a[:id] == 1 || a[:name].matches regex || a[:lenght] < 6 && a[:published] = "true"
+    #end
+    #and it's not a big deal )
+    s = []
+    attributes.each do |k, v|
       if v.is_a? Model
-        v.reset_errors
-      end
-      if v.is_a? Array
+        s << v if yield(v.attributes)
+        s = s + v.where {block.call}
+      elsif v.is_a? Array
         v.each do |c|
-          c.reset_errors if c.is_a? Model
+          if c.is_a? Model
+            s << c if yield(c.attributes) 
+            s = s + c.where {block.call}
+          end
         end
       end
     end
-    end 
+    s 
   end
-
+=begin
   def self.associations(*args)
     #NOT YET IMPLEMENTED! it's here just beacuse it's here, and someday, some beatifull cloudy day i'll try do do
     #something with it!
@@ -270,7 +273,8 @@ class Model
       end
     end
   end
-
+  TODO: propbably shall be deleted beacuse association stuff can be done via routes, and no need in it on frontend
+=end
   def self.route(name, method_and_url, options ={})
     if name[0] == name.capitalize[0]
       self.define_singleton_method(name.downcase) do | wilds = {}, req_options = {}|
@@ -472,6 +476,17 @@ class ModelAssociation
       Model.parse(val)
     end
     @data = data
+  end
+
+  def where(&block)
+    s = []
+    @data.each do |v|
+      if v.is_a? Model
+        s << v if yield(v.attributes)
+        s = s + v.where {block.call}
+      end
+    end
+    s 
   end
 
   def <<(val)
