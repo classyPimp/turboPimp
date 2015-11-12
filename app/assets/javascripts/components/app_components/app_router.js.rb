@@ -13,7 +13,7 @@ module AppComponents
     end
 
 	  def render
-	    t(`Router`, {history: Native(`History()`)},
+	    t(`Router`, {history: Native(`window.History.createHistory()`)},
 	      t(`Route`, {path: "/", component: App.create_class},
 
 	        t(`Route`, {path: "/users", component: Users::Main.create_class}, 

@@ -92,7 +92,6 @@ gem "auth", path: "~/dev/my_gems/auth"
 
 	gem "react-rails", '~> 1.3.2'
 
-	gem "browserify-rails"
 
 ######### END REACT INSTALL
 

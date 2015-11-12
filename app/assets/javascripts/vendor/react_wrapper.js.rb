@@ -14,7 +14,6 @@ require 'native'
 window.Router = ReactRouter.Router
 window.Route = ReactRouter.Route
 window.Link = ReactRouter.Link
-window.History = require('history/lib/createBrowserHistory')
 `
 
 class RW
