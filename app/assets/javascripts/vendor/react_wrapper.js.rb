@@ -176,7 +176,7 @@ class RW
   end
 
   def refs
-    @native.refs
+    Hash.new @native.refs.to_n
   end
 
   def children

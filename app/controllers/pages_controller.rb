@@ -1,5 +1,4 @@
 class PagesController < ApplicationController
-	
 		
 	def create
 		@page = Page.new(create_params)
@@ -8,11 +7,13 @@ class PagesController < ApplicationController
 		else
 			render json: {page: {errors: @page.errors}}
 		end
-
 	end
 
 	def index
-		@pages = Page.all
+
+		@pages = Page.all.paginate(page: params[:page], per_page: 1)
+		@pages = @pages << {pagination: {current_page: @pages.current_page, total_entries: @pages.total_entries, total_pages: @pages.total_pages,
+												offset: @pages.offset}} 
 		render json: @pages
 	end
 

@@ -476,6 +476,11 @@ class ModelAssociation
       Model.parse(val)
     end
     @data = data
+    init
+  end
+
+  def init
+    
   end
 
   def where(&block)
@@ -562,9 +567,15 @@ class RequestHandler
     @url = prepare_http_url_for(method_and_url)
     #makes youre route get: "url/:foo",
     #passes default for wilds, or attaches one from wilds option
-    @http_method = method_and_url.keys[0]
 
+    @http_method = method_and_url.keys[0]
     @req_options ||= {}
+    extra_params = {}
+    #TODO: WATCH the behaviour
+    if req_options[:extra_params] != nil
+      extra_params = req_options[:extra_params]
+    end
+    @req_options.merge! extra_params
     if req_options[:data]
     #ve done it for these reasons:
     #if passed as payload it will be to_json,
@@ -574,13 +585,13 @@ class RequestHandler
     elsif req_options[:payload]
       @req_options = req_options
     elsif @caller.has_file
-      p "CALLER HAS FILE!"
+      @caller.update_attributes extra_params
       @req_options[:data] = @caller.serialize_attributes_as_form_data
       @req_options[:processData] = false
       @req_options[:contentType] = false
       #For info on this method refer to validation part of model
     else
-      @req_options = {payload: req_options}
+      @req_options = {payload: @req_options}
     end
     #TODO: NEED TO THROUGHLY PLAN AND STANDARTIZE THE OPTIONS THAT CAN BE PASSED FOR REQUEST!
     send_request

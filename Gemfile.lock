@@ -1,10 +1,3 @@
-GIT
-  remote: git://github.com/nerian/bootstrap-wysihtml5-rails.git
-  revision: a4b413aa1c9d5f614a33c3c1f5731ed8bc6302de
-  specs:
-    bootstrap-wysihtml5-rails (0.3.3.7)
-      railties (>= 3.0)
-
 PATH
   remote: ~/dev/my_gems/auth
   specs:
@@ -267,6 +260,7 @@ GEM
       binding_of_caller (>= 0.7.2)
       railties (>= 4.0)
       sprockets-rails (>= 2.0, < 4.0)
+    will_paginate (3.0.7)
 
 PLATFORMS
   ruby
@@ -277,7 +271,6 @@ DEPENDENCIES
   bcrypt (~> 3.1.7)
   better_errors
   binding_of_caller
-  bootstrap-wysihtml5-rails!
   bullet
   byebug
   coffee-rails (~> 4.1.0)
@@ -304,3 +297,4 @@ DEPENDENCIES
   turbolinks
   uglifier (>= 1.3.0)
   web-console (~> 2.0)
+  will_paginate (~> 3.0.6)

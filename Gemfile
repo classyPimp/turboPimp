@@ -101,4 +101,5 @@ group :development, :test do
   gem 'letter_opener'
 end
 
-gem 'bootstrap-wysihtml5-rails', github: 'nerian/bootstrap-wysihtml5-rails'
+
+gem 'will_paginate', '~> 3.0.6'

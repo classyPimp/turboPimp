@@ -25,7 +25,7 @@ require_tree "../../components/shared/"
 	          t(`Route`, {path: ":id", component: Users::Show.create_class})
 	        ),
 
-	        t(`Route`, {path: "/test", component: Shared::Nav.create_class}),
+	        t(`Route`, {path: "/test", component: PageIndex.create_class}),
 
 	        t(`Route`, {path: "*", component: Forms::WysiTextarea.create_class})
 	      )
