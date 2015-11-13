@@ -143,6 +143,9 @@ class RW
           displayName: #{self.to_s},
           render: function() {
             return this.__opalInstance.$render();
+          },
+          getInstance: function(){
+            return this.__opalInstance
           }
         })
     })

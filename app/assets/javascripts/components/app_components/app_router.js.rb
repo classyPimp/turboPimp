@@ -11,7 +11,7 @@ module AppComponents
     def component_did_mount
       
     end
-
+require_tree "../../components/shared/"
 	  def render
 	    t(`Router`, {history: Native(`window.History.createHistory()`)},
 	      t(`Route`, {path: "/", component: App.create_class},
@@ -25,7 +25,7 @@ module AppComponents
 	          t(`Route`, {path: ":id", component: Users::Show.create_class})
 	        ),
 
-	        t(`Route`, {path: "/test", component: Forms::WysiTextarea.create_class}),
+	        t(`Route`, {path: "/test", component: Shared::Nav.create_class}),
 
 	        t(`Route`, {path: "*", component: Forms::WysiTextarea.create_class})
 	      )
