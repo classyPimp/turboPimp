@@ -295,3 +295,96 @@ end
 
 =end
 
+class Dropdown < RW
+  expose
+
+  def initial_state
+    {
+      open: false
+    }
+  end
+
+  def render
+    t(:li, {className: "dropdown #{state.open ? "open" : ""}"},
+      t(:a, {onClick: ->(){set_state open: !state.open; clear_opened}, role: "button", 
+             "aria-haspopup" => "true", "aria-expanded" => "false"}, "dropdown", t(:span, {className: "caret"})),
+      children
+    )
+  end
+
+  def clear_opened
+    props.on_toggle(self)
+  end
+
+end
+
+
+class Nav < RW
+  expose
+  def initial_state
+    {
+      collapsed: false
+    }    
+  end
+
+  def toggle_collapse 
+    set_state collapsed: !state.collapsed
+  end
+
+  def clear_opened(d_d)
+    refs.each do |k,v|
+      if k.include? "d_d"
+        v.__opalInstance.set_state open: false unless (v.__opalInstance == d_d)
+      end
+    end
+  end
+
+  def render
+    t(:nav, {className: "navbar navbar-default"},
+      t(:div, {className: "container-fluid"},
+        t(:div, {className: "navbar-header"},
+          t(:button, {type: "button", className: "navbar-toggle collapsed",
+                      "aria-expanded" => "false", onClick: ->(){toggle_collapse(:collapsed_navbar)}},
+            t(:span, {className: "sr-only"}, "toggle navigation"),
+            t(:span, {className: "icon-bar"}),
+            t(:span, {className: "icon-bar"}),
+            t(:span, {className: "icon-bar"})
+          ),
+          t(:a, {className: "navbar-brand"}, "brand")
+        ),
+        t(:div, {className: "collapse navbar-collapse #{state.collapsed ? "in" : ""}", ref: :collapsed_navbar},
+          t(:ul, {className: "nav navbar-nav"}, 
+            t(Dropdown, {on_toggle: ->(d_d){clear_opened(d_d)}, caller: self, ref: "d_d_1"}, 
+              t(:ul, {className: "dropdown-menu"},
+                t(:li, {}, t(:a, {}, "action")),
+                t(:li, {}, t(:a, {}, "annother")),
+                t(:li, {}, t(:a, {}, "and another")), 
+                t(:li, {className: "divider"}),
+                t(:li, {}, t(:a, {}, "the separated"))
+              )
+            )
+          ),
+          t(:form, {className: "navbar-form navbar-left", role: "search"},
+            t(:div, {className: "form-group"},
+              t(:input, {type: "text", className: "form-control", placeholder: "search"})
+            ),
+            t(:button, {className: "btn btn-default"}, "submit")
+          ),
+          t(:ul, {className: "nav navbar-nav navbar-right"},
+            t(:li, {}, t(:a, {}, "link")),
+            t(Dropdown, {on_toggle: ->(d_d){clear_opened(d_d)}, caller: self, ref: "d_d_2"},
+              t(:ul, {className: "dropdown-menu"},
+                t(:li, {}, t(:a, {}, "action")),
+                t(:li, {}, t(:a, {}, "annother")),
+                t(:li, {}, t(:a, {}, "and another")), 
+                t(:li, {className: "divider"}),
+                t(:li, {}, t(:a, {}, "the separated"))
+              )
+            )
+          )
+        )
+      )
+    )
+  end  
+end
+
