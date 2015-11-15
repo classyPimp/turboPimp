@@ -1,4 +1,38 @@
 =begin
+  NOTICE
+  *****************OPAL JQUERY needs hack
+  after this line
+settings, payload = @settings.to_n, @payload
+  this should be inserted in opal_jquery opal gem 
+
+    %x{
+      if (typeof(#{payload}) === 'string' || #{@method == "get"}) {
+        payload = #{@payload.to_n};
+        #{settings}.data = $.param(payload);
+      }
+      else if (payload != nil) {
+        settings.data = payload.$to_json();
+        settings.contentType = 'application/json';
+      }
+
+      settings.url  = #@url;
+      settings.type = #{@method.upcase};
+
+      settings.success = function(data, status, xhr) {
+        return #{ succeed `data`, `status`, `xhr` };
+      };
+
+      settings.error = function(xhr, status, error) {
+        return #{ fail `xhr`, `status`, `error` };
+      };
+
+      $.ajax(settings);
+    }
+
+This dirty hack is needed for proper serialization of payload povided with ruby hash to query string on HTTP.get requests
+
+********************************************************************
+
   HOW THIS WORKS
         MODELS
   your models should inherit from Model
