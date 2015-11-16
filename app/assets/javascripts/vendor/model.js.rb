@@ -220,7 +220,7 @@ class Model
     #BUG: CHANGES THE ACTUAL ATTRIBUTES! edit: changed a bit but behaviour needs examination
     x = {}
     attributes.each do |k,v|
-      x[k] = normalize_attributes(v.dup)
+      x[k] = normalize_attributes(v.nil? ? v : v.dup)
     end
     {self.class.name.downcase => x}
   end
