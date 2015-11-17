@@ -103,3 +103,9 @@ end
 
 
 gem 'will_paginate', '~> 3.0.6'
+
+gem "pundit"
+
+gem "rolify"
+
+gem "paperclip", "~> 4.3"

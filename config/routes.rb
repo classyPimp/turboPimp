@@ -14,7 +14,9 @@ Rails.application.routes.draw do
     resources :password_resets, only: [:new, :create, :edit, :update]
   # END BASIC AUTH
 
-    resources :pages     
+    resources :pages
+
+    resources :images     
   end
 
   root "faker#home"

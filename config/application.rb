@@ -1,7 +1,8 @@
 require File.expand_path('../boot', __FILE__)
 
 require 'rails/all'
-
+#this was included because if not rolify #scopify which it adds to User would raise
+require 'rolify/railtie'
 # Require the gems listed in Gemfile, including any gems
 # you've limited to :test, :development, or :production.
 Bundler.require(*Rails.groups)

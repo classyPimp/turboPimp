@@ -1,3 +1,5 @@
+require "./model"
+
 module Helpers
   
   class Cookie
@@ -66,6 +68,7 @@ module Helpers
   class ::RequestHandler
 
     def defaults_on_response
+      authorize!
       (@component.spinner_instance.off if @component.has_spinner) if @component
     end
 
@@ -74,7 +77,10 @@ module Helpers
     end
 
     def authorize!
-      #LOGIC ON 401 RESPONSE
+      #obvious
+      if @response.status_code == 403
+        App.history.replaceState(nil, "/forbidden")
+      end
     end
   end
 

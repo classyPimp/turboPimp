@@ -57,4 +57,11 @@ module SessionsHelper
   def store_location
     session[:forwarding_url] = request.url if request.get?
   end
+
+  #used as before_action filter
+  def require_logged_in_user
+    if current_user.nil?
+      head 403
+    end
+  end
 end

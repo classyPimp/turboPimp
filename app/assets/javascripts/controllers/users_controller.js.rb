@@ -3,7 +3,7 @@ class UsersController < BaseController
   def handle_signup_submit
     c.collect_inputs
     unless c.state.form_model.has_errors?
-      c.state.form_model.sign_up({yield_response: true}, user: c.state.form_model.attributes).then do |response|
+      c.state.form_model.sign_up({yield_response: true}, payload: {user: c.state.form_model.attributes}).then do |response|
         if e = response[:user][:errors]
           c.state.form_model.errors = e
           c.set_state form_model: c.state.form_model 
@@ -37,7 +37,7 @@ class UsersController < BaseController
   def send_password_reset_email
     c.collect_inputs
     unless c.state.form_model.has_errors?
-      CurrentUser.request_password_reset({}, password_reset: c.state.form_model.attributes).then do |response|
+      CurrentUser.request_password_reset({}, payload: {password_reset: c.state.form_model.attributes}).then do |response|
         c.set_state message: "instructions were sent to you"
       end.fail do |response|
         c.state.form_model.errors = response[:errors]
@@ -51,7 +51,7 @@ class UsersController < BaseController
   def update_new_password
     c.collect_inputs(validate_only: [:password, :password_confirmation])
     unless c.state.form_model.has_errors?
-      CurrentUser.update_new_password({id: c.state.id}, {user: c.state.form_model.attributes, email: c.state.email}).then do |response|
+      CurrentUser.update_new_password({id: c.state.id}, payload: {user: c.state.form_model.attributes, email: c.state.email}).then do |response|
         App.history.replaceState(nil, "/users/#{CurrentUser.user_instance.id}")
         AppController.user_logged_in
       end.fail do |response|

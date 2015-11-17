@@ -18,7 +18,12 @@ class App < RW
   def component_will_update
     AppController.check_credentials
   end
- 
+  
+  def component_will_unmount
+    p "#{self} gon unmount!"
+  end
+
+
   def render
     t(:div, {},
       if false

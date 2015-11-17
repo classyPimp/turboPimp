@@ -2,7 +2,7 @@
   NOTICE
   *****************OPAL JQUERY needs hack
   after this line
-settings, payload = @settings.to_n, @payload
+    settings, payload = @settings.to_n, @payload
   this should be inserted in opal_jquery opal gem 
 
     %x{
@@ -30,6 +30,11 @@ settings, payload = @settings.to_n, @payload
     }
 
 This dirty hack is needed for proper serialization of payload povided with ruby hash to query string on HTTP.get requests
+
+If you're going to use zepto: zepto itself as well as opal-jquery need hack
+Zepto should be defined on window.
+If you get raised with something like "gvars[]$[]and stuff", in opal-jquery change from $$["Zepto"][:zepto][:Z] to `window.Zepto.zepto.Z`
+don't know why it isn't working -- it should be!
 
 ********************************************************************
 
@@ -219,8 +224,10 @@ class Model
     #this way it will return the pure hash as -> kind of reverse of Model.parse
     #BUG: CHANGES THE ACTUAL ATTRIBUTES! edit: changed a bit but behaviour needs examination
     x = {}
-    attributes.each do |k,v|
-      x[k] = normalize_attributes(v.nil? ? v : v.dup)
+    attributes.each do |k,v| 
+      #weird part of v.dup is needed when native objects (in single case I encounterd
+      #the native file from input would otherwise niled)
+      x[k] = normalize_attributes( (v.nil? ? v : (v.dup.nil? ? v : v.dup)) )
     end
     {self.class.name.downcase => x}
   end
@@ -573,7 +580,7 @@ class RequestHandler
   attr_accessor :caller, :promise, :name, :response, :req_options
 
   def initialize(caller, name, method_and_url, options, wilds, req_options)
-    p "req_options: #{req_options}"
+  
     @caller = caller
     #the model that called either instance or class
     @name = name
@@ -619,6 +626,9 @@ class RequestHandler
     elsif req_options[:payload]
       @req_options = req_options
     elsif @caller.has_file
+      p "gon serialize to form data #{@caller.pure_attributes}"
+      #this skip before is needed to override default's on model class which result in payload: something; not data
+      @skip_before_handler = true
       @caller.update_attributes extra_params
       @req_options[:data] = @caller.serialize_attributes_as_form_data
       @req_options[:processData] = false
@@ -635,7 +645,6 @@ class RequestHandler
     url = method_and_url[method_and_url.keys[0]].split('/')
     url.map! do |part|
       if part[0] == ":"
-        p @options
         if @wilds[part[1..-1]]
           @wilds[part[1..-1]]
         elsif  (@options[:defaults].find_index(part[1..-1]) if @options[:defaults].is_a?(Array))
@@ -666,6 +675,7 @@ class RequestHandler
       #so you wont need to user.destroy({}, payload: user.pure_attributes),
       #and simply user.destroy and that's it!
       #and be like responses_on_route_name
+      #EDIT: it kinda works now as of nov 17 2015, but needs reviewing
     end
     HTTP.__send__(@http_method, @url, @req_options) do |response|
       @response = response 
@@ -706,12 +716,6 @@ class RequestHandler
 
   def defaults_before_request
     
-  end
-
-  def defaults_on_response
-    unless @response.ok?
-      @promise.reject(@response.status_code) unless @promise.realized?
-    end
   end
   
 end

@@ -1,5 +1,7 @@
 class PagesController < ApplicationController
-		
+	
+	before_action :require_logged_in_user	
+
 	def create
 		@page = Page.new(create_params)
 		if @page.save
@@ -11,7 +13,7 @@ class PagesController < ApplicationController
 
 	def index
 
-		@pages = Page.all.paginate(page: params[:page], per_page: 1)
+		@pages = Page.all.paginate(page: params[:page], per_page: 2)
 		@pages = @pages << {pagination: {current_page: @pages.current_page, total_entries: @pages.total_entries, total_pages: @pages.total_pages,
 												offset: @pages.offset}} 
 		render json: @pages
@@ -29,6 +31,7 @@ class PagesController < ApplicationController
 
 	def destroy
 		@page = Page.find params[:id]
+		@page.destroy
 		render json: @page
 	end
 
