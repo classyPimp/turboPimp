@@ -423,3 +423,136 @@ class Nav < RW
   end  
 end
 
+require "date"
+
+class Calendar < RW
+  expose
+
+  def self.wdays
+    ["sun", "mon", "tue", "wed", "thur", "fri", "sat" ]
+  end
+
+  def render
+    t(:div, {}, 
+      t(Month, {month: 12, year: 2015})
+    )
+  end
+
+  def component_did_mount
+    x =  Date.new(2015, 12, 1)
+  end
+
+end
+
+class  Month < RW
+  expose
+  def days_in_month
+
+  end
+
+  def init 
+    @week = false
+    @cur_month = Date.new(props.year, props.month, 1)
+    @days_in_month = @cur_month.next_month.prev_day.day
+    @first_wday = @cur_month.wday
+    @m_d_counter = 1
+    @blank_days_on_first_week = @first_wday
+    @prev_month = @cur_month.prev_day.day
+    @next_month = @cur_month.next_month.day
+  end
+
+
+  def splat_times(from, upto, &block)
+    x = []
+    from..upto.times do |i|
+      x << yield(i)
+    end
+    x
+  end
+
+  def render
+    t(:div, {},
+      t(:table, {},
+        t(:tbody, {},
+          t(:tr, {},
+            *splat_each(Calendar.wdays) do |wday_name| 
+                t(:th, {}, wday_name)
+            end
+          ),
+          *splat_times(1, 6) do |week_num|
+            @first_iter = (week_num == 0) ? true : false
+            t(:tr, {onClick: ->(){handle(week_num, @cur_month, @first_wday)}},
+              *splat_times(0, 7) do |wday_num|
+                p "@prev_month = #{@prev_month} firrst wday #{@first_wday}"
+                if @first_iter
+                  if @blank_days_on_first_week > 0
+                    to_ret = t(:td, {}, (@prev_month - @blank_days_on_first_week + 1))
+                    @blank_days_on_first_week -= 1
+                    if @blank_days_on_first_week == 0
+                      @first_iter = false
+                    end
+                    to_ret
+                  end
+                else
+                  to_ret = t(:td, {}, (@days_in_month >= @m_d_counter) ? @m_d_counter : (@next_month += 1; (@next_month - 1)))
+                  @m_d_counter += 1
+                  to_ret
+                end
+              end
+            )
+          end
+        )     
+      ),
+      if @week
+        t(Week, @week_options)
+      end
+    )
+  
+  end
+
+  def handle(week_num, cur_month, first_wday)
+    @week = true
+    @week_options = {week_num: week_num, cur_month: cur_month, first_wday: first_wday} 
+  end
+end
+
+class Week < RW
+
+  def init
+    @week_num = props.week_num
+    @month = props.cur_month
+    @first_wday = props.first_wday
+    @prev_month = @month.prev_day.day
+    @blank_days_on_first_week = @first_wday
+    calc_mondays
+  end
+
+  def calc_mondays
+    
+  end
+
+
+  def render
+    t(:div,
+      t(:table, {},
+        t(:tbody, {},
+          t(:tr, {},
+            *splat_each(Calendar.wdays) do |wday_name| 
+                t(:th, {}, wday_name)
+            end
+          ),
+          *splat_times(0, 7) do |wday|
+            if wday < @first_wday
+              to_ret = t(:td, {}, (@prev_month - @blank_days_on_first_week + 1))
+              @blank_days_on_first_week -= 1
+              to_ret
+            else  
+
+            end
+          end
+        )
+      )
+    )
+  end
+
+end
