@@ -51,33 +51,42 @@ class  Month < RW
     @days_in_month = @cur_month.next_month.prev_day.day
     @first_wday = @cur_month.wday
     @m_d_counter = 1
-    @prev_month = @cur_month.prev_day.day
-    @next_month = @cur_month.next_month.day
+    @prev_month = @cur_month.prev_day
+    @next_month = @cur_month.next_month
 
 
     t(:div, {},
       t(:table, {},
-        t(:tbody, {},
+        t(:thead, {},
           t(:tr, {},
             *splat_each(Calendar.wdays) do |wday_name| 
                 t(:th, {}, wday_name)
             end
-          ),
+          )
+        ),
+        t(:tbody, {},
           *splat_each(0..4) do |week_num|
             @first_iter = (week_num == 0 && @first_wday != 0) ? true : false
             t(:tr, {onClick: ->(){handle(week_num , @cur_month)}},
               *splat_each(0..6) do |wday_num|
                 if @first_iter
-                    to_return = t(:td, {}, (@prev_month - @first_wday + 1))
+                    to_return = t(:td, {ref: "#{@prev_month.year}-#{@prev_month.month}-#{@prev_month.day - @first_wday + 1}"}, (@prev_month.day - @first_wday + 1))
                     @first_wday -= 1
                     if @first_wday == 0
                       @first_iter = false
                     end
                     to_return
                 else
-                  to_ret = t(:td, {}, (@days_in_month >= @m_d_counter) ? @m_d_counter : (@next_month += 1; (@next_month - 1)))
+                  if (@days_in_month >= @m_d_counter) 
+                    day_num = @m_d_counter
+                    month_to_pass = @cur_month 
+                  else
+                    month_to_pass = @next_month
+                    day_num = @next_month.day 
+                    @next_month += 1
+                  end
                   @m_d_counter += 1
-                  to_ret
+                  t(:td, {ref: "#{month_to_pass.year}-#{month_to_pass.month}-#{day_num}"}, day_num)
                 end
               end
             )
@@ -85,7 +94,6 @@ class  Month < RW
         )     
       )
     )
-  
   end
 
   def handle(week_num, cur_month)
@@ -114,8 +122,8 @@ class Week < RW
     @cur_month = props.cur_month
     @days_in_month = @cur_month.next_month.prev_day.day
     @first_wday = @cur_month.wday
-    @prev_month = @cur_month.prev_day.day
-    @next_month = @cur_month.next_month.day
+    @prev_month = @cur_month.prev_day
+    @next_month = @cur_month.next_month
     @m_d_counter = calculate_start_day
 
     t(:div, {},
@@ -131,14 +139,24 @@ class Week < RW
               if props.week_num == 0
                 if @first_wday > 0
                   @first_wday -= 1
-                  t(:td, {}, (@prev_month - @first_wday))
+                  day_num = @prev_month.day - @first_wday
+                  t(:td, {className: "#{@prev_month.year}-#{@prev_month.month}-#{day_num}"}, day_num)
                 else
+                  to_ret = t(:td, {className: "#{@cur_month.year}-#{@cur_month.month}-#{@m_d_counter}"}, @m_d_counter)
                   @m_d_counter += 1
-                  to_ret = t(:td, {}, (@days_in_month >= (@m_d_counter - 1)) ? (@m_d_counter - 1) : (@next_month += 1; (@next_month - 1)))
+                  to_ret
                 end
               else
+                if (@days_in_month >= @m_d_counter) 
+                  day_num = @m_d_counter
+                  month_to_pass = @cur_month 
+                else
+                  month_to_pass = @next_month
+                  day_num = @next_month.day 
+                  @next_month += 1
+                end
                 @m_d_counter += 1
-                to_ret = t(:td, {}, (@days_in_month >= (@m_d_counter - 1)) ? (@m_d_counter - 1) : (@next_month += 1; (@next_month - 1)))
+                t(:td, {className: "#{month_to_pass.year}-#{month_to_pass.month}-#{day_num}"}, day_num)
               end
             end
           )
@@ -147,4 +165,13 @@ class Week < RW
     )
   end
   
+end
+
+class WeekDay < RW
+  expose
+
+  def method_name
+    
+  end
+
 end
