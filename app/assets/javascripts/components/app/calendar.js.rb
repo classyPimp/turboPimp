@@ -1,5 +1,45 @@
 require "date"
+class Event
+    attr_accessor :start, :finish
+    
+    def initialize(x,y = x)
+       @start = `new Date(x)`
+       @finish = `new Date(y)`
+    end
 
+    def self.prepare(ar)
+      res_h = {}
+      ar.sort_by do |a|
+          x = a.dif_days
+          (0..x).each do |i|
+            foo = `new Date(#{a.start})`
+            `
+              var tomorrow = new Date()
+              #{foo}.setDate(#{foo}.getDate() + i)
+            `
+            z = "#{`#{`foo`}.getFullYear()`}-#{`#{`foo`}.getMonth() + 1`}-#{`#{`foo`}.getDate()`}"
+            p z
+         end
+      end
+
+    end
+
+    def dif_days
+      %x{
+      oneDay = 86400000
+      var firstDate = #{self.finish}
+      var secondDate = #{self.start}
+      var diffDays = Math.round(Math.abs((firstDate.getTime() - secondDate.getTime())/(oneDay)))
+      return diffDays
+      }
+    end
+
+end
+
+Document.ready? do
+  x = [Event.new("2015-10-25", "2015-12-25")]
+  Event.prepare(x)
+end
 class Calendar < RW
   expose
 
