@@ -528,7 +528,7 @@ class ModelAssociation
     s = []
     @data.each do |v|
       if v.is_a? Model
-        s << v if yield(v.attributes)
+        s << v if yield(v) #previously was v.attributes; changed beacause sometimes yo'll need to check on their methods not only attributes
         s = s + v.where {block.call}
       end
     end

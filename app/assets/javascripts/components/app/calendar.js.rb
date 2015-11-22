@@ -1,50 +1,42 @@
 require "date"
-class Event
-    attr_accessor :start, :finish
-    
-    def initialize(x,y = x)
-       @start = `new Date(x)`
-       @finish = `new Date(y)`
+class Eventy < Model
+    attributes :start, :finish, :position, :all_day
+    attr_accessor :_start, :_finish
+
+    def init
+       @_start = `new Date(#{self.start})`
+       @_finish ? (@_finish = `new Date(#{self.finsih})`) : @_start
     end
 
     def self.prepare(ar)
-      res_h = {}
-      ar.sort_by do |a|
-          x = a.dif_days
-          (0..x).each do |i|
-            foo = `new Date(#{a.start})`
-            `
-              var tomorrow = new Date()
-              #{foo}.setDate(#{foo}.getDate() + i)
-            `
-            z = "#{`#{`foo`}.getFullYear()`}-#{`#{`foo`}.getMonth() + 1`}-#{`#{`foo`}.getDate()`}"
-            p z
-         end
+      res = {}
+      ar.each do |ev|
+        (res["#{ev.start}"] ||= []) << ev
       end
-
+      res
     end
 
     def dif_days
       %x{
       oneDay = 86400000
-      var firstDate = #{self.finish}
-      var secondDate = #{self.start}
+      var firstDate = #{@_finish}
+      var secondDate = #{@_start}
       var diffDays = Math.round(Math.abs((firstDate.getTime() - secondDate.getTime())/(oneDay)))
       return diffDays
       }
     end
-
 end
 
-Document.ready? do
-  x = [Event.new("2015-10-25", "2015-12-25")]
-  Event.prepare(x)
-end
+
 class Calendar < RW
   expose
 
   def self.wdays
     ["sun", "mon", "tue", "wed", "thur", "fri", "sat" ]
+  end
+
+  def init 
+    
   end
 
   def initial_state
@@ -58,7 +50,7 @@ class Calendar < RW
       t(:button, {onClick: ->(){prev_month}}, "<"),
       t(:button, {onClick: ->(){next_month}}, ">"),
       t(:p, {}, "the month is #{state.date.month}, of year #{state.date.year}"),
-      t(Month, {date: state.date, on_show_week: ->(week_num, cur_month){show_week(week_num, cur_month)}}),
+      t(Month, {date: state.date, on_show_week: ->(track_day){show_week(track_day)}}),
       t(:br, {}),
       t(:div, {},
         if state.week
@@ -68,8 +60,8 @@ class Calendar < RW
     )
   end
 
-  def show_week(week_num, cur_month)
-    state.week_options = {week_num: week_num, cur_month: cur_month}
+  def show_week(track_day)
+    state.week_options = {track_day: track_day}
     set_state week: true
   end
 
@@ -86,85 +78,86 @@ end
 class  Month < RW
   expose
   
-  def render
-    @cur_month = props.date - (props.date.day - 1)
-    @days_in_month = @cur_month.next_month.prev_day.day
-    @first_wday = @cur_month.wday
-    @m_d_counter = 1
-    @prev_month = @cur_month.prev_day
-    @next_month = @cur_month.next_month
+  def initial_state
+    {
+      events_feed: Model.parse([
+                                {eventy: {start: "2015-11-21", finish: "2015-11-21"}},
+                                {eventy: {start: "2015-11-21", finish: "2015-11-23"}},
+                                {eventy: {start: "2015-11-24", finish: "2015-11-24"}},
+                                {eventy: {start: "2015-11-22", finish: "2015-11-22"}},
+                                {eventy: {start: "2015-11-23", finish: "2015-11-27"}},
+                                {eventy: {start: "2015-11-25", finish: "2015-11-26"}},
+                                {eventy: {start: "2015-11-28", finish: "2015-11-28"}}
+                              ])
+    }
+  end
 
+
+  def render
+    @ev_feed = Eventy.prepare(state.events_feed)
+    @cur_month = props.date - (props.date.day - 1)
+    @first_wday = @cur_month.wday
+    @track_day = @cur_month.clone - (@first_wday + 1)
 
     t(:div, {},
-      t(:table, {},
-        t(:thead, {},
-          t(:tr, {},
-            *splat_each(Calendar.wdays) do |wday_name| 
-                t(:th, {}, wday_name)
-            end
-          )
+      t(:div, {className: "table"},
+        t(:div, {className: "row"},
+          t(:div, {className: "col-lg-2"}),
+          *splat_each(Calendar.wdays) do |wday_name| 
+              t(:div, {className: "col-lg-1"}, wday_name)
+          end,
+          t(:div, {className: "col-lg-3"})
         ),
-        t(:tbody, {},
-          *splat_each(0..4) do |week_num|
-            @first_iter = (week_num == 0 && @first_wday != 0) ? true : false
-            t(:tr, {onClick: ->(){handle(week_num , @cur_month)}},
-              *splat_each(0..6) do |wday_num|
-                if @first_iter
-                    to_return = t(:td, {ref: "#{@prev_month.year}-#{@prev_month.month}-#{@prev_month.day - @first_wday + 1}"}, (@prev_month.day - @first_wday + 1))
-                    @first_wday -= 1
-                    if @first_wday == 0
-                      @first_iter = false
-                    end
-                    to_return
-                else
-                  if (@days_in_month >= @m_d_counter) 
-                    day_num = @m_d_counter
-                    month_to_pass = @cur_month 
-                  else
-                    month_to_pass = @next_month
-                    day_num = @next_month.day 
-                    @next_month += 1
+        *splat_each(0..5) do |week_num|
+          t_d = (@track_day).clone
+          t(:div, {className: "row"},
+            t(:div, {className: "col-lg-2"}),
+            t(:div, {onClick: ->(){handle(t_d)}},
+              *splat_each(0..6) do |d|
+                t(:div, {className: "col-lg-1", style: {"height" => "20%"}}, 
+                  t(:p, {}, (@track_day += 1).day),
+                  *splat_each(0..6) do |x|
+                    z = "#{@track_day.year}-#{@track_day.month}-#{@track_day.day}"
+                    val = @ev_feed[z].pop if @ev_feed[z]
+                    t(:p, {}, val ? "#{val.start} - #{val.finish}" : "")
                   end
-                  @m_d_counter += 1
-                  t(:td, {ref: "#{month_to_pass.year}-#{month_to_pass.month}-#{day_num}"}, day_num)
-                end
+                )
               end
-            )
-          end
-        )     
+            ),
+            t(:div, {className: "col-lg-3"})
+=begin
+            *splat_each(0..6) do |d|
+              t(:tr, {},
+                *(
+                span_track = 0
+                x = splat_each(0..6) do |x|
+                  t_d += 1
+                  z = "#{t_d.year}-#{t_d.month}-#{t_d.day}"
+                  val = @ev_feed[z].pop if @ev_feed[z]
+                  t(:td, {}, val ? "#{val.start} - #{val.finish}" : "nil")
+                end
+                t_d -= 7
+                x
+                )
+              )
+            end
+=end
+          )
+        end   
       )
     )
   end
 
-  def handle(week_num, cur_month)
-    props.on_show_week(week_num, cur_month)
+  def handle(track_day)
+    props.on_show_week(track_day)
   end
 end
 
 class Week < RW
   expose
-  def days_in_month
-
-  end
-
-  def calculate_start_day
-    x = 1 + (7 - @first_wday)
-    if props.week_num > 1
-      x + 7 * (props.week_num - 1)
-    elsif props.week_num == 1
-      x
-    else
-      1
-    end
-  end
 
   def render
-    @cur_month = props.cur_month
-    @days_in_month = @cur_month.next_month.prev_day.day
-    @first_wday = @cur_month.wday
-    @prev_month = @cur_month.prev_day
-    @next_month = @cur_month.next_month
-    @m_d_counter = calculate_start_day
+    @track_day = props.track_day.clone
 
     t(:div, {},
       t(:table, {},
@@ -176,28 +169,7 @@ class Week < RW
           ),
           t(:tr, {},
             *splat_each(0..6) do |wday_num|
-              if props.week_num == 0
-                if @first_wday > 0
-                  @first_wday -= 1
-                  day_num = @prev_month.day - @first_wday
-                  t(:td, {className: "#{@prev_month.year}-#{@prev_month.month}-#{day_num}"}, day_num)
-                else
-                  to_ret = t(:td, {className: "#{@cur_month.year}-#{@cur_month.month}-#{@m_d_counter}"}, @m_d_counter)
-                  @m_d_counter += 1
-                  to_ret
-                end
-              else
-                if (@days_in_month >= @m_d_counter) 
-                  day_num = @m_d_counter
-                  month_to_pass = @cur_month 
-                else
-                  month_to_pass = @next_month
-                  day_num = @next_month.day 
-                  @next_month += 1
-                end
-                @m_d_counter += 1
-                t(:td, {className: "#{month_to_pass.year}-#{month_to_pass.month}-#{day_num}"}, day_num)
-              end
+              t(:td, {}, (@track_day += 1).day)
             end
           )
         )     
