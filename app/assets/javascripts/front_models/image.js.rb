@@ -1,5 +1,5 @@
 class Image < Model
-	attributes :id, :file, :url, :user_id
+	attributes :id, :file, :url, :user_id, :alt, :description, :search_query
 
 	route "create", post: "images"
   route "Index", get: "images"

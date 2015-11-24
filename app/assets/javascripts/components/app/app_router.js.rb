@@ -27,7 +27,7 @@ require_tree "../../components/shared/"
 
           t(`Route`, {path: "forbidden", component: Components::App::Forbidden.create_class}),
 
-          t(`Route`, {path: "test", component: Calendar.create_class}),
+          t(`Route`, {path: "test", component: Components::Images::Index.create_class}),
 
           t(`Route`, {path: "*", component: Components::App::NotFound.create_class})
         )

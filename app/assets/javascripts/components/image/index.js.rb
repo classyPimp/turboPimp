@@ -5,12 +5,13 @@ module Components
 
 			def initial_state
 		    {
-		      images: ModelAssociation.new
+		      images: ModelAssociation.new,
+          query: ""
 		    }
 		  end
 
 		  def component_did_mount
-		    Image.index.then do |images|
+		    Image.index().then do |images|
 		      if x = (images.data.pop if images[-1].instance_of? Pagination)
 		        self.state.pagination = x
 		      end
@@ -21,8 +22,10 @@ module Components
 		  end
 
 		  def render
-		  	p state.images
 		    t(:div,{},
+          t(:div, {},
+            t(Components::Images::SearchBar, {search_for_image: ->(img){perform_search(img)}})
+          ),
 		      *splat_each(state.images) do |image|
 		        t(:div, {key: "#{image}", style: {width: "200px", height: "200px"}},
 		          t(:image, {src: image.url, style: {width: "100%", height: "auto"}}),
@@ -40,6 +43,17 @@ module Components
 		      t(Components::Images::Create, {on_create: ->(image){add_image(image)}})
 		    )
 		  end
+
+      def perform_search(img)
+        ::App.history.replaceState(nil, "#{props.location.pathname}?#{img.attributes}")
+
+        Image.index({},{extra_params: img.attributes}).then do |images|
+          if x = (images.data.pop if images[-1].instance_of? Pagination)
+            self.state.pagination = x
+          end
+          set_state images: images
+        end
+      end
 
 		  def will_paginate
 		    to_ret = []
