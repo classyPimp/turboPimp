@@ -1,6 +1,7 @@
 class Page < Model
+
   attributes :id, :body, :title, :user,
-             :m_title, :m_description, :m_keywords
+             :m_title, :m_description, :m_keywords, :slug
 
   route "create", post: "pages"
   route "Index", get: "pages"

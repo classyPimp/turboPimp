@@ -357,8 +357,6 @@ class Model
   def self.responses_on_show(r)
     if r.response.ok?
       r.promise.resolve Model.parse(r.response.json)
-    else
-      r.promise.reject r.response.status_code
     end
   end
 

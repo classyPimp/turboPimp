@@ -28,6 +28,7 @@ require_tree "../../components/shared/"
           t(`Route`, {path: "/pages", component: Components::Pages::Main.create_class},
             t(`Route`, {path: "new", component: Components::Pages::New.create_class}),
             t(`Route`, {path: "index", component: Components::Pages::Index.create_class}),
+            t(`Route`, {path: "show/:id", component: Components::Pages::Show.create_class}),
             t(`Route`, {path: "edit/:id", component: Components::Pages::Edit.create_class})
           ),
 
@@ -35,7 +36,8 @@ require_tree "../../components/shared/"
 
           t(`Route`, {path: "test", component: Components::Images::Index.create_class}),
 
-          t(`Route`, {path: "*", component: Components::App::NotFound.create_class})
+          t(`Route`, {path: "*", component: Components::App::NotFound.create_class}),
+          t(`Route`, {path: "404", component: Components::App::NotFound.create_class})
         )
       )
     end 

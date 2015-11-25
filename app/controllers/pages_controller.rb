@@ -1,6 +1,6 @@
 class PagesController < ApplicationController
 	
-	before_action :require_logged_in_user	
+	before_action :require_logged_in_user, only: [:create, :update]	
 
 	def create
 		@page = Page.new(create_params)
@@ -29,7 +29,7 @@ class PagesController < ApplicationController
 	end
 
   def show
-    @page = Page.find(params[:id])
+    @page = Page.friendly.find(params[:id])
     render json: @page.as_json(only: [:id, :title, :body, :m_title, :m_description, :m_keywords])
   end
 

@@ -24,7 +24,6 @@ module Components
       end
 
       def render
-        `console.log(#{self.state})`
         t(:div, {},
           if state.page_saved
             t(:div, {},

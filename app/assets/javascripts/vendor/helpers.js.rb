@@ -70,6 +70,11 @@ module Helpers
     def defaults_on_response
       authorize!
       (@component.spinner_instance.off if @component.has_spinner) if @component
+      if @response.status_code == 404
+        App.history.replaceState(nil, "/404")
+      elsif @response.status_code == 500
+        App.history.replaceState(nil, "/505?status_code=500")
+      end
     end
 
     def defaults_before_request

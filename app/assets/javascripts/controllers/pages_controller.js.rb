@@ -21,8 +21,6 @@ class PagesController < BaseController
     c.set_state form_model: Page.new
   end
 
-  
-
   def handle_inputs_for_update
     c.collect_inputs
     unless c.state.form_model.has_errors?
@@ -37,5 +35,15 @@ class PagesController < BaseController
       c.set_state form_model: c.state.form_model
     end
   end
+
+  def destroy(page)
+    page.destroy.then do |r|
+      c.state.pages.remove(page)
+      c.set_state pages: c.state.pages
+    end.fail do |r|
+      raise "#{self}#destroy!"
+    end
+  end
+
 
 end

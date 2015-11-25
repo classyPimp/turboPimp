@@ -109,3 +109,9 @@ gem "pundit"
 gem "rolify"
 
 gem "paperclip", "~> 4.3"
+
+gem 'pg'
+
+gem 'pg_search'
+
+gem 'friendly_id', '~> 5.1.0'
