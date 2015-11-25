@@ -12,11 +12,15 @@ class ImagesController < ApplicationController
 	end
 
 	def index
-
-		@images = Image.all.paginate(page: params[:page], per_page: 2)
-		render json: @images.as_json(only: [:id, :alt, :description], methods: [:url]) << 
-												{pagination: {current_page: @images.current_page, total_entries: @images.total_entries, total_pages: @images.total_pages,
-												offset: @images.offset}} 
+    if params[:search_query].present?
+      @images = Image.search_by_alt_description(params[:search_query])
+    else
+    	@images = Image.all
+    end
+    @images = @images.paginate(page: params[:page], per_page: 2)
+    render json: @images.as_json(only: [:id, :alt, :description], methods: [:url]) << 
+                        {pagination: {current_page: @images.current_page, total_entries: @images.total_entries, total_pages: @images.total_pages,
+                        offset: @images.offset}}
 	end
 
 	def update

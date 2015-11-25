@@ -152,7 +152,7 @@ class PageIndex < RW
 
   def initial_state
     {
-      pages: ModelAssociation.new
+      pages: ModelCollection.new
     }
   end
 

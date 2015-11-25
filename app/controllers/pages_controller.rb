@@ -12,7 +12,6 @@ class PagesController < ApplicationController
 	end
 
 	def index
-
 		@pages = Page.all.paginate(page: params[:page], per_page: 2)
 		@pages = @pages << {pagination: {current_page: @pages.current_page, total_entries: @pages.total_entries, total_pages: @pages.total_pages,
 												offset: @pages.offset}} 
