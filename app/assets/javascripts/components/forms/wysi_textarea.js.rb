@@ -1,68 +1,41 @@
-class Filer < Model
-
-	attributes :file, :name, :id, :users
-
-	route "upload", post: "test"
-
-	def responses_on_upload(r)
-		if r.response.ok?
-        r.promise.resolve(r.response)
-    else
-      r.promise.reject(r.response)
-    end
-	end 
-
-	def validate_file
-		self.has_file = true
-	end
-
-end
-
-
 module Forms
 	class WysiTextarea < RW
 		expose
 
-		def initial_state
-			{
-				foo: "bar",
-				file: Filer.new
-			}
-		end
+		def __component_will_update__
+      ref("#{self}").value = "" if props.reset_value == true
+      super
+    end
+
+    def valid_or_not?
+      if props.model.errors[:attr]
+        "invalid"
+      else
+        "valid"
+      end
+    end
 
 		def render
 			t(:div, {},
-				t(:p, {}, "#{state.foo}"),
-				t(:p, {}, "upload file"),
-				t(:input, {type: "file", ref: "file"}),
-				t(:br, {}),
-				t(:button, {onClick: ->(){handle_upload}}, "collectfile"),
-				t(:br, {}),
+        t(:p, {}, props.attr),
+        *if props.model.errors[props.attr]
+          splat_each(props.model.errors[props.attr]) do |er|
+            t(:div, {},
+              t(:p, {},
+                er
+              ),
+              t(:br, {})    
+            )             
+          end
+        end,
 				t(:div, {id: "wysi_toolbar", style: {display: "none"}},
 					t(:a, {"data-wysihtml5-command" => "bold"}, "BOLD"),
 					t(:a, {"data-wysihtml5-action" => "change_view", "unselectable"=>"on"},
 						"switch to html"
 					)
 				),
-				t(:textarea, {className: "form-control", rows: "5", id: "wysi"}),
-				t(:br, {}),
-				t(:button, {onClick: ->(){p @wysi_editor.getValue}}, "click me for value")
+				t(:textarea, {className: "form-control", rows: "5", id: "wysi", defaultValue: props.model.attributes[props.attr]})
 			)
-		end
-
-
-		
-		def handle_upload
-
-			form_data = Native(`new FormData()`)
-
-			state.file.name = "JOHNATAN!"
-			state.file.id = "WUUURHA"
-			state.file.file = ref(:file).files[0]
-			state.file.validate
-			form_data = Model.iterate_for_form(state.file.pure_attributes, form_data)
-			state.file.upload()
-			
 		end
 
 		def component_will_unmount
@@ -77,6 +50,12 @@ module Forms
 				})
 			})
 		end
+
+    def collect
+      props.model.attributes[props.attr.to_sym] = @wysi_editor.getValue
+    end
+
+
 	end
 end
 

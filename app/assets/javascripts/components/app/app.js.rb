@@ -36,7 +36,11 @@ class App < RW
           t(:br, {}),
           link_to("signup", "/users/signup"),
           t(:br, {}),
-          link_to("test", "/test")
+          link_to("test", "/test"),
+          t(:br, {}),
+          link_to("new page", "/pages/new"),
+          t(:br, {}),
+          link_to("page index", "/pages/index")
         ),
         spinner
       ),
