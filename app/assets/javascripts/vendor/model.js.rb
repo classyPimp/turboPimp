@@ -46,7 +46,7 @@ don't know why it isn't working -- it should be!
   Rails, should respond with json root eg {user: {id: 1}}
   When Model.parse if it will meet {model_name: {atr: "some", foo: "some"}} it will instantiate that #{model_name} and [:model_name] wll
   go to attribtes if in attributes there is model it will also be instantiated.
-  if array of models given to model parse it will retun ModelAssociation wich is basicaly the arry of models
+  if array of models given to model parse it will retun ModelCollection wich is basicaly the arry of models
   attributes are stored in @attributes wich are passed on init
   each model has .attributes runtime called method that defines getter setter methods on @attributes
   to update attributes call update_attributes({hash}) which will merge it to attributes TODO implement deep_merge on ::Hash
@@ -123,7 +123,7 @@ class Model
     end
     parsed_data = objectify data
     if parsed_data.is_a? Array
-      return ModelAssociation.new(data)
+      return ModelCollection.new(data)
     end
     parsed_data
   end
@@ -508,7 +508,7 @@ class HelperStuff
 
 end
 
-class ModelAssociation
+class ModelCollection
   #you will get it if will pass array of models to Model.parse 
   include Enumerable
   attr_accessor :data

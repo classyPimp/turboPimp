@@ -1,6 +1,9 @@
 class Image < ActiveRecord::Base
   belongs_to :user
 
+  include PgSearch
+  pg_search_scope :search_by_alt_description, :against => [:alt, :description]
+
   has_attached_file :file
 
   validates_attachment :file, presence: true,

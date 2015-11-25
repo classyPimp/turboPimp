@@ -1,67 +1,59 @@
 module Components
 	module Images
 		class Index < RW
+
 			expose
+      include Plugins::Paginatable
 
 			def initial_state
 		    {
-		      images: ModelAssociation.new
+		      images: ModelCollection.new,
+          query: ""
 		    }
 		  end
 
 		  def component_did_mount
 		    Image.index.then do |images|
-		      if x = (images.data.pop if images[-1].instance_of? Pagination)
-		        self.state.pagination = x
-		      end
+		      extract_pagination(images)
 		      set_state images: images
+          p "set_state"
 		    end.fail do |pr|
 		      `console.log(#{pr})`
 		    end
 		  end
 
 		  def render
-		  	p state.images
 		    t(:div,{},
+          t(:div, {},
+            t(Components::Images::SearchBar, {search_for_image: ->(img){perform_search(img)}})
+          ),
 		      *splat_each(state.images) do |image|
 		        t(:div, {key: "#{image}", style: {width: "200px", height: "200px"}},
+              t(:p, {}, "alt: #{image.alt}, description: #{image.description}"),
 		          t(:image, {src: image.url, style: {width: "100%", height: "auto"}}),
 		          t(:button, {onClick: ->(){destroy(image)}}, "destroy this image"),
 		          t(:br, {})
 		          #t(:button, {onCLick: ->(){show(image)}})
 		        )
 		      end,
-		      t(:div, {className: "pagination"},
-		        *if state.pagination
-		          will_paginate
-		        end
-		      ),
+		      will_paginate,
 		      t(:br, {}),
 		      t(Components::Images::Create, {on_create: ->(image){add_image(image)}})
 		    )
 		  end
 
-		  def will_paginate
-		    to_ret = []
-		    state.pagination.total_pages.times do |pa|
-		      pa += 1
-		      if pa == state.pagination.current_page
-		        to_add  = t(:span, {}, "#{pa} - current_page")
-		      else
-		        to_add = t(:a, {onClick: ->(){jump_to(pa)}}, "\t#{pa}\t")
-		      end
-		      to_ret << to_add
-		    end
-		    to_ret
-		  end
+      def perform_search(img)
+        ::App.history.replaceState(nil, "#{props.location.pathname}?#{`$.param({search_query: #{img.attributes[:search_query].to_n}})`}")
+        Image.index({},{extra_params: img.attributes}).then do |images|
+          extract_pagination(images)
+          set_state images: images
+        end
+      end
 
-		  def jump_to(pa)
-		  	::App.history.replaceState(nil, "#{props.location.pathname}?page=#{pa}")
-
-		    Image.index({},{extra_params: {page: pa}}).then do |images|
-		      if x = (images.data.pop if images[-1].instance_of? Pagination)
-		        self.state.pagination = x
-		      end
+		  def pagination_switch_page(page)
+		  	::App.history.replaceState(nil, "#{props.location.pathname}?page=#{page}")
+		    Image.index({},{extra_params: {page: page}}).then do |images|
+		      extract_pagination(images)
 		      set_state images: images
 		    end
 		  end
