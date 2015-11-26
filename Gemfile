@@ -64,7 +64,7 @@ group :development, :test do
   gem 'spring'
 end
 
-gem 'opal_installer', path: "~/dev/my_gems/opal_installer"
+
 
 ######### OPAL INSTALL
 
@@ -72,15 +72,8 @@ gem 'opal_installer', path: "~/dev/my_gems/opal_installer"
 
 ######### END OPAL INSTALL
 
-#gem 'opal_front_model', path: "~/dev/my_gems/opal_front_model"
-
-#gem "opal_react_wrapper", path: "~/dev/my_gems/opal_react_wrapper"
-
-gem 'set_up_my_gems', path: "~/dev/my_gems/set_up_my_gems"
-
-gem "react_installer", path: "~/dev/my_gems/react_installer"
-
-gem "auth", path: "~/dev/my_gems/auth"
+# Windows does not include zoneinfo files, so bundle the tzinfo-data gem
+gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
 
 ######### MY ADDED GEMS
 

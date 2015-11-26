@@ -5,6 +5,15 @@ module Components
 			expose
       include Plugins::Paginatable
 
+      #PROPS:
+      # => request_on_mount: Boolean
+      #if false won't request images from server
+      #used for image linking with wysi
+      #if prop is not provided accounted as true
+      # => expose_image: Hash with values {proc: ->(){PROC YOU WANT TO CALL ON PARENT}, button_value: "THE VALUE WHICH WILL BE PASSED TO BUTTON ELEM"}
+      #if provided under each rendered image button will be added with value of props.expose_image
+      #which will have call the props.expose_image[:proc].call(image) on click
+
 			def initial_state
 		    {
 		      images: ModelCollection.new,
@@ -13,13 +22,15 @@ module Components
 		  end
 
 		  def component_did_mount
-		    Image.index.then do |images|
-		      extract_pagination(images)
-		      set_state images: images
-          p "set_state"
-		    end.fail do |pr|
-		      `console.log(#{pr})`
-		    end
+        unless props.request_on_mount == false
+  		    Image.index.then do |images|
+  		      extract_pagination(images)
+  		      set_state images: images
+            p "set_state"
+  		    end.fail do |pr|
+  		      `console.log(#{pr})`
+  		    end
+        end
 		  end
 
 		  def render
@@ -32,18 +43,21 @@ module Components
               t(:p, {}, "alt: #{image.alt}, description: #{image.description}"),
 		          t(:image, {src: image.url, style: {width: "100%", height: "auto"}}),
 		          t(:button, {onClick: ->(){destroy(image)}}, "destroy this image"),
+              if props.should_expose
+                t(:button, {onClick: ->(){props.should_expose[:proc].call(image)}}, props.should_expose[:button_value])
+              end,
 		          t(:br, {})
-		          #t(:button, {onCLick: ->(){show(image)}})
+		          #t(:button, {onCLick: ->(){}})
 		        )
 		      end,
 		      will_paginate,
 		      t(:br, {}),
-		      t(Components::Images::Create, {on_create: ->(image){add_image(image)}})
+		      t(Components::Images::Create, {on_create: ->(image){on_create(image)}})
 		    )
 		  end
 
       def perform_search(img)
-        ::App.history.replaceState(nil, "#{props.location.pathname}?#{`$.param({search_query: #{img.attributes[:search_query].to_n}})`}")
+        ::App.history.replaceState(nil, "#{props.location.pathname}?#{`$.param({search_query: #{img.attributes[:search_query].to_n}})`}") unless props.should_expose
         Image.index({},{extra_params: img.attributes}).then do |images|
           extract_pagination(images)
           set_state images: images
@@ -58,18 +72,20 @@ module Components
 		    end
 		  end
 
+      def on_create(image)
+        p "add image"
+        p state.images
+        state.images << image
+        p state.images
+        self.set_state images: state.images
+      end
+
 		  def destroy(image)
 		    image.destroy.then do |r|
 		      state.images.remove(image)
 		      set_state images: state.images
 		    end
 		  end
-
-		  def add_image(image)
-		    (state.images << image)
-		    set_state images: state.images
-		  end
-
 		  
 		end
 	end
