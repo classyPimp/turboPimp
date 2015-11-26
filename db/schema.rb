@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20151125150202) do
+ActiveRecord::Schema.define(version: 20151126140314) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -42,6 +42,16 @@ ActiveRecord::Schema.define(version: 20151125150202) do
   end
 
   add_index "images", ["user_id"], name: "index_images_on_user_id", using: :btree
+
+  create_table "menu_items", force: :cascade do |t|
+    t.string   "href"
+    t.string   "link_text"
+    t.integer  "menu_item_id"
+    t.datetime "created_at",   null: false
+    t.datetime "updated_at",   null: false
+  end
+
+  add_index "menu_items", ["menu_item_id"], name: "index_menu_items_on_menu_item_id", using: :btree
 
   create_table "pages", force: :cascade do |t|
     t.string   "body"
@@ -92,5 +102,6 @@ ActiveRecord::Schema.define(version: 20151125150202) do
   add_index "users_roles", ["user_id", "role_id"], name: "index_users_roles_on_user_id_and_role_id", using: :btree
 
   add_foreign_key "images", "users"
+  add_foreign_key "menu_items", "menu_items"
   add_foreign_key "pages", "users"
 end

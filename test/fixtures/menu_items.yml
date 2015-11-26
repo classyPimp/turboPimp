@@ -1,0 +1,11 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  href: MyString
+  link_text: MyString
+  menu_item_id: 
+
+two:
+  href: MyString
+  link_text: MyString
+  menu_item_id: 

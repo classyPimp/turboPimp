@@ -16,7 +16,9 @@ Rails.application.routes.draw do
 
     resources :pages
 
-    resources :images     
+    resources :images 
+
+    resources :menu_items    
   end
 
   root "faker#home"
