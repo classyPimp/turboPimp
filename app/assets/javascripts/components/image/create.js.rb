@@ -22,10 +22,10 @@ module Components
 		          input(Forms::Input, state.form_model, :file, {type: "file", has_file: true}),
               input(Forms::Input, state.form_model, :alt, {type: "text"}),
               input(Forms::Input, state.form_model, :description, {type: "text"}),
-		          t(:button, {onClick: ->(){handle_inputs}}, "create image")
+		          t(:button, {onClick: ->(){handle_inputs}}, "upload")
 		        )
 		      else
-		        t(:button, {onClick: ->(){init_image_creation}}, "I WANT SOME IMAGES TO CREATE!")
+		        t(:button, {onClick: ->(){init_image_creation}}, "new image")
 		      end
 		    )
 			end
@@ -38,6 +38,7 @@ module Components
 		          set_state form_model: model
 		        else
 		          set_state form_model: false
+              p "gon call add image"
 		          props.on_create(model)
 		        end
 		      end

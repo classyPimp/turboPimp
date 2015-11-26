@@ -1,7 +1,7 @@
 module Components
   module Pages
     class New < RW
-      expose
+      expose 
 
       include Plugins::Formable
 

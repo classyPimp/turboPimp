@@ -4,13 +4,13 @@ module Shared
 
     def initial_state
       {
-        display: "none"
+        display: "none"  
       }
     end
 
     def init
       @head = t(:p, {})
-      @content = t(:div, {})
+      @body = t(:div, {}, "foo")
     end
 
 		def render
@@ -22,7 +22,7 @@ module Shared
               @head
             ),
             t(:div, {className: "modal-body"},
-              @content,      
+              @body,      
               children
             )
 					)					
@@ -39,7 +39,7 @@ module Shared
 
     def close(preserve = false)
       @head = t(:p, {} ) unless preserve
-      @content = t(:div, {}) unless preserve
+      @body = t(:div, {}) unless preserve
       Element.find("body").remove_class("modal-open")
       set_state display: "none"
     end
