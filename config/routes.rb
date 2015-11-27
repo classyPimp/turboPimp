@@ -18,7 +18,7 @@ Rails.application.routes.draw do
 
     resources :images 
 
-    resources :menu_items    
+    resources :menu_items, only: [:index, :update]    
   end
 
   root "faker#home"

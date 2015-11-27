@@ -32,6 +32,8 @@ require_tree "../../components/shared/"
             t(`Route`, {path: "edit/:id", component: Components::Pages::Edit.create_class})
           ),
 
+          t(`Route`, {path: "menues/index", component: Components::Menues::Index.create_class}),
+
           t(`Route`, {path: "forbidden", component: Components::App::Forbidden.create_class}),
 
           t(`Route`, {path: "test", component: Components::Images::Index.create_class}),
