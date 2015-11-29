@@ -42,7 +42,7 @@ class App < RW
           t(:br, {}),
           link_to("page index", "/pages/index"),
           t(:br, {}),
-          link_to("menu index", "/menues/index")
+          link_to("menu index edit", "/menues/index")
         ),
         spinner
       ),
