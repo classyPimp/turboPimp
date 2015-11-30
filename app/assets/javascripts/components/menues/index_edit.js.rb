@@ -22,8 +22,10 @@ module Components
               t(:p, {}, "add top level menu branch"),
               t(Components::Menues::New, {parent_menu_item: state.menu, on_menu_item_added: ->(_menu_i){handle_item_change(_menu_i)}}),
               *splat_each(state.menu.menu_items) do |menu_item|
+                next if menu_item.attributes[:_destroy]
                 t(:div, {},
                   t(:p, {}, "link_text#{menu_item.link_text}, href: #{menu_item.href}"),
+                  t(:button, {onClick: ->{destruct(menu_item)}}, "delete"),
                   if menu_item.arbitrary[:marked_for_edit]
                     t(:div, {},
                       t(Components::Menues::Edit, {menu_item_to_edit: menu_item, on_menu_item_edited: ->(m_i){handle_item_change(m_i)}}),
@@ -33,8 +35,10 @@ module Components
                     t(:button, {onClick: ->(){init_edit_for(menu_item)}}, "edit this entry")
                   end,
                   *splat_each(menu_item.menu_items) do |sub_item|
+                    next if sub_item.attributes[:_destroy]
                     t(:div, {style: {"paddingLeft" => "3em"}},
                       t(:p, {}, "href#{sub_item.href},link_text:#{sub_item.link_text}"),
+                      t(:button, {onClick: ->{destruct(sub_item)}}, "delete"),
                       if sub_item.arbitrary[:marked_for_edit]
                         t(:div, {},
                           t(Components::Menues::Edit, {menu_item_to_edit: sub_item, on_menu_item_edited: ->(m_i){handle_item_change(m_i)}}),
@@ -88,10 +92,12 @@ module Components
         set_state menu: state.menu
       end
 
+      def destruct(item)
+        item.attributes[:_destroy] = 1
+        set_state menu: state.menu
+      end
+
       def update_menu
-        p state.menu.attributes
-        p state.menu.pure_attributes
-        p state.menu.attributes
         state.menu.update.then do |menu|
           set_state menu: menu
         end.fail do |resp|
@@ -102,3 +108,4 @@ module Components
     end
   end
 end
+

@@ -89,6 +89,23 @@ module Helpers
     end
   end
 
-  
+  module UpdateOnSetStateOnly
+    def __component_did_mount__(*args)
+      super *args
+      @should_update = false 
+    end
 
+    def __set_state__
+      @should_update = true
+    end
+
+    def __component_did_update__(*args)
+      super *args
+      @should_update = false
+    end
+
+    def __should_component_update__(*args)
+      @should_update
+    end
+  end
 end

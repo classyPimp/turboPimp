@@ -8,8 +8,10 @@ class MenuItemsController < ApplicationController
 
   def update
     @menu =  MenuItem.includes(menu_items: [:menu_items]).find(1)
-    @menu_items = @menu.as_json(include: {menu_items: {root: true, include: {menu_items: {root: true}}}})
-    render json: @menu_items
+    if @menu.update(update_params)
+      @menu_items = @menu.as_json(include: {menu_items: {root: true, include: {menu_items: {root: true}}}})
+      render json: @menu_items
+    end
   end
 
 private

@@ -12,7 +12,8 @@ module Users
     end
 
     def component_will_mount
-      AppController.login_info_component = self      
+      AppController.login_info_component = self
+      AppController.check_credentials      
     end
 
     def component_will_unmount

@@ -5,14 +5,6 @@ module AppComponents
 
     expose
 
-    def component_will_unmount
-      p "router will unmount"
-    end
-
-    def component_did_mount
-      
-    end
-
     def render
       t(`Router`, {history: Native(`window.History.createHistory()`)},
         t(`Route`, {path: "/", component: App.create_class},
@@ -39,8 +31,9 @@ module AppComponents
 
           t(`Route`, {path: "test", component: Components::Images::Index.create_class}),
 
+          
+          t(`Route`, {path: "404", component: Components::App::NotFound.create_class}), 
           t(`Route`, {path: "*", component: Components::App::NotFound.create_class}),
-          t(`Route`, {path: "404", component: Components::App::NotFound.create_class})
         )
       )
     end 

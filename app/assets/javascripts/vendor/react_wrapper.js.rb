@@ -186,7 +186,12 @@ class RW
   end
 
   def set_state(val)
+    __set_state__(val)
     `#{@native.to_n}.setState(#{val.to_n})`
+  end
+
+  def __set_state__(val)
+    
   end
 
   def self.initial_state

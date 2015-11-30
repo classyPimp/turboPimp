@@ -12,40 +12,16 @@ class App < RW
 
   def component_did_mount
     self.class.history = props.history
-    AppController.check_credentials
   end
 
   def component_will_update
     AppController.check_credentials
   end
   
-  def component_will_unmount
-    p "#{self} gon unmount!"
-  end
-
-
   def render
     t(:div, {},
-      if false
-        "false"
-      end,
-      t(Users::LoginInfo, {}),
-      t(:div, {},
-        t(:p, {}, 
-          link_to("login", "/users/login"),
-          t(:br, {}),
-          link_to("signup", "/users/signup"),
-          t(:br, {}),
-          link_to("test", "/test"),
-          t(:br, {}),
-          link_to("new page", "/pages/new"),
-          t(:br, {}),
-          link_to("page index", "/pages/index"),
-          t(:br, {}),
-          link_to("menu index edit", "/menues/index")
-        ),
-        spinner
-      ),
+      t(Components::Menues::Index, {}),
+      spinner,
       t(:div, {},
         children
       ),

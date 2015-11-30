@@ -314,28 +314,7 @@ end
 
 
 
-class Dropdown < RW
-  expose
 
-  def initial_state
-    {
-      open: false
-    }
-  end
-
-  def render
-    t(:li, {className: "dropdown #{state.open ? "open" : ""}"},
-      t(:a, {onClick: ->(){set_state open: !state.open; clear_opened}, role: "button", 
-             "aria-haspopup" => "true", "aria-expanded" => "false"}, "dropdown", t(:span, {className: "caret"})),
-      children
-    )
-  end
-
-  def clear_opened
-    props.on_toggle(self)
-  end
-
-end
 
 
 class Nav < RW
