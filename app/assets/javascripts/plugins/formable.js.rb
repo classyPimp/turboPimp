@@ -76,5 +76,13 @@ module Plugins
 	    #=> to either to pass to server, or to show errors 
 		end
 
+		def clear_inputs
+			Hash.new(refs.to_n).each do |k,v|
+				if k.include? "_input"
+					v.__opalInstance.clear_inputs if v.__opalInstance.respond_to? :clear_inputs
+				end
+			end
+		end
+
 	end
 end

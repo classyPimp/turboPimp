@@ -13,7 +13,7 @@ module Forms
       else 
         "valid"
       end
-    end
+    end\
 
 		def render
       @head_content_if_link = t(:p, {}, "choose link")

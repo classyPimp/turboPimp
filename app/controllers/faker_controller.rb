@@ -4,6 +4,10 @@ class FakerController < ApplicationController
 				
 	end
 
+  def console
+    raise "HELLO THERE!"
+  end
+
 	def test
 		render plain: params
 	end

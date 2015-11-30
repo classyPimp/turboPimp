@@ -1,3 +1,4 @@
+require "./vendor/core_monkey_patches"
 require_tree "./vendor"
 require "opal-jquery"
 require "./vendor/helpers"

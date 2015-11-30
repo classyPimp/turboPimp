@@ -1,3 +1,4 @@
+require_tree "../../components/shared/"
 module AppComponents
 
   class AppRouter < RW
@@ -11,7 +12,7 @@ module AppComponents
     def component_did_mount
       
     end
-require_tree "../../components/shared/"
+
     def render
       t(`Router`, {history: Native(`window.History.createHistory()`)},
         t(`Route`, {path: "/", component: App.create_class},
@@ -31,6 +32,8 @@ require_tree "../../components/shared/"
             t(`Route`, {path: "show/:id", component: Components::Pages::Show.create_class}),
             t(`Route`, {path: "edit/:id", component: Components::Pages::Edit.create_class})
           ),
+
+          t(`Route`, {path: "menues/index_edit", component: Components::Menues::IndexEdit.create_class}),
 
           t(`Route`, {path: "forbidden", component: Components::App::Forbidden.create_class}),
 

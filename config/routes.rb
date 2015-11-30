@@ -16,9 +16,11 @@ Rails.application.routes.draw do
 
     resources :pages
 
-    resources :images     
-  end
+    resources :images 
 
+    resources :menu_items, only: [:index, :update]    
+  end
+  get "/console" => "faker#console"
   root "faker#home"
   post "api/test" => "faker#test"
   get "/*path" => "faker#home"

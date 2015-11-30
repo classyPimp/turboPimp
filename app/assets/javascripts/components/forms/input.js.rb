@@ -41,5 +41,9 @@ module Forms
         props.model.attributes[props.attr.to_sym] = ref("#{self}").value
       end
     end
+
+    def clear_inputs
+      ref("#{self}").value = ""
+    end
   end
 end

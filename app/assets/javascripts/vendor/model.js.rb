@@ -35,6 +35,48 @@ If you're going to use zepto: zepto itself as well as opal-jquery need hack
 Zepto should be defined on window.
 If you get raised with something like "gvars[]$[]and stuff", in opal-jquery change from $$["Zepto"][:zepto][:Z] to `window.Zepto.zepto.Z`
 don't know why it isn't working -- it should be!
+****************************RAILS CORE NEEDS HACK!
+if you want to use as_json (reminder Model needs root true in serialized eg NOT User.find(1).as_json => {id:1} BUT {user: {id: 1}}),
+this can be achieved via adding to  config/initializer/wrap_parameters.rb:
+ActiveSupport.on_load(:active_record) do
+  self.include_root_in_json = true
+end
+But if you have something nested eg user.has_many blogs User.includes(:blog).find(1).as_json(include: [:blog]) =>
+user will get serialized with root: true, but blog will NOT e/g/ user: {id: 1, blog: {id: 1}} NOT user: {id: 1, blog: {blog: {id: 1}}}
+even if youll pass root: true as include: {blog: {root: true}},
+There some dirty hack again:
+in config/application.rb after rails loaded just monkeypatch ActiveModel::Serialization
+#WARNING: check out source of ActiveModel::Serialization if it gets changed in future versions and keep it in sync with this monkeypatch/
+by adding:
+    module ActiveModel
+      module Serialization
+        def serializable_hash(options = nil)
+          options ||= {}
+
+          attribute_names = attributes.keys
+          if only = options[:only]
+            attribute_names &= Array(only).map(&:to_s)
+          elsif except = options[:except]
+            attribute_names -= Array(except).map(&:to_s)
+          end
+
+          hash = {}
+          attribute_names.each { |n| hash[n] = read_attribute_for_serialization(n) }
+
+          Array(options[:methods]).each { |m| hash[m.to_s] = send(m) if respond_to?(m) }
+
+          serializable_add_includes(options) do |association, records, opts|
+            hash[association.to_s] = if records.respond_to?(:to_ary)
+              records.to_ary.map { |a| a.serializable_hash(opts) }
+            else
+              records.serializable_hash(opts)
+            end
+          end
+          root = options[:root]  <+==================THIS LINE IS ADDED
+          root ? {self.class.name.split("::")[-1].underscore => hash} : hash <+++++++++THIS IS LINED IS CHANGED, PRIOR IT WAS SIMPLY: root 
+        end
+      end
+    end
 
 ********************************************************************
 
@@ -43,7 +85,7 @@ don't know why it isn't working -- it should be!
   your models should inherit from Model
   Model has parse class method tha traverses Hash || Array or stringified JSON and
   instantiates meeting models.
-  Rails, should respond with json root eg {user: {id: 1}}
+  Rails, should respond with json root true (can be enabled in config) eg {user: {id: 1}}
   When Model.parse if it will meet {model_name: {atr: "some", foo: "some"}} it will instantiate that #{model_name} and [:model_name] wll
   go to attribtes if in attributes there is model it will also be instantiated.
   if array of models given to model parse it will retun ModelCollection wich is basicaly the arry of models
@@ -108,14 +150,77 @@ require "promise"
 class Model
 
   @attributes_list
+  #WARNING EXPERIMENTAL
+  @association_list
   #@associations_list not yet implemented; think about it is there a reason to be?
   #they are handled as attribute now and we're not on backend, 
   #TODO: think about
-
+  #UPDATE: decided to go only wth has_many and has_one, and they're only needed for
+  #proper serialization for handling accepts_nested_attributes_for
+  @nested_attributes #experimental
   class << self
     attr_accessor :attributes_list
-    attr_accessor :associations_list
+    #experimental
+    #if youve run has_many has_one @nested_attributes will contain them, and
+    #that is needed in pure_attributes mehtod, and also when getter setter will be defined for
+    #args passed to has_many has_one
+    #has_many has_one ARE NOT method to make queries to server, they are needed
+    #a. to make default value of geter of [] if has_many
+    #b. they are used in accepts_nested_attributes_for
+    #c. they're needed in pure_attributes (again to put in array if has_many)
+    def nested_attributes
+      @nested_attributes ||= {}
+    end
+    def association_list
+      @association_list ||= {}
+    end
   end
+
+  ####EXPERIMENTAL NEEDED ONLY FOR ACCEPTS_NESTED_ATTRIBUTES TO WORK!
+  #Itself there's no big difference between has_many and has_one on client
+  #and the only difference that has_one is a hash containg the model
+  #and has_many should hold an array of them/
+  #this difference is needed for:
+  #serialization in #pure_attributes to either out in array or hash
+  #and also the has many getter definition (with .attributes) should return an array
+  #that's it
+  def self.has_many(*args)
+    args.each do |arg|
+      #in pure attributes is used for checking should either to array || hash
+      #in .attributes is used for cheking if getter should return ||= array
+      #also get copied to self.nested_attributes[arg] if accepts_nested_attributes_for defined
+      #defines the getter and setter just like .attributes for you to manage it easily
+      self.association_list[arg] = []
+      self.attributes arg
+    end
+  end
+  #the same as has_many behaviour
+  def self.has_one(*args)
+    args.each do |arg|
+      #actually this can be assigned to anything truthy, in method where it's checked
+      #eg. #pure_attributes or .attributes it checks if it's an [], else it's counted as 
+      #hash holding single model
+      #self.nested_attributes[arg] = {}
+      self.association_list[arg] = {}
+      self.attributes arg
+    end
+  end
+
+  def self.accepts_nested_attributes_for(*args)
+    args.each do |arg|
+      self.nested_attributes[arg] = self.association_list[:arg]
+    end
+  end
+
+  def mark_for_destruction(model)
+    x = self.where do |_model|
+      _model == model
+    end
+    x.each do |_model|
+      _model.attributes[:_destroy] = "1"
+    end
+  end
+############################
 
   def self.parse(data)
     if data.is_a? String
@@ -151,7 +256,7 @@ class Model
       data.each_with_index do |(i, value), index|
         #TODO raise on constant missing, rescue with parse on value, and passing k as symbol to model 
         begin
-        data = HelperStuff.constantize(i.capitalize).new(value) if value.is_a? Hash
+        data = i.to_camel_case.constantize.new(value) if value.is_a? Hash
         rescue
           data[i] = self.objectify(value)
         end
@@ -176,6 +281,7 @@ class Model
   #result is populated formData object to be passed to HTTP request with all the pure_attributes attached to it
   #this is  necessary for sending file though xhr only
   #TODO: depending if model has file defaultly make ajax data: formData returned from this method (can be done through validation)
+  #UPDATE: above todos done
   #TODO: fallback for ie < 10 and other shitty versions via iframe. But is there a true neccessity in such? 
     if val.is_a? Array
       val.each_with_index do |v, i| 
@@ -197,10 +303,14 @@ class Model
   #######INSTANCE
 
   #attr_accessor :attributes 
-
+  #This accessor needed if you need some arbitrary data on model at runtime temprorarily
+  #for and just to have some centralized access to it without making accessors
+  #you can use it
+  attr_accessor :arbitrary
  
   def initialize(data = {})
     data = self.class.objectify(data, nil, true)
+    @arbitrary = {} #refer to attr_accessor :aritrary for info
     @attributes = data
     @errors = {}
     init
@@ -217,7 +327,8 @@ class Model
     @attributes
   end
 
-  def pure_attributes
+
+  def pure_attributes(root = true)
     #for example you have a model {user: {id: 1, page: {page: {id: 2}}}}
     #parsed it ll be user.@attributes {id: 1, <Page instance>}
     #and you'll need it to pass to server, but @attributes will contain instantiated page not its attributes
@@ -227,12 +338,20 @@ class Model
     attributes.each do |k,v| 
       #weird part of v.dup is needed when native objects (in single case I encounterd
       #the native file from input would otherwise niled)
-      x[k] = normalize_attributes( (v.nil? ? v : (v.dup.nil? ? v : v.dup)) )
+      if self.class.nested_attributes.has_key? k
+        x["#{k}_attributes"] = normalize_attributes( (v.nil? ? v : ( (v.dup.nil? || v.dup == 0) ? v : v.dup)), false )
+      else
+        x[k] = normalize_attributes( (v.nil? ? v : ((v.dup.nil? || v.dup == 0) ? v : v.dup)))
+      end
     end
-    {self.class.name.downcase => x}
+    if root
+      {self.class.name.to_snake_case => x}
+    else
+      x
+    end
   end
 
-  def normalize_attributes(attrs)
+  def normalize_attributes(attrs, root = true)
     #THIS METHOD IS ONLY NEEDED FOR #pure_attributes
     if attrs.is_a? Hash
       attrs.each do |k,v|
@@ -244,10 +363,10 @@ class Model
       end      
     elsif attrs.is_a? Array 
       attrs.map! do |val|
-        normalize_attributes(val)
+        normalize_attributes(val, root)
       end
     elsif attrs.is_a? Model
-      attrs.pure_attributes
+      attrs.pure_attributes(root)
     else
       attrs
     end
@@ -260,10 +379,14 @@ class Model
   end
 
   def self.attributes(*args)
-    @attributes_list = args
+    (@attributes_list ||= []) + args
     args.each do |arg|
       self.define_method arg do | |
-        @attributes[arg]
+        if self.class.association_list[arg] == []
+          @attributes[arg] ||= []
+        else
+          @attributes[arg]
+        end
       end
 
       self.define_method "#{arg}=" do |val|
@@ -286,12 +409,12 @@ class Model
     s = []
     attributes.each do |k, v|
       if v.is_a? Model
-        s << v if yield(v.attributes)
+        s << v if yield(v)
         s = s + v.where {block.call}
       elsif v.is_a? Array
         v.each do |c|
           if c.is_a? Model
-            s << c if yield(c.attributes) 
+            s << c if yield(c) 
             s = s + c.where {block.call}
           end
         end
@@ -315,6 +438,7 @@ class Model
     end
   end
   TODO: propbably shall be deleted beacuse association stuff can be done via routes, and no need in it on frontend
+  UPDATE: done sort of it just eave it be or now
 =end
   def self.route(name, method_and_url, options ={})
     if name[0] == name.capitalize[0]
@@ -336,7 +460,7 @@ class Model
 
   def responses_on_create(r)
     if r.response.ok?
-      self.update_attributes(r.response.json[self.class.name.downcase])
+      self.update_attributes(r.response.json[self.class.name.to_snake_case])
       self.validate
       r.promise.resolve self
     end
@@ -361,13 +485,12 @@ class Model
   end
 
   def on_before_update(r)
-    p "#{self} before on update"
     r.req_options = {payload: pure_attributes}
   end
 
   def responses_on_update(r)
     if r.response.ok?
-      self.update_attributes(r.response.json[self.class.name.downcase])
+      self.update_attributes(r.response.json[self.class.name.to_snake_case])
       r.promise.resolve self
     end
   end
@@ -496,15 +619,7 @@ class Model
 
 end
 
-class HelperStuff
 
-  def self.constantize(string)
-    #TODO: shoould move it elsewere?
-    #needed purely for Model.parse method
-    string.split('::').inject(Object) {|o,c| o.const_get c}
-  end
-
-end
 
 class ModelCollection
   #you will get it if will pass array of models to Model.parse 
@@ -596,7 +711,7 @@ class RequestHandler
     #pass component in first arg like
     #user.some_route({component: self})
     #and youll have access to it in automatic response handlers (or anywhere in requesthandler)
-     @should_yield_response = wilds[:yield_response]
+    @should_yield_response = wilds[:yield_response]
     #handy if you need unprocessed response
     #e.g. simply pass user.some_route({yield_response: true}, {}) {|response| unprocessed response}
     @skip_before_handler = wilds[:skip_before_handler]
@@ -613,8 +728,8 @@ class RequestHandler
     #TODO: WATCH the behaviour
     if req_options[:extra_params] != nil
       extra_params = req_options[:extra_params]
+      @req_options.merge! extra_params
     end
-    @req_options.merge! extra_params
     if req_options[:data]
     #ve done it for these reasons:
     #if passed as payload it will be to_json,
@@ -624,7 +739,6 @@ class RequestHandler
     elsif req_options[:payload]
       @req_options = req_options
     elsif @caller.has_file
-      p "gon serialize to form data #{@caller.pure_attributes}"
       #this skip before is needed to override default's on model class which result in payload: something; not data
       @skip_before_handler = true
       @caller.update_attributes extra_params
