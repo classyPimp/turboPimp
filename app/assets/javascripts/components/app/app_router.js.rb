@@ -10,6 +10,7 @@ module AppComponents
         t(`Route`, {path: "/", component: App.create_class},
 
           t(`Route`, {path: "/users", component: Users::Main.create_class}, 
+            route({path: "dash_board", components: Components::Dashboards::Admin.create_class}),
             t(`Route`, {path: "signup", component: Users::SignUp.create_class }),
             t(`Route`, {path: "activations", component: Users::Activations.create_class}),
             t(`Route`, {path: "login", component: Users::Login.create_class}),
@@ -20,7 +21,7 @@ module AppComponents
 
           t(`Route`, {path: "/pages", component: Components::Pages::Main.create_class},
             t(`Route`, {path: "new", component: Components::Pages::New.create_class}),
-            t(`Route`, {path: "index", component: Components::Pages::Index.create_class}),
+            t(`Route`, {path: "index", component: Components::Pages::Index.create_class}),            
             t(`Route`, {path: "show/:id", component: Components::Pages::Show.create_class}),
             t(`Route`, {path: "edit/:id", component: Components::Pages::Edit.create_class})
           ),
@@ -29,11 +30,11 @@ module AppComponents
 
           t(`Route`, {path: "forbidden", component: Components::App::Forbidden.create_class}),
 
-          t(`Route`, {path: "test", component: Components::Images::Index.create_class}),
+          t(`Route`, {path: "test", component: Components::Users::New.create_class}),
 
           
           t(`Route`, {path: "404", component: Components::App::NotFound.create_class}), 
-          t(`Route`, {path: "*", component: Components::App::NotFound.create_class}),
+          t(`Route`, {path: "*", component: Components::App::NotFound.create_class})
         )
       )
     end 

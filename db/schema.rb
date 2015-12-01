@@ -11,10 +11,19 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20151126140314) do
+ActiveRecord::Schema.define(version: 20151201095636) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "avatars", force: :cascade do |t|
+    t.datetime "created_at",        null: false
+    t.datetime "updated_at",        null: false
+    t.string   "file_file_name"
+    t.string   "file_content_type"
+    t.integer  "file_file_size"
+    t.datetime "file_updated_at"
+  end
 
   create_table "friendly_id_slugs", force: :cascade do |t|
     t.string   "slug",                      null: false
@@ -68,6 +77,17 @@ ActiveRecord::Schema.define(version: 20151126140314) do
   add_index "pages", ["slug"], name: "index_pages_on_slug", unique: true, using: :btree
   add_index "pages", ["user_id"], name: "index_pages_on_user_id", using: :btree
 
+  create_table "profiles", force: :cascade do |t|
+    t.integer  "user_id"
+    t.text     "bio"
+    t.string   "position"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.string   "name"
+  end
+
+  add_index "profiles", ["user_id"], name: "index_profiles_on_user_id", using: :btree
+
   create_table "roles", force: :cascade do |t|
     t.string   "name"
     t.integer  "resource_id"
@@ -104,4 +124,5 @@ ActiveRecord::Schema.define(version: 20151126140314) do
   add_foreign_key "images", "users"
   add_foreign_key "menu_items", "menu_items"
   add_foreign_key "pages", "users"
+  add_foreign_key "profiles", "users"
 end

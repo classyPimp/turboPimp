@@ -2,13 +2,9 @@ module Users
 
 	class Show < RW
 		
-		def init
-			@user_id = props.params.id
-		end
-
     def initial_state
       {
-        message: nil
+        user: false
       }
     end
 

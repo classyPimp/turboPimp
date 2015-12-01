@@ -1,7 +1,6 @@
 class User < ActiveRecord::Base
   rolify
-#AUTHENTICATION
-
+# => ################AUTHENTICATION
   ACTIVATABLE = true
   
   attr_accessor :activation_token #ACTIVATION
@@ -80,5 +79,10 @@ class User < ActiveRecord::Base
   def password_reset_expired?
     self.reset_sent_at < 2.hours.ago
   end
-  #//////
+  #//////         END AUTHENTICATION
+
+  has_one :profile, dependent: :destroy
+
+  has_one :avatar, dependent: :destroy
+
 end

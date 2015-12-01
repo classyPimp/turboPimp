@@ -19,6 +19,10 @@ module Helpers
      end
       t(`Link`, {to: link, query: options}, body)    
     end
+
+    def route(options, *args)
+      t(`Route`, options, *args)
+    end
   ###### /REACT ROUTER HELPERS
   #####   SPINNER
     attr_accessor :has_spinner

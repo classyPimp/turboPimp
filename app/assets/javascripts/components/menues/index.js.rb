@@ -18,10 +18,6 @@ module Components
           self.set_state menu: _menu
         end
       end
-
-      def component_will_update
-        p "#{self} updated"
-      end
       
       def render
         if state.menu
@@ -29,7 +25,7 @@ module Components
             t(:div, {className: "container-fluid"},
               t(:div, {className: "navbar-header"},
                 t(:button, {type: "button", className: "navbar-toggle collapsed",
-                            "aria-expanded" => "false", onClick: ->(){toggle_collapse(:collapsed_navbar)}},
+                            "aria-expanded" => "false", onClick: ->(){toggle_collapse()}},
                   t(:span, {className: "sr-only"}, "toggle navigation"),
                   t(:span, {className: "icon-bar"}),
                   t(:span, {className: "icon-bar"}),
@@ -42,25 +38,27 @@ module Components
                   t(Users::LoginInfo, {})
                 )
               ),
-              t(:ul, {className: "nav navbar-nav navbar-right"},
-                *splat_each(state.menu.menu_items) do |menu_item|
-                  if menu_item.menu_items.empty?
-                    t(:li, {}, 
-                      link_to(menu_item.link_text, menu_item.href)
-                    )
-                  else
-                    t(Shared::Dropdown, {on_toggle: ->(d_d){clear_opened(d_d)}, caller: self, 
-                                         ref: "d_d_#{menu_item.id}", text_val: "#{menu_item.link_text}"},
-                      t(:ul, {className: "dropdown-menu"},
-                        *splat_each(menu_item.menu_items) do |sub_item|
-                          t(:li, {}, 
-                            link_to(sub_item.link_text, sub_item.href)
-                          )
-                        end
+              t(:div, {className: "collapse navbar-collapse #{state.collapsed ? "in" : ""}"},
+                t(:ul, {className: "nav navbar-nav navbar-right"},
+                  *splat_each(state.menu.menu_items) do |menu_item|
+                    if menu_item.menu_items.empty?
+                      t(:li, {}, 
+                        link_to(menu_item.link_text, menu_item.href)
                       )
-                    )
+                    else
+                      t(Shared::Dropdown, {on_toggle: ->(d_d){clear_opened(d_d)}, caller: self, 
+                                           ref: "d_d_#{menu_item.id}", text_val: "#{menu_item.link_text}"},
+                        t(:ul, {className: "dropdown-menu"},
+                          *splat_each(menu_item.menu_items) do |sub_item|
+                            t(:li, {}, 
+                              link_to(sub_item.link_text, sub_item.href)
+                            )
+                          end
+                        )
+                      )
+                    end
                   end
-                end
+                )                
               )
             )
           )
