@@ -78,6 +78,18 @@ class CurrentUser < User
     attr_accessor :logged_in
   end
 
+  def self.user_instance
+    if @user_instance
+      @user_instance
+    else
+      self.get_current_user.then do |user|
+        @user_instance = user
+      end.fail do |response|
+        `console.log("error #{self}.user_instance")`
+      end
+    end
+  end
+
   def self.get
     if @user_instance.id != nil       
       @user_instance

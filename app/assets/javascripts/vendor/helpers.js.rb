@@ -21,6 +21,9 @@ module Helpers
     end
 
     def route(options, *args)
+      if options[:component].is_a? RW
+        options[:component] = options[:component].create_class
+      end
       t(`Route`, options, *args)
     end
   ###### /REACT ROUTER HELPERS

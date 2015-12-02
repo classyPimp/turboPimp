@@ -12,13 +12,14 @@ module Users
 
     def initial_state
       {
-        form_model: prepare_new_user
+        form_model: prepare_new_user.call
       }
     end
 
     def render
       t(:div, {},
         t(:div, {className: "form"},
+          input(Forms::Input, state.form_model.profile, :name),
           input(Forms::Input, state.form_model, :email, {type: "text"}),
           input(Forms::Input, state.form_model, :password, {type: "password"}),
           input(Forms::Input, state.form_model, :password_confirmation, {type: "password"}),
@@ -28,6 +29,22 @@ module Users
           t(:button, {onClick: ->(){handle_inputs}}, "create user")
         )
       )
+    end
+
+    def handle_inputs
+      collect_inputs
+      unless state.form_model.has_errors?
+        state.form_model.create({}, {serialize_as_form: true}).then do |model|
+         if model.has_errors?
+            set_state form_model: model
+          else
+            set_state form_model: false
+            props.on_create(model)
+          end
+        end
+      else
+        set_state form_model: state.form_model
+      end
     end
 
   end

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20151201095636) do
+ActiveRecord::Schema.define(version: 20151202100634) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -23,7 +23,10 @@ ActiveRecord::Schema.define(version: 20151201095636) do
     t.string   "file_content_type"
     t.integer  "file_file_size"
     t.datetime "file_updated_at"
+    t.integer  "user_id"
   end
+
+  add_index "avatars", ["user_id"], name: "index_avatars_on_user_id", using: :btree
 
   create_table "friendly_id_slugs", force: :cascade do |t|
     t.string   "slug",                      null: false
@@ -121,6 +124,7 @@ ActiveRecord::Schema.define(version: 20151201095636) do
 
   add_index "users_roles", ["user_id", "role_id"], name: "index_users_roles_on_user_id_and_role_id", using: :btree
 
+  add_foreign_key "avatars", "users"
   add_foreign_key "images", "users"
   add_foreign_key "menu_items", "menu_items"
   add_foreign_key "pages", "users"

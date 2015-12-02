@@ -5,7 +5,7 @@ module Components
 
       def initial_state
         {
-          page: false
+          page: false 
         }
       end
 

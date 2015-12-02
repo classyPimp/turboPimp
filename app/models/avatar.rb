@@ -9,4 +9,10 @@ class Avatar < ActiveRecord::Base
                         file_name: {matches: [/png\Z/, /jpe?g\Z/]},
                         size: { less_than: 1.megabytes }
 
+  #used in JSON serializing e/g/ @avatr.as_json(methods: [:url])
+  def url 
+    self.file.url
+  end 
+
 end
+ 

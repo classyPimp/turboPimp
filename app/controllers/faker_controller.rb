@@ -9,6 +9,7 @@ class FakerController < ApplicationController
   end
 
 	def test
-		render plain: params
+    x = params.require(:user).permit(:email, avatar_attributes: [:file], profile_attributes: [:bio])
+		render plain: x
 	end
 end

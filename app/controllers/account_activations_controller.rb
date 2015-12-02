@@ -1,5 +1,5 @@
 class AccountActivationsController < ApplicationController
-
+  #####################AUTHENTUICATION
   def edit
       user = User.find_by(email: params[:email])
       if user && !user.activated? && user.authenticated?(:activation, params[:id])
@@ -10,5 +10,7 @@ class AccountActivationsController < ApplicationController
         redirect_to "/users/activations?#{{status: "error"}.to_query}"
       end
   end 
+
+  #####################END AUTHENTUICATION
 
 end

@@ -10,7 +10,6 @@ module AppComponents
         t(`Route`, {path: "/", component: App.create_class},
 
           t(`Route`, {path: "/users", component: Users::Main.create_class}, 
-            route({path: "dash_board", components: Components::Dashboards::Admin.create_class}),
             t(`Route`, {path: "signup", component: Users::SignUp.create_class }),
             t(`Route`, {path: "activations", component: Users::Activations.create_class}),
             t(`Route`, {path: "login", component: Users::Login.create_class}),
@@ -24,6 +23,10 @@ module AppComponents
             t(`Route`, {path: "index", component: Components::Pages::Index.create_class}),            
             t(`Route`, {path: "show/:id", component: Components::Pages::Show.create_class}),
             t(`Route`, {path: "edit/:id", component: Components::Pages::Edit.create_class})
+          ),
+
+          t(`Route`, {path: "/dashboards", component: Components::Dashboards::Main.create_class},
+            t(`Route`, {path: "admin", component: Components::Dashboards::Admin.create_class})
           ),
 
           t(`Route`, {path: "menues/index_edit", component: Components::Menues::IndexEdit.create_class}),

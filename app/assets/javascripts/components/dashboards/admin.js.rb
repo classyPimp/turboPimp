@@ -1,11 +1,12 @@
 module Components
   module Dashboards
     class Admin < RW
+      
       expose
 
-      def insitial_state
+      def initial_state
         {
-          current_control_component: false
+          current_control_component: Native(t(:div, {}, "nothing"))
         }
       end
 
@@ -15,13 +16,15 @@ module Components
             t(:button, {onClick: ->(){init_user_creation}}, "add users")
           ),
           t(:div, {className: "row"},
-            t(:div, {className: "container"},)
+            t(:div, {className: "container"},
+              state.current_control_component.to_n
+            )
           )
         ) 
       end
 
       def init_user_creation
-        set_state current_control_component: t(Components::Users::New, {})
+        set_state current_control_component: Native(t(Users::New, {}))
       end
 
     end

@@ -85,4 +85,6 @@ class User < ActiveRecord::Base
 
   has_one :avatar, dependent: :destroy
 
+  accepts_nested_attributes_for :profile, :avatar, allow_destroy: true
+
 end

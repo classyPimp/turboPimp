@@ -1,22 +1,9 @@
 class UsersController < ApplicationController
 
-=begin
-IMPORTANT NOTICE
-don't forget to insert this into application_controller
-<div class="container">
-  <div class="row-offset-3">
-  <%= render "sessions/user_bar" %>
-</div>
-<% flash.each do |message_type, message| %>
-  <div class="alert alert-<%= message_type %>"><%= message %></div>
-<% end %>
-=end
+  
+  ######################AUTHENTICATION
   before_action :logged_in_user, only: [:edit, :update]
   before_action :correct_user,   only: [:edit, :update]
-
-  def show
-    @user = User.find params[:id]
-  end
 
   def new
     @user = User.new
@@ -40,15 +27,8 @@ don't forget to insert this into application_controller
   end
 
   def create_user_params
-    params.require(:user).permit(:email, :password, :password_confirmation)
-  end
-
-  def expose_current_user
-    unless current_user == nil
-      render json: current_user.as_json(only: [:id, :email])
-    else
-      render json: {user: {status: "guest"}}
-    end
+    #params.require(:user).permit(:email, :password, :password_confirmation) DEFAULT AUTHENTICATION. FOR PURE UNCOMMENT AND DELETE REST OF METHOD
+    params.require(:user).permit(:email, :password, :password_confirmation, avatar_attributes: [:file], profile_attributes: [:name, :bio] )
   end
 
   # Confirms a logged-in user.
@@ -64,5 +44,25 @@ don't forget to insert this into application_controller
   def correct_user
     @user = User.find(params[:id])
     redirect_to(root_url) unless current_user?(@user)
+  end
+  ######################END AUTHENTICATION
+
+  def expose_current_user
+    unless current_user == nil
+      render json: current_user.as_json(only: [:id, :email])
+    else
+      render json: {user: {status: "guest"}}
+    end
+  end
+
+  def show
+    @user = User.includes(:profile, :avatar).find params[:id]
+    @response = @user.as_json(only: [:email, :id], 
+                              include: {profile: {root: true, only: [:id, :name, :bio]},
+                                        avatar: {root: true, only: [:id], methods: [:url]}})
+    if @user == current_user
+      @response["user"][:arbitrary] = "current_user"
+    end
+    render json: @response
   end
 end

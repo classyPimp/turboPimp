@@ -578,6 +578,11 @@ class Model
             end
           end
         end
+      elsif v.is_a? Model
+        v.validate
+        if v.has_errors?
+          @errors[:nested_errors] = true       
+        end
       else
         self.send("validate_#{k}") if self.respond_to? "validate_#{k}"
         #p (self.respond_to? "validate_#{k}") ? "has validation method #{k}" : "doesn't have validation method #{k}"
@@ -693,7 +698,6 @@ class RequestHandler
   attr_accessor :caller, :promise, :name, :response, :req_options
 
   def initialize(caller, name, method_and_url, options, wilds, req_options)
-  
     @caller = caller
     #the model that called either instance or class
     @name = name
@@ -738,7 +742,7 @@ class RequestHandler
       @req_options = req_options
     elsif req_options[:payload]
       @req_options = req_options
-    elsif @caller.has_file
+    elsif @caller.has_file || req_options[:serialize_as_form]
       #this skip before is needed to override default's on model class which result in payload: something; not data
       @skip_before_handler = true
       @caller.update_attributes extra_params
