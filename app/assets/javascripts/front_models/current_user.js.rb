@@ -103,5 +103,11 @@ class CurrentUser < User
     self.get_current_user
   end
 
+  def self.ping_with_role
+    self.get_current_user({}, {extra_params: {role: "role"}}).fail do ||
+      raise "RAISE!"
+    end
+  end
+
 end
 

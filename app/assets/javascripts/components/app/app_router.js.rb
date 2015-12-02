@@ -5,8 +5,14 @@ module AppComponents
 
     expose
 
+    @@history = Native(`window.History.createHistory()`)
+
+    def self.history
+      @@history
+    end
+
     def render
-      t(`Router`, {history: Native(`window.History.createHistory()`)},
+      t(`Router`, {history: @@history},
         t(`Route`, {path: "/", component: App.create_class},
 
           t(`Route`, {path: "/users", component: Users::Main.create_class}, 
@@ -25,7 +31,7 @@ module AppComponents
             t(`Route`, {path: "edit/:id", component: Components::Pages::Edit.create_class})
           ),
 
-          t(`Route`, {path: "/dashboards", component: Components::Dashboards::Main.create_class},
+          t(`Route`, {path: "/dashboards", component: Components::Dashboards::Main.create_class, onEnter: ->(n, r, cb){check_role(n, r, cb, [:admin])}},
             t(`Route`, {path: "admin", component: Components::Dashboards::Admin.create_class})
           ),
 
@@ -41,6 +47,28 @@ module AppComponents
         )
       )
     end 
+
+
+    def check_role(next_state, replace_state, cb, role)
+      CurrentUser.ping_with_role.then do |user|
+        CurrentUser.user_instance = user
+        if user.has_role? role
+          `cb()`
+        else
+          @@history.replaceState({}, "/forbidden")
+        end
+      end
+    end
+  end
+end
+
+Document.ready? do
+  HTTP.get("/api/restricted_asset", payload: {file: "foo.js.rb"}) do |r|
+    if r.ok? 
+      `eval(r)`
+      #{}`Opal.load("Foo")`
+      Foo.foo
+    end
   end
 end
 

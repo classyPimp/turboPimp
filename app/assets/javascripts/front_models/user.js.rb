@@ -15,6 +15,7 @@ class User < Model
   route "create", post: "users"
  
   has_one :profile, :avatar
+  has_many :roles
   accepts_nested_attributes_for :profile, :avatar
 
   def on_before_test(r)
@@ -25,6 +26,13 @@ class User < Model
     unless email.match /^[-a-z0-9~!$%^&*_=+}{\'?]+(\.[-a-z0-9~!$%^&*_=+}{\'?]+)*@([a-z0-9_][-a-z0-9_]*(\.[-a-z0-9_]+)*\.(aero|arpa|biz|com|coop|edu|gov|info|int|mil|museum|name|net|org|pro|travel|mobi|[a-z][a-z])|([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}))(:[0-9]{1,5})?$/i
       add_error :email, "you should provide a valid email"
     end
+  end
+
+  def has_role?(role)
+    roles.each do |_role|
+      return true if role.include? _role.name 
+    end
+    false
   end
 
   def validate_password

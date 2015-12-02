@@ -23,7 +23,6 @@ class UsersController < ApplicationController
     else
       render json: {user: {errors: @user.errors}}
     end
-
   end
 
   def create_user_params
@@ -49,9 +48,9 @@ class UsersController < ApplicationController
 
   def expose_current_user
     unless current_user == nil
-      render json: current_user.as_json(only: [:id, :email])
+      render json: current_user.as_json(only: [:id, :email], include: {roles: {root: true, only: [:name]}})
     else
-      render json: {user: {status: "guest"}}
+      render json: {user: {roles: [{role: {name: "guest"}}] }}
     end
   end
 

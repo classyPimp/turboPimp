@@ -87,4 +87,13 @@ class User < ActiveRecord::Base
 
   accepts_nested_attributes_for :profile, :avatar, allow_destroy: true
 
+
+  rolify :before_add => :before_add_method
+
+  def before_add_method(role)
+    unless Services::RoleManager.allowed_roles.include? role.name
+      raise "assigned role to #{self} not in the allowed role names"
+    end
+  end
+
 end

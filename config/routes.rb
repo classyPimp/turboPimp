@@ -18,8 +18,12 @@ Rails.application.routes.draw do
 
     resources :images 
 
-    resources :menu_items, only: [:index, :update]    
+    resources :menu_items, only: [:index, :update]  
+
+    get "restricted_asset" => "faker#restricted_asset" 
+
   end
+
   get "/console" => "faker#console"
   root "faker#home"
   post "api/test" => "faker#test"
