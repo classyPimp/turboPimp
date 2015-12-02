@@ -2,7 +2,7 @@ require "vendor/model"
 
 class User < Model
 
-  attributes :id, :email, :password, :password_confirmation
+  attributes :id, :email, :password, :password_confirmation, :profile, :avatar
 
   route "sign_up", post: "users"
 

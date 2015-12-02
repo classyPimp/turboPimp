@@ -5,7 +5,7 @@ module Users
   class SignUp < RW
 
     include Plugins::Formable
-
+ 
     def init
       @controller = UsersController.new(self)
     end
