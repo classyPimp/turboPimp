@@ -12,34 +12,24 @@ module Users
     end
 
     def component_will_mount
-      AppController.login_info_component = self
-      AppController.check_credentials      
+      CurrentUser.sub_to(:on_user_logged_in, self)
+      CurrentUser.sub_to(:on_user_logout, self)    
     end
 
     def component_will_unmount
-      AppController.login_info_component = false
+      CurrentUser.unsub_from(:on_user_logged_in, self)
+      CurrentUser.unsub_from(:on_user_logout, self)
     end
 
-    def update_current_user
-
-      state.current_user = CurrentUser.user_instance
-      set_state logged_in: CurrentUser.logged_in
+    #FROM SUB_TO CURRENT_USER
+    def on_user_logged_in(user)
+      set_state current_user: user
+      set_state logged_in: true
     end
-
-    def on_user_logout
-      state.current_user = CurrentUser.user_instance
-      set_state logged_in: CurrentUser.logged_in
-    end
-
-    def request_credentials
-      CurrentUser.get_current_user({component: self}).then do |response|
-        if CurrentUser.logged_in == true
-          state.current_user = CurrentUser.user_instance
-          set_state(logged_in: CurrentUser.logged_in)
-        end
-      end.fail do |response|
-        set_state logged_in: (CurrentUser.logged_in = false)
-      end
+    #FROM SUB_TO CURRENT_USER
+    def on_user_logout(user)
+      set_state current_user: user
+      set_state logged_in: false
     end
     
     def render
@@ -55,5 +45,3 @@ module Users
   end
 
 end
-
-

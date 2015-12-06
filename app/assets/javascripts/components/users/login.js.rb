@@ -23,6 +23,7 @@ module Users
         end,
         input(Forms::Input, state.form_model, :email, {}),
         input(Forms::Input, state.form_model, :password, {type: "password"}),
+        input(Forms::Checkbox, state.form_model, :remember_me, {checked: false}),
         t(:br, {} ),
         t(:button, {onClick: ->(){controller.login}}, "login"),
         t(:br, {}),
@@ -33,3 +34,4 @@ module Users
   end
 
 end
+

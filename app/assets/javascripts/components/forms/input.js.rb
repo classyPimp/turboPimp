@@ -15,23 +15,18 @@ module Forms
       end
     end
 
-    def on_change_options
+    def optional_props
+      opt = {}
       if props.preview_image
-        {onChange: ->(){preview_image}}
-      else
-        {}
+        opt[:onChange] = ->(){preview_image}
       end
+      opt
     end
 
     def initial_state
       {
         image_to_preview: ""
       } 
-    end
-
-
-    def component_did_update
-      p "updated"
     end
 
     def preview_image
@@ -65,7 +60,7 @@ module Forms
           end
         end,
         t(:input, {className: valid_or_not?, defaultValue: props.model.attributes[props.attr], ref: "#{self}", 
-                   type: props.type, key: props.keyed}.merge(on_change_options)),
+                   type: props.type, key: props.keyed}.merge(optional_props)),
         if props.preview_image
           t(:div, {className: "image_preview"},
             t(:div, {style: {width: "300px", height: "300px"}},

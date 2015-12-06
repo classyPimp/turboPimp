@@ -1,11 +1,11 @@
 class FakerController < ApplicationController
 
 	def home
-				
+    @current_user = current_user.as_json(only: [:id, :email])				
 	end
 
   def console
-    raise "HELLO THERE!"
+    raise "Hello there!"
   end
 
 	def test

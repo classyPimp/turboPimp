@@ -10,6 +10,10 @@ module Users
       }
     end
 
+    def init
+            
+    end
+
     def initial_state
       {
         form_model: prepare_new_user.call
@@ -34,6 +38,7 @@ module Users
     def handle_inputs
       collect_inputs
       unless state.form_model.has_errors?
+        state.form_model.attributes[:by_admin] = 1
         state.form_model.create({}, {serialize_as_form: true}).then do |model|
          if model.has_errors?
             set_state form_model: model

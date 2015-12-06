@@ -78,9 +78,9 @@ module Helpers
       authorize!
       (@component.spinner_instance.off if @component.has_spinner) if @component
       if @response.status_code == 404
-        App.history.replaceState(nil, "/404")
+        Components::App::Router.history.replaceState(nil, "/404")
       elsif @response.status_code == 500
-        App.history.replaceState(nil, "/505?status_code=500")
+        Components::App::Router.history.replaceState(nil, "/505?status_code=500")
       end
     end
 
@@ -91,7 +91,7 @@ module Helpers
     def authorize!
       #obvious
       if @response.status_code == 403
-        App.history.replaceState(nil, "/forbidden")
+        Components::App::Router.history.replaceState(nil, "/forbidden")
       end
     end
   end
@@ -115,4 +115,48 @@ module Helpers
       @should_update
     end
   end
+
+  module PubSubBus
+
+  def self.extended(base)
+    base.pub_sub_list_init
+  end
+
+  def pub_sub_list_init
+    @pub_sub_list = {}
+  end
+
+  def pub_sub_list
+    @pub_sub_list
+  end
+
+  def allowed_channels(*args)
+    args.each do |arg|
+      @pub_sub_list[arg] = []
+    end
+  end
+
+  def sub_to(channel, obj)
+    if @pub_sub_list[channel].is_a? Array
+      raise "#{obj} does'nt implement #{channel} method needed for sub_to #{self}" unless obj.respond_to? channel
+      @pub_sub_list[channel] << obj 
+    else
+      raise "#{self} attempt to sub_to unallowed channel by #{obj}"
+    end
+  end
+
+  def pub_to(channel, *args)
+    raise "#{self} tried to pub_to unallowed: #{channel}" unless @pub_sub_list[channel]
+    @pub_sub_list[channel].each do |obj|
+      obj.public_send(channel, *args)
+    end
+  end
+
+  def unsub_from(channel, obj)
+    raise "#{obj} tried to #{self}.unsub_from #{channel} which is not in list" unless @pub_sub_list[channel]
+    @pub_sub_list[channel].delete(obj)
+  end
+
+end
+
 end

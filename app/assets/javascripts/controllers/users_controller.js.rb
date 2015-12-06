@@ -1,4 +1,4 @@
-class UsersController < BaseController
+class UsersController < BaseController 
 
   def handle_signup_submit
     c.collect_inputs
@@ -25,8 +25,7 @@ class UsersController < BaseController
         if x = response[:errors]
           c.set_state message: x
         else
-          App.history.replaceState(nil, "/users/#{CurrentUser.user_instance.id}")
-          AppController.user_logged_in
+          Components::App::Router.history.replaceState(nil, "/users/#{CurrentUser.user_instance.id}")
         end
       end
     else
@@ -52,8 +51,7 @@ class UsersController < BaseController
     c.collect_inputs(validate_only: [:password, :password_confirmation])
     unless c.state.form_model.has_errors?
       CurrentUser.update_new_password({id: c.state.id}, payload: {user: c.state.form_model.attributes, email: c.state.email}).then do |response|
-        App.history.replaceState(nil, "/users/#{CurrentUser.user_instance.id}")
-        AppController.user_logged_in
+        Components::App::Router.history.replaceState(nil, "/users/#{CurrentUser.user_instance.id}")
       end.fail do |response|
         c.set_state message: "error"
       end

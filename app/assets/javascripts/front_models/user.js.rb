@@ -12,6 +12,8 @@ class User < Model
 
   route "test", post: "test"
 
+  route "update", {put: "users/:id"}, {defaults: [:id]}
+
   route "create", post: "users"
  
   has_one :profile, :avatar

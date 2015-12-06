@@ -1,5 +1,5 @@
 class SessionsController < ApplicationController
-
+ 
   def new
   end
   ####################AUTHENTICATION
@@ -10,7 +10,6 @@ class SessionsController < ApplicationController
         if user.activated?
           log_in user
           params[:session][:remember_me] == '1' ? remember(user) : forget(user)
-          cookies[:l] = user.id
           render json: user.as_json(only: [:id, :email])
         else
           render json: {errors: ["not activated"]}

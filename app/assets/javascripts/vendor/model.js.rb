@@ -816,9 +816,9 @@ class RequestHandler
 
   def yield_response(response, promise)
     if @response.ok?
-      @promise.resolve @response.json
+      @promise.resolve @response
     else
-      @promise.reject @response.json
+      @promise.reject @response
     end
   end
 
