@@ -97,13 +97,17 @@ module Helpers
   end
 
   module UpdateOnSetStateOnly
+    #Including to RW component, will make it updatetable only from calling set_state on corresponding instance
+    #ither way it always should_component_update == false
+
     def __component_did_mount__(*args)
       super *args
       @should_update = false 
     end
 
-    def __set_state__
+    def __set_state__(val)
       @should_update = true
+      super val
     end
 
     def __component_did_update__(*args)
@@ -118,45 +122,80 @@ module Helpers
 
   module PubSubBus
 
-  def self.extended(base)
-    base.pub_sub_list_init
+    #Sort of observable, but user objects subcsribe to channels
+    #Observable publishes to channels, objects that subscribed to that channel must implement method same as
+    #channel name.
+    #To make it a but strict observable object must call .allowed_channels at classs body passing channel names
+    #example
+=begin
+  class Foo
+    
+    include PubSubBus
+    allowed_channels :on_foo_update, :on_foo_secret
+
   end
 
-  def pub_sub_list_init
-    @pub_sub_list = {}
-  end
+  class Bar
+    
+    def initialize(foo)
+      foo.subscribe(:on_not_imp, self)
+      => WILL THROW :on_not_imp not allowed channel
+      foo.subscribe(:on_foo_update, self)
+      => will THROW bar must implement :on_update method
+      #unless bar respond_to? :on_update
+    end
 
-  def pub_sub_list
-    @pub_sub_list
-  end
-
-  def allowed_channels(*args)
-    args.each do |arg|
-      @pub_sub_list[arg] = []
+    def on_foo_update(foo)
+      p "foo from Bar"
     end
   end
 
-  def sub_to(channel, obj)
-    if @pub_sub_list[channel].is_a? Array
-      raise "#{obj} does'nt implement #{channel} method needed for sub_to #{self}" unless obj.respond_to? channel
-      @pub_sub_list[channel] << obj 
-    else
-      raise "#{self} attempt to sub_to unallowed channel by #{obj}"
+  foo = Foo.new
+  bar = Bar.new(foo)
+  foo.pub_to(:on_foo_update, "foo") 
+  => "foo from Bar"
+  foo.unsub_from(:on_foo_update, bar)
+=end
+
+    def self.extended(base)
+      base.pub_sub_list_init
     end
-  end
 
-  def pub_to(channel, *args)
-    raise "#{self} tried to pub_to unallowed: #{channel}" unless @pub_sub_list[channel]
-    @pub_sub_list[channel].each do |obj|
-      obj.public_send(channel, *args)
+    def pub_sub_list_init
+      @pub_sub_list = {}
     end
-  end
 
-  def unsub_from(channel, obj)
-    raise "#{obj} tried to #{self}.unsub_from #{channel} which is not in list" unless @pub_sub_list[channel]
-    @pub_sub_list[channel].delete(obj)
-  end
+    def pub_sub_list
+      @pub_sub_list
+    end
 
-end
+    def allowed_channels(*args)
+      args.each do |arg|
+        @pub_sub_list[arg] = []
+      end
+    end
+
+    def sub_to(channel, obj)
+      if @pub_sub_list[channel].is_a? Array
+        raise "#{obj} does'nt implement #{channel} method needed for sub_to #{self}" unless obj.respond_to? channel
+        @pub_sub_list[channel] << obj 
+      else
+        raise "#{self} attempt to sub_to unallowed channel by #{obj}"
+      end
+    end
+
+    def pub_to(channel, *args)
+      raise "#{self} tried to pub_to unallowed: #{channel}" unless @pub_sub_list[channel]
+      @pub_sub_list[channel].each do |obj|
+        obj.public_send(channel, *args)
+      end
+    end
+
+    def unsub_from(channel, obj)
+      raise "#{obj} tried to #{self}.unsub_from #{channel} which is not in list" unless @pub_sub_list[channel]
+      @pub_sub_list[channel].delete(obj)
+    end
+
+  end
 
 end
