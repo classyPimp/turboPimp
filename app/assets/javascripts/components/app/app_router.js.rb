@@ -26,6 +26,7 @@ module Components
               t(`Route`, {path: "login", component: Users::Login.create_class}),
               t(`Route`, {path: "password_reset", component: Users::PasswordReset.create_class}),
               t(`Route`, {path: "update_new_password/:digest", component: Users::PasswordResetForm.create_class}),
+              t(`Route`, {path: "new", component: Users::New.create_class}),
               t(`Route`, {path: ":id", component: Users::Show.create_class})
             ),
 
@@ -53,16 +54,17 @@ module Components
         )
       end 
 
-
       def check_role(next_state, replace_state, cb, role)
-        CurrentUser.ping_with_role.then do |user|
+        CurrentUser.get_current_user.then do |user|
           CurrentUser.user_instance = user
           if user.has_role? role
             `cb()`
           else
             @@history.replaceState({}, "/forbidden")
           end
-        end
+        end.fail do |resp|
+          @@history.replaceState({}, "/forbidden")
+        end 
       end
     end
   end

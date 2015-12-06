@@ -34,7 +34,7 @@ class CurrentUser < User
     if r.response.ok?
       unless r.response.json[:user][:id]
         @logged_in = false
-        r.promise.reject("guest")
+        r.promise.reject(User.new)
       else
         @user_instance = Model.parse(r.response.json)      
         

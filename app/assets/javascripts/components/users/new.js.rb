@@ -4,14 +4,13 @@ module Users
 
     include Plugins::Formable
 
+    include Plugins::DependsOnCurrentUser
+    set_roles_to_fetch :admin
+
     def prepare_new_user
       ->{
         User.new(profile: {profile: {}}, avatar: {avatar: {}})
       }
-    end
-
-    def init
-            
     end
 
     def initial_state
@@ -29,6 +28,9 @@ module Users
           input(Forms::Input, state.form_model, :password_confirmation, {type: "password"}),
           input(Forms::Textarea, state.form_model.profile, :bio),
           input(Forms::Input, state.form_model.avatar, :file, {type: "file", has_file: true, preview_image: true}),
+          if state.current_user.has_role? :admin
+            t(:h1, {}, "ADMIN ")
+          end,
           t(:br, {}),
           t(:button, {onClick: ->(){handle_inputs}}, "create user")
         )
