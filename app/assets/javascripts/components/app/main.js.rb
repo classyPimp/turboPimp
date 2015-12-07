@@ -9,7 +9,7 @@ module Components
         attr_accessor :props_from_server
       end
 
-      def initial_state  
+      def get_initial_state  
         if x = self.class.props_from_server.current_user
           p Hash.new(x.to_n)
           CurrentUser.user_instance = Model.parse(Hash.new(x.to_n))

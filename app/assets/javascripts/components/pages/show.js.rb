@@ -3,7 +3,7 @@ module Components
     class Show < RW
       expose
 
-      def initial_state
+      def get_initial_state
         {
           page: false 
         }

@@ -39,7 +39,7 @@ class Calendar < RW
     
   end
 
-  def initial_state
+  def get_initial_state
     {
       date: Date.today
     }
@@ -78,7 +78,7 @@ end
 class  Month < RW
   expose
   
-  def initial_state
+  def get_initial_state
     {
       events_feed: Model.parse([
                                 {eventy: {start: "2015-11-21", finish: "2015-11-21"}},

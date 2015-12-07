@@ -11,7 +11,7 @@ module Components
         @@history
       end
 
-      def initial_state
+      def get_initial_state
         Components::App::Main.props_from_server = self.props
         {}
       end

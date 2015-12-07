@@ -9,7 +9,7 @@ module Users
       @controller = UsersController.new(self)
     end
 
-    def initial_state
+    def get_initial_state
       {
         form_model: CurrentUser.new,
         message: []

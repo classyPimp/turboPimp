@@ -11,7 +11,7 @@ module Users
     end
 
 
-    def initial_state
+    def get_initial_state
       {
         form_model: User.new,
         submitted: false

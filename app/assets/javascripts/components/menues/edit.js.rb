@@ -6,7 +6,7 @@ module Components
 
       #PROPS
       #menu_item_to_edit => MenuItem instance
-      def initial_state
+      def get_initial_state
         {
           form_model: props.menu_item_to_edit
         }

@@ -2,7 +2,7 @@ module Shared
 	class Modal < RW
     expose
 
-    def initial_state
+    def get_initial_state
       {
         display: "none"  
       }

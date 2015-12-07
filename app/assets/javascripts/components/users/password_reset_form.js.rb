@@ -9,7 +9,7 @@ module Users
     end
     attr_accessor :blank_errors
  
-    def initial_state
+    def get_initial_state
       user = User.new
       {
         message: false,

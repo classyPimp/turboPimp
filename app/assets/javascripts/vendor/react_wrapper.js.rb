@@ -50,7 +50,7 @@ class RW
     
   end
 
-  def initial_state
+  def get_initial_state
     
   end
 
@@ -119,7 +119,7 @@ class RW
           },
           getInitialState: function(){
             this.__opalInstance = #{self.new(`this`)}
-            return #{`this.__opalInstance.$initial_state()`.to_n};
+            return #{`this.__opalInstance.$get_initial_state()`.to_n};
           },
           componentWillMount: function() {
             return this.__opalInstance.$component_will_mount();
@@ -194,7 +194,7 @@ class RW
     
   end
 
-  def self.initial_state
+  def self.get_initial_state
     
   end
 

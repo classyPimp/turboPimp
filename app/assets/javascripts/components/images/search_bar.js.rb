@@ -5,7 +5,7 @@ module Components
 
       include Plugins::Formable
 
-      def initial_state
+      def get_initial_state
         {
           form_model: Image.new
         }

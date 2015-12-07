@@ -18,7 +18,7 @@ module Forms
       end
     end
 
-    def initial_state
+    def get_initial_state
       {
         checked: props.checked
       }

@@ -9,7 +9,7 @@ module Components
         @controller = PagesController.new(self)
       end
 
-      def initial_state
+      def get_initial_state
         {
           form_model: Page.new
         }

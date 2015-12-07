@@ -14,7 +14,7 @@ module Components
       #if provided under each rendered image button will be added with value of props.expose_image
       #which will have call the props.expose_image[:proc].call(image) on click
 
-			def initial_state
+			def get_initial_state
 		    {
 		      images: ModelCollection.new,
           query: ""

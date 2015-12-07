@@ -4,7 +4,7 @@ module Users
     expose
     include Plugins::Formable
 
-    def initial_state
+    def get_initial_state
       {
         message: false,
         form_model: User.new

@@ -1,7 +1,7 @@
 =begin
 class Dummy < RW
 
-  def initial_state
+  def get_initial_state
     @foo = [1,2,3]
     {
       menu: Menu.new([["foo", "bar"], ["dooz", [["asd", "bsd"]]], ["baz", [["a","b"], ["c", [["foo","bar"], ["baz", "laz"]]]]]])
@@ -134,7 +134,7 @@ end
 class PageIndex < RW
   expose
 
-  def initial_state
+  def get_initial_state
     {
       pages: ModelCollection.new
     }
@@ -224,7 +224,7 @@ class PageCreate < RW
 
   include Plugins::Formable
 
-  def initial_state 
+  def get_initial_state 
     {
       form_model: false
     }
@@ -270,7 +270,7 @@ class PageEdit < RW
 
   include Plugins::Formable
 
-  def initial_state 
+  def get_initial_state 
     {
       form_model: false
     }
@@ -319,7 +319,7 @@ end
 
 class Nav < RW
   expose
-  def initial_state
+  def get_initial_state
     {
       collapsed: false
     }    

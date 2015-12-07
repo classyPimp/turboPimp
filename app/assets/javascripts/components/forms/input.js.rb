@@ -23,7 +23,7 @@ module Forms
       opt
     end
 
-    def initial_state
+    def get_initial_state
       {
         image_to_preview: ""
       } 

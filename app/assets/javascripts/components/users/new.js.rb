@@ -13,7 +13,7 @@ module Users
       }
     end
 
-    def initial_state
+    def get_initial_state
       {
         form_model: prepare_new_user.call
       }
@@ -29,7 +29,7 @@ module Users
           input(Forms::Textarea, state.form_model.profile, :bio),
           input(Forms::Input, state.form_model.avatar, :file, {type: "file", has_file: true, preview_image: true}),
           if state.current_user.has_role? :admin
-            t(:h1, {}, "ADMIN ")
+            input(Forms::Select, state.form_model, :bole, {options: ["foo", "bar", "baz"]})
           end,
           t(:br, {}),
           t(:button, {onClick: ->(){handle_inputs}}, "create user")
@@ -39,6 +39,7 @@ module Users
 
     def handle_inputs
       collect_inputs
+      p state.form_model.attributes and return
       unless state.form_model.has_errors?
         state.form_model.attributes[:by_admin] = 1
         state.form_model.create({}, {serialize_as_form: true}).then do |model|

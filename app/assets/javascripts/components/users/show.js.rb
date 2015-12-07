@@ -2,7 +2,7 @@ module Users
 
 	class Show < RW
 		
-    def initial_state
+    def get_initial_state
       {
         user: false
       }

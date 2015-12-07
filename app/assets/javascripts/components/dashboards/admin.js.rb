@@ -4,7 +4,7 @@ module Components
       
       expose
 
-      def initial_state
+      def get_initial_state
         {
           current_control_component: Native(t(:div, {}, "nothing"))
         }

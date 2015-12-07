@@ -4,7 +4,7 @@ module Users
 
     expose
 
-    def initial_state
+    def get_initial_state
       {
         logged_in: CurrentUser.logged_in,
         current_user: CurrentUser.user_instance

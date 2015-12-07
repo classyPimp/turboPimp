@@ -11,7 +11,7 @@ module Components
       #on_menu_item_added => passed method from parent that shall be 
       #called when new menu item pushed to parent_menu_item
       #########
-      def initial_state
+      def get_initial_state
         {
           form_model: MenuItem.new 
         }

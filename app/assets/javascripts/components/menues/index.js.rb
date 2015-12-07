@@ -6,7 +6,7 @@ module Components
       expose
       include Helpers::UpdateOnSetStateOnly
 
-      def initial_state
+      def get_initial_state
         {
           menu: false,
           collapsed: false

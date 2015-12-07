@@ -122,40 +122,41 @@ module Helpers
 
   module PubSubBus
 
-    #Sort of observable, but user objects subcsribe to channels
+    
+
+
+  #Sort of observable, but user objects subcsribe to channels
     #Observable publishes to channels, objects that subscribed to that channel must implement method same as
     #channel name.
     #To make it a but strict observable object must call .allowed_channels at classs body passing channel names
     #example
-=begin
-  class Foo
-    
-    include PubSubBus
-    allowed_channels :on_foo_update, :on_foo_secret
+#  class Foo
+#    
+#    include PubSubBus
+#    allowed_channels :on_foo_update, :on_foo_secret
+#  end
+#
+#  class Bar
+#    
+#    def initialize(foo)
+#      foo.subscribe(:on_not_imp, self)
+#      => WILL THROW :on_not_imp not allowed channel
+#      foo.subscribe(:on_foo_update, self)
+#      => will THROW bar must implement :on_update method
+#      #unless bar respond_to? :on_update
+#    end
+#
+#    def on_foo_update(foo)
+#      p "foo from Bar"
+#    end
+#  end
+#
+#  foo = Foo.new
+#  bar = Bar.new(foo)
+#  foo.pub_to(:on_foo_update, "foo") 
+#  => "foo from Bar"
+#  foo.unsub_from(:on_foo_update, bar)
 
-  end
-
-  class Bar
-    
-    def initialize(foo)
-      foo.subscribe(:on_not_imp, self)
-      => WILL THROW :on_not_imp not allowed channel
-      foo.subscribe(:on_foo_update, self)
-      => will THROW bar must implement :on_update method
-      #unless bar respond_to? :on_update
-    end
-
-    def on_foo_update(foo)
-      p "foo from Bar"
-    end
-  end
-
-  foo = Foo.new
-  bar = Bar.new(foo)
-  foo.pub_to(:on_foo_update, "foo") 
-  => "foo from Bar"
-  foo.unsub_from(:on_foo_update, bar)
-=end
 
     def self.extended(base)
       base.pub_sub_list_init
