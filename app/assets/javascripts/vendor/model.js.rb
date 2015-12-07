@@ -84,33 +84,136 @@ by adding:
         MODELS
   your models should inherit from Model
   Model has parse class method tha traverses Hash || Array or stringified JSON and
-  instantiates meeting models.
-  Rails, should respond with json root true (can be enabled in config) eg {user: {id: 1}}
-  When Model.parse if it will meet {model_name: {atr: "some", foo: "some"}} it will instantiate that #{model_name} and [:model_name] wll
-  go to attribtes if in attributes there is model it will also be instantiated.
-  if array of models given to model parse it will retun ModelCollection wich is basicaly the arry of models
-  attributes are stored in @attributes wich are passed on init
-  each model has .attributes runtime called method that defines getter setter methods on @attributes
-  to update attributes call update_attributes({hash}) which will merge it to attributes TODO implement deep_merge on ::Hash
+  instantiates models if it meets them.
+  Rails, should respond with json root true (can be enabled in config) eg {user: {id: 1}} not the default {id: 1}
+  When Model.parse is called, if it will meet {model_name: {atr: "some", foo: "some"}} it will instantiate that #{model_name} and and its attributes wll
+  go to @attributes of #{model_name}. If attribute holds another model it will also be instantiated.
+  example:
+  x = Model.parse({user: {id: 1, friend: {user: {id: 2}}}})
+  p x.attributes
+  =>{id: 1, friend: <User_instance>}
+  p x.pure_attributes
+  => {user: {id: 1, friend: {user: {id: 2}}}}
+  if array of models given to model parse it will retun ModelCollection wich is basicaly the array of models
+  x = Model.parse([{user: {id: 1}}, {user: {id: 2}}])
+  p x.data
+  [<User_instance>, <User_instance>]
 
-        HTTP REQUESTS
-  in your model you define routes as:
-  route :find => will define method #find
-  for class method routes route shall be capitalized
-  route :Find => will define method .find
-  second arg is url
-  route :find, "/users"
-  so model.find will make request to /users
-  also you can pass wilds to url
-  route :find, "users/:id"
-  this works as expected
-  to add the payload to request you should pass hash as 2nd arg
-  .find {}, {user: {email: user.email}} => will result in payload: {users: {email: user.email}}
-  if you had wild in route definition, you have to supply it in first arg as
-  .find {id: 1}, {payload : Hash}
-  you can pass {defaults: [:your wild, :your 2nd wild]} in route definition option
-  route :find, "users/:id", {defaults: [:id]} =>
-  so if you will not supply wild when calling wild will be taken from return value of Model || model.__send__ #{wild}
+  attributes are stored in @attributes accessor
+
+  each model has .attributes runtime called class method that defines getter setter methods which will basically get/set values from @attributes
+  class User
+    attributes :id, :name
+  end
+  x = User.parse({user: {id: 1, name: "Joe", nickname: "Schmoe"}})
+  p x.attributes
+  => {id: 1, name: "Joe", nickname: "Schmoe"}
+  p x.name
+  => "Joe"
+  x.name = "Foo"
+  p x.nickname
+  => method missing
+  p x.attributes[:nickname]
+  => "Schmoe"
+  x.attributes[:nickname] = "Bar"
+  p x.attributes[:nickname]
+  => "Bar"
+  p x.pure_attributes
+  => {user: {id: 1, name: "Foo", nickname: "Bar"}}
+
+  to update attributes call update_attributes({hash}) which will merge it to @attributes
+
+  @attributes is a hash containing what was given to Model.parse
+  but when model was parsed, it will instantiate all meeting instances (if they're defined). E.g.
+  x = Model.parse({user: {id: 1, friend: {user: {id: 2}}}})
+  p x.attributes
+  =>{id: 1, friend: <User_instance>}
+  p x.friend.attributes
+  => {id: 2}
+  if you need "pure" attributes structure, simply call #pure_attributes
+  p x.pure_attributes
+  => {user: {id: 1, friend: {user: {id: 2}}}}
+
+        HTTP REQUESTS/backend communication
+  ALL route calls are managed by RequestHandler class which configures everything on each route call 
+  ALL route calls return Opal Promise so you have to handle responses in .then .fail.
+
+  User.show(id: 1).then do |response|
+    p x = response.json
+    {user: {id: 1, name: "F"}}
+    user = Model.parse(x)
+    p user
+    <User:instance>
+    p user.attributes
+    {id: 1, name: "F"}
+    user.name = "Foo"
+    user.save.then do |response|
+      p response.status_code
+      => 200
+    end
+  end.fail do |r|
+    raise "failed"
+  end
+
+  you define the map of HTTP calls via class .route method like this which shall be called in class body definition:
+  class User
+    
+    route :find => will define method instance method #find 
+    route :Find => (capitalized name for route) will define method class method .find 
+  
+  end  
+
+  second arg is http method and url pair
+  class User
+    route :Show, get: "/users"
+  end
+  User.show
+  => makes HTTP.get "/users" request to server
+
+  also you can pass wilds to url:
+  route :Show, post: "users/:id"
+  this works as you expect it to. But then you'll have to provide the :id if calling that route like so:
+  Model.show({id: 1})
+  => makes HTTP.post "/users/1" request to server
+
+  you can pass {defaults: [:your_wild, :your_2nd_wild]} in route definition option and it will be resolved automatically
+  if you have corresponding method defined:
+  class User
+    attributes :id, :name
+    route :update, put: "users/:id", {defaults: [:id]}
+  end
+  user = User.show(id: 10)
+  user.name = "Joe"
+  user.update
+  => makes HTTP.put "/users/10" request to server
+  Behind the scenes it follows: if you will not supply wild when calling route, wild will be taken from return value of <Model>.__send__ #{wild}
+
+  When making request you can add some payload to it.
+  There are two ways:
+
+    Manual payload configuration
+  To add the payload to request you should pass hash containing what you want to send, as 2nd arg. Usually that'll be #pure_attributes, but it can be anything 
+  
+  user = User.new
+  user.name = "Joe"
+  user.save({}, payload: user.pure_attributes)
+  => makes HTTP.post request to "/users", with payload: {user: {name: "Joe"}}
+
+    Automatic payload configuration
+  simply define the following method either class or instance, corresponding your defined routes
+  ## such method shall have one argument, before the request will be made RequestHandler instance for that request is passed to that method
+  you can access requst options by using request_handler's accessor req_options, basically treat it like the second arg for route call
+
+  attributes :id
+  route "update", put: "users/:id", defaults: [:id]
+
+  def on_before_update(r) ## #{route_name} 
+    r.req_options = {payload: self.attributes}
+    #same as manual user.update({}, {payload: user.pure_attributes})
+  end
+  
+
+
   
   if you need to handle response in .then .fail customly, supply {yield_response: true} as first arg; as
   .find {yield_response: true, id: 2}.then {|response| do somethind with esponse}.fail {|response| do spmething else} 
