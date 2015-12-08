@@ -5,8 +5,10 @@ You can monkey patch RW, Model there or anything else there. (reminder it was ha
 other methods, like include RW; include Helpers; include Etc in each component but that is more typing; so I decided to stay with monkey 
 patching everything in helpers file)
 
+VIEWS (React components)
 
-
+view part is all about react components.
+that is done via opal wrapping the React by RW class (short for React Wrapper)
 =end
 
 
@@ -237,6 +239,7 @@ class RW
 #I thought that it's bad to traverse all children each time, so instead I altered react itself.
 #That's a little hack and I don't think it'll be hard to do with further coming versions of React, beacuse even if
 #traverseAllChildrenImpl be implemented in other way there would easily be place for checking if child is Opal.nil
+#if you don't want to mess with react core simply uncomment params.compact!
 
 #=end
     unless _klass.is_a? String
@@ -248,6 +251,7 @@ class RW
     else
       params = [_klass, _props.to_n, *args]
     end
+    #params.compact!
     (%x{
       React.createElement.apply(null, #{params})
     })

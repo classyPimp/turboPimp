@@ -73,7 +73,7 @@ by adding:
             end
           end
           root = options[:root]  <+==================THIS LINE IS ADDED
-          root ? {self.class.name.split("::")[-1].underscore => hash} : hash <+++++++++THIS IS LINED IS CHANGED, PRIOR IT WAS SIMPLY: root 
+          root ? {self.class.name.split("::")[-1].underscore => hash} : hash <+++++++++THIS IS LINED IS CHANGED, PRIOR IT WAS SIMPLY: hash 
         end
       end
     end
@@ -83,7 +83,7 @@ by adding:
   HOW THIS WORKS
         MODELS
   your models should inherit from Model
-  Model has parse class method tha traverses Hash || Array or stringified JSON and
+  Model has parse class method that traverses Hash || Array or stringified JSON and
   instantiates models if it meets them.
   Rails, should respond with json root true (can be enabled in config) eg {user: {id: 1}} not the default {id: 1}
   When Model.parse is called, if it will meet {model_name: {atr: "some", foo: "some"}} it will instantiate that #{model_name} and and its attributes wll
@@ -99,7 +99,7 @@ by adding:
   p x.data
   [<User_instance>, <User_instance>]
 
-  attributes are stored in @attributes accessor
+  attributes are stored in @attributes accessor which is a simple hash
 
   each model has .attributes runtime called class method that defines getter setter methods which will basically get/set values from @attributes
   class User
@@ -177,7 +177,7 @@ by adding:
   => makes HTTP.post "/users/1" request to server
 
   you can pass {defaults: [:your_wild, :your_2nd_wild]} in route definition option and it will be resolved automatically
-  if you have corresponding method defined:
+  if you have corresponding method defined (e.g. called attributes :id):
   class User
     attributes :id, :name
     route :update, put: "users/:id", {defaults: [:id]}
@@ -209,43 +209,301 @@ by adding:
 
   def on_before_update(r) ## #{route_name} 
     r.req_options = {payload: self.attributes}
-    #same as manual user.update({}, {payload: user.pure_attributes})
+    #same as manual =>  user.update({}, {payload: user.pure_attributes})
+  end
+
+  now you can simply do it like so:
+  User.show(id: 1).then do |response|
+    user = User.parse(response.json)
+    user.name = "Foo"
+    user = User.update().then do |response|
+      => makes put request to "/users/1", with payload {user: {id: 1, name: "Foo"}}
+      user = User.parse response.json
+    end
   end
   
+  Your responses can also be automatically resolved via this way:
+  define class or instance methods with this naming rules
+  responses_on_#{route_name}
 
+  route "Show", get: "users/:id"
+  route "update", put: "users/:id", defaults: [:id]
 
-  
-  if you need to handle response in .then .fail customly, supply {yield_response: true} as first arg; as
-  .find {yield_response: true, id: 2}.then {|response| do somethind with esponse}.fail {|response| do spmething else} 
+  def self.responses_on_show(request_handler)
+    if request_handler.response.ok?
+      request_handler.promise.resolve Model.parse(request_handler.response.json)
+    else
+      "raise http error"
+    end
+  end
 
-  when you call defined route request is handled by RequestHandler class
+  def  responses_on_update(r)
+    if r.response.ok?
+      r.promise.resolve Model.parse(r.response.json)
+    else
+      #handle error
+    end
+  end
+
+  def on_before_update(r) ## #{route_name} 
+    r.req_options = {payload: self.attributes}
+    #same as manual =>  user.update({}, {payload: user.pure_attributes})
+  end
+
+  Now it'll get pretty simple
+
+  User.show(id: 1).then do |user|
+    => get request to "users/1"
+    p user.attributes
+    => {user: {id: 1, name: "joe"}}
+    user.name = "Schmoe"
+    user.update.then do |user|
+      # put request to "users/1", payload: {user: {id: 1, name: "Schmoe"}}
+      p user.attributes
+      => {user: {id: 1, name: "Schmoe"}}
+      #and e.g. set_state user: user
+    end
+  end
 
   RequestHandler has everything needed (passed from invoking model) as: response , urld and etc Model || model from which RequestHadler was
   initialized; you can call it by request_handler.caller
 
-  If you call Model model route from component, or any other object you can pass components self to RequestHandler in first arg (wilds)
+  If you call Model model route from component, or any other object you can pass anything to RequestHandler in first arg (wilds)
   as render; User.find({component: self}, {payload: {foo: "bar"}}); then the component will be available as instance var @component
 
-  to define custom scenarios of response automatic handling you should define
-  responses_on_#{your route name} methods that accepts RequestHandler instance
-  that instance has accessors on everything you need e.g. .response .promise and etc
-  example:
-      def self.responses_on_find(request_handler)
-        if request_handler.response.ok?
-          request_handler.promise.resolve Model.parse(request_handler.response.json)
-        else
-          "raise http error"
-        end
-      end
-
-  to provide default actions on response there is RequestHandler#defaults_on_response where you put code that should run
-  for any response
-
-  You can monkeypatch Model in Helpers, (you mostly will need it for defaults modethods); now they are
+  You can monkeypatch Model in Helpers, (you mostly will need it for defaults before and after response handling modethods); they are
   #defaults_before_request (as expected)
   #defaults_on_response (just add if @response.ok else and will run defaultly)
+
+  Default on_before_#{rest_action_name} responses_on_#{rest_action_name} for standard REST actions are predefined in model
+
+  To use accepts_nested_attributes_for capabilities
+  has_one :friend
+  has_many :dogs
   
-  sorry for my french
+  accepts_nested_attributes_for :friend, :dogs
+  
+  user = User.new
+  p user.pure_attributes
+  => {user: {friend: {}, dogs: []}}
+  dog = Dog.new(nick: "Doge")
+  user.dogs << dog
+  friend = User.new(name: "bar")
+  user.friend = friend
+  p user.attributes
+  => {dogs: [<Dog_instance>], friend: <User_instance>}
+  p user.pure_attributes
+  => {user: {firend_attributes: {name: "bar"}, dogs_attributes: [{nick: "Doge"}]}}
+
+  serializing to JS FormData
+  need sending payload as form data (maybe you need to send JS File via route)
+  p user.update({}, serialize_as_form: true)
+  => will payload valid FormData object to HTTP request
+
+  if your model holds in ine of it's attributes (e.g. has_many dogs) you can search them via #where method
+  x = user.where do |foo|
+    foo[:attributes][:nick] == "Doge"
+  end
+  p x => <Dog_instance>
+  *same way you can search ModelCollection
+
+  VALIDATIONS
+  ####
+  #your model should implement validate_attr_name for the attr you need to validate
+  #this method should recieve optional option : Hash arg
+  #and it should result in either add_error(:attr_name, "bad error")
+  #or doing it manually, example
+  #def validate_name
+  # if name.length < 8
+  #   add_error :name, "too short"
+  # end
+  #end
+  #for convinience errors are assumed to have structure
+  #repeating it's attributes hash
+  #model.attributes => {name: "foo"}
+  #model.validate
+  #model.errors => {name: ["too short"]}
+  #model.attributes => {name: "foo"}
+  if you don't have corresponding attributes defined those validation won't run
+  User.new
+  user.validate
+  user.has_errors?
+  => false
+  user.name = "f"
+  user.has_errors?
+  => true
+
+  If your server responsds with errors in json e.g. user was validated on rails and responded with {user: {errors: {name: ["too short"]}}}
+  when Model.parse 'ed those errors will present
+  User.new
+  user.name = "f"
+  user.validate(only: ["email"])
+  user.has_errors? #=> false
+  user.create.then do |user|
+    user.validate
+    user.has_errors? 
+    => true
+  end
+
+  to reset errors call #reset_errors
+
+  example in react component
+  class FormSample < RW
+    expose
+
+    include Plugins::Formable
+
+    def get_initial_state
+      form_model: User.new
+    end
+    
+    render
+      input(Forms::Input, state.form_model, :name, {type: "text"})
+      t(:button, onClick: ->{handle_inputs})
+    end
+
+    def  handle_inputs
+      collect_inputs #given by plugin will collect all inputs, form_model.reset_errors (to clear errors from previous validate) and call validate
+      #or your own way of collecting inputs and then
+      #state.form_model.validate
+      unless state.form_model.has_errors?
+        state.model.create.then do |user|
+          user.validate
+          unless user.has_errors? #or add validate in responses_on_create and just use in .then has_errors?
+            App::Router.replaceState({}, "/users/#{user.id}")
+          end
+        end
+      else
+        set_state form_model: state.form_model
+        #formable plugin will render errors for each input if attr on model has corresponding error
+      end 
+    end
+  end
+
+  validate can accept options like only: [:name] will validate only those and etc.
+
+  #has_file for automatic serialization to FormData
+  if you have attribute that supposed to recive JS File from file input
+  in order to send it via XHR (route).
+  youe model should has_file = true
+  it can be done via
+  
+  attributes :avatar
+
+  def  validate_avatar
+    if avatar
+      self.has_file = true
+    end
+  end
+
+  than validate your model and next time you'll call route payload will be serialized to form data/
+
+  Model has more stuff, will document them later/ And it can be used solely as model layer for any app or another JS library/
+
+  SNEAK PEAK ON HOW MODEL CAN BE USED IN RW COMPONENT
+
+  class User < Model
+
+    attributes :id, :email, :password, :password_confirmation
+
+    route "sign_up", post: "users"
+    route "Show", get: "users/:id"
+    route "create", post: "users"
+    route "update", put: "users/:id", defaults: [:id]
+   
+    has_one :profile, :avatar
+    has_many :roles
+    accepts_nested_attributes_for :profile, :avatar
+
+    def validate_email(options={})
+      unless email.match /^[-a-z0-9~!$%^&*_=+}{\'?]+(\.[-a-z0-9~!$%^&*_=+}{\'?]+)*@([a-z0-9_][-a-z0-9_]*(\.[-a-z0-9_]+)*\.(aero|arpa|biz|com|coop|edu|gov|info|int|mil|museum|name|net|org|pro|travel|mobi|[a-z][a-z])|([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}))(:[0-9]{1,5})?$/i
+        add_error :email, "you should provide a valid email"
+      end
+    end
+
+    def has_role?(role)
+      roles.each do |_role|
+        return true if role.include? _role.name 
+      end
+    end
+
+    def validate_password
+      if password.length < 6
+        add_error :password, "password is too short"
+      end
+      if password != password_confirmation
+        add_error :password_confirmation, "confirmation does not match"
+      end
+    end
+  end
+  
+  module Users
+  class New < RW
+    expose
+
+    include Plugins::Formable <= makes forms extra EASY
+
+    include Plugins::DependsOnCurrentUser #<= will load the permision on component_did_mount automatically
+    set_roles_to_fetch :admin #<= needed for above
+
+    def get_initial_state
+      {
+        form_model: User.new(profile: {profile: {}}, avatar: {avatar: {}}) 
+      }
+    end
+
+    def  general_channel(msg)
+      if msg = "reset"
+        force_update
+      end
+    end
+
+    def  component_will_unmount
+      AppController.unsub_from(:generall_channel, self)
+    end
+
+    def render
+      t(:div, {},
+        spinner, #THAt shit'll spin when model requests are done and stops when recieved automatically
+        t(:div, {className: "form"},
+          input(Forms::Input, state.form_model.profile, :name), 
+          input(Forms::Input, state.form_model, :email, {type: "text"}),
+          input(Forms::Input, state.form_model, :password, {type: "password"}),
+          input(Forms::Input, state.form_model, :password_confirmation, {type: "password"}),
+          input(Forms::WysiTextarea, state.form_model.profile, :bio), # Wysi with image upload image browse fulltext search and shit
+          input(Forms::Input, state.form_model.avatar, :file, {type: "file", has_file: true, preview_image: true}), #< preview your avatar before saving user
+          if state.current_user.has_role? :admin <== that'll is set by plugin #<= will automatically show if has thanks to DependsOnCurrentUser plugin
+            input(Forms::Select, state.form_model, :role, {multiple: true, load_from_server: {url: "/api/test"}}) #select option will be feeded by server
+          end,
+          t(:br, {}),
+          t(:button, {onClick: ->(){handle_inputs}}, "create user")
+        )
+      )
+    end
+
+    def handle_inputs
+      collect_inputs 
+      unless state.form_model.has_errors?
+        state.form_model.attributes[:by_admin] = 1 if state.form_model.has_role? :admin
+        state.form_model.create({component: self #needed for spinner only#}, {serialize_as_form: true}).then do |model|
+         if model.has_errors?
+            set_state form_model: model
+          else
+            pub_to(:user_created_channel, model)
+          end
+        end
+      else
+        set_state form_model: state.form_model
+      end
+    end
+  #####THIS WILL ALL serialize beatifully to form data, will send with all accepts_nested_attributes_for Rails ready
+  #Love it! everything is OOP clean and done by total noob just to see if it'll work! have any error everything will be shown and checked before sent to server, (even if not defined on client but are on server after request will also be shown where what and how many ), 
+  #highlighted and shit. and your dealing with several models at once, image upload preview, fulll assblown WYSIWG (Voog rules), and just look how DRY it is, everything is reusable!
+  #all files via XHR without hassle, super duper message BUS between your objects, everything one needs, handy right?
+  end
+end
+
+  
 =end
 
 require "opal"

@@ -6,6 +6,7 @@ module Forms
     #multiple: boolean #multiple select or not
     #options: [*String] #options that be given to select
     #load_from_server: Hash{url*required: <String "urld from where options be fetched">, extra_params: <Hash defaults to nil>}
+    #attr: from_model of parent @attributes to populate with this input on collect
 
     def get_initial_state
       options = props.options ? ( props.options.each.map(){|v| SelectOption.new(v) } ) : []
@@ -77,15 +78,11 @@ module Forms
 
   class SelectOption
     
-    attr_accessor :value, :selected
+    attr_accessor :value
 
-    def initialize(value, selected = false)
+    def initialize(value)
       @value = value
       @selected = selected
-    end
-
-    def selected!
-      @selected = !@selected
     end
 
   end
