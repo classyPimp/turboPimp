@@ -10,7 +10,7 @@ module Shared
     end
 
     def render
-      t(:div, {className: "cssload-container", style: {display: state.on}}, 
+      t(:div, {className: "cssload-container", style: {display: props.display}}, 
         t(:div, {className: "cssload-speeding-wheel"})
       )
     end

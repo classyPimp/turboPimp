@@ -32,9 +32,9 @@ module Helpers
 
     require "components/shared/spinner"
 
-    def spinner
+    def spinner(display = "none")
       @has_spinner = true
-      t(Shared::Spinner, {ref: "spinner"})
+      t(Shared::Spinner, {ref: "spinner", display: display})
     end
 
     def spinner_instance

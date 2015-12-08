@@ -9,8 +9,8 @@ class FakerController < ApplicationController
   end
 
 	def test
-    x = params.require(:user).permit(:email, avatar_attributes: [:file], profile_attributes: [:bio])
-		render plain: x
+    x = {options: ["foo", "bar", "baz", "cux"]}
+		render json: x
 	end
 
   def restricted_asset
