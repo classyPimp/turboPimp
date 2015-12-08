@@ -5,10 +5,7 @@ You can monkey patch RW, Model there or anything else there. (reminder it was ha
 other methods, like include RW; include Helpers; include Etc in each component but that is more typing; so I decided to stay with monkey 
 patching everything in helpers file)
 
-VIEWS (React components)
 
-view part is all about react components.
-that is done via opal wrapping the React by RW class (short for React Wrapper)
 =end
 
 

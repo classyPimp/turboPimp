@@ -276,6 +276,23 @@ by adding:
   #defaults_on_response (just add if @response.ok else and will run defaultly)
 
   Default on_before_#{rest_action_name} responses_on_#{rest_action_name} for standard REST actions are predefined in model
+  They are:
+  create
+  before: will payload: pure_attributes
+  after: on 200 instantiate model and yield it to then
+
+  Index
+  afer: on 200 instantiate collection and yield it to then
+
+  destroy
+  after: on 200 will yield model self to then
+
+  Show
+  after: on 200 will instatiate model and yield it to then
+
+  update
+  before: will payload: pure_attributes
+  after: on 200 instantiate model and yield it to then
 
   To use accepts_nested_attributes_for capabilities
   has_one :friend
@@ -450,6 +467,10 @@ by adding:
       {
         form_model: User.new(profile: {profile: {}}, avatar: {avatar: {}}) 
       }
+    end
+
+    def component_will_mount
+      AppController.sub_to(:general_channel, self)
     end
 
     def  general_channel(msg)
