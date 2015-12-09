@@ -8,7 +8,10 @@ module Components
 
       def get_initial_state
         {
-          menu: false,
+          menu: Model.parse({menu_item: {menu_items: [{menu_item: {link_text: "users", menu_items: [{menu_item: {href: "/users/signup", link_text: "signup"}}, {menu_item: {href: "/users/login", link_text: "login"}}]}},
+                                {menu_item: {link_text: "pages", menu_items: [{menu_item: {href: "/pages/new", link_text: "new"}}, {menu_item: {href: "/pages/index", link_text: "index"}}]}},
+                                {menu_item: {link_text: "dashboards", menu_items: [{menu_item: {href: "/dashboards/admin", link_text: "admin"}}]}}
+                              ]}}),
           collapsed: false
         }
       end
@@ -18,9 +21,9 @@ module Components
       end
 
       def component_did_mount
-        menu = MenuItem.index.then do |_menu|
-          self.set_state menu: _menu
-        end
+        #menu = MenuItem.index.then do |_menu|
+        #  self.set_state menu: _menu
+        #end
       end
       
       def render

@@ -15,7 +15,7 @@ The lib itself is not in 0.0.0.1 state, but not super stable, and it's more for 
 Chaotic soup of React, ReactRouter, wrapped in Opal with generous dash of model.
 
 ### the purpose
-maybe you'll find it usefull and use yourself, or just try it and laugh, or teach me something.
+maybe you'll find it usefull and use yourself, or just try it find what's wrong and teach me something.
 
 ### Installation
 ```
@@ -24,6 +24,10 @@ bundle
 rake db:migrate
 rails s
 navigate to /
+signup one user
+navigate to /console
+User.first.add_role :admin
+
 ```
 
 # THE MODEL
@@ -40,6 +44,8 @@ Model has `.parse` class method that traverses Hash || Array or stringified JSON
   > example:
  ```
   x = Model.parse({user: {id: 1, friend: {user: {id: 2}}}})
+  p x
+  => <User_instance>
   p x.attributes
   =>{id: 1, friend: <User_instance>}
   p x.pure_attributes
@@ -58,7 +64,7 @@ Model has `.parse` class method that traverses Hash || Array or stringified JSON
   class User
     attributes :id, :name
   end
-  x = User.parse({user: {id: 1, name: "Joe", nickname: "Schmoe"}})
+  x = User.new(id: 1, name: "Joe", nickname: "Schmoe")
   p x.attributes
   => {id: 1, name: "Joe", nickname: "Schmoe"}
   p x.name
@@ -78,16 +84,18 @@ Model has `.parse` class method that traverses Hash || Array or stringified JSON
   to update attributes call `update_attributes({hash})` which will merge it to `@attributes`
 
   `@attributes` is a hash containing what was given to `Model.parse`
-  but when model was parsed, it will instantiate all meeting instances (if they're defined). E.g.
+  but when model was parsed, as mentionedf above it will instantiate all meeting instances (if they're defined). E.g.
 ```
   x = Model.parse({user: {id: 1, friend: {user: {id: 2}}}})
   p x.attributes
-  =>{id: 1, friend: <User_instance>}
+  #=>{id: 1, friend: <User_instance>}
+  p x.friend.id
+  #=> 2
   p x.friend.attributes
-  => {id: 2}
-  if you need "pure" attributes structure, simply call #pure_attributes
+  #=> {id: 2}
+        ***if you need "pure" attributes structure, simply call #pure_attributes***
   p x.pure_attributes
-  => {user: {id: 1, friend: {user: {id: 2}}}}
+  #=> {user: {id: 1, friend: {user: {id: 2}}}}
 ```
 You can instantiate a model with attributes .via new as well
 
@@ -96,7 +104,7 @@ You can instantiate a model with attributes .via new as well
 **ALL route calls return Opal Promise so you have to handle responses in .then .fail.**
 ```
   User.show(id: 1).then do |response|
-    p x = response.json
+    p response.json
     {user: {id: 1, name: "F"}}
     user = Model.parse(x)
     p user
@@ -118,7 +126,7 @@ You can instantiate a model with attributes .via new as well
   class User
     
     route :find => will define method instance method #find 
-    route :Find => (capitalized name for route) will define method class method .find 
+    route :Find => (capitalized) will define method class method .find 
   
   end  
 ```
@@ -180,11 +188,12 @@ this works as you expect it to. But then you'll have to provide the `:id` if cal
     user = User.parse(response.json)
     user.name = "Foo"
     user = User.update.then do |response|
-      => makes put request to "/users/1", with payload {user: {id: 1, name: "Foo"}}
+      #=> makes put request to "/users/1", with payload {user: {id: 1, name: "Foo"}}
       user = User.parse response.json
     end
   end
  ```
+ ### automatic handling on response
   Your responses can also be automatically resolved via this way:  
   define class or instance methods with this naming rules
   `responses_on_#{route_name}`
@@ -213,21 +222,25 @@ this works as you expect it to. But then you'll have to provide the `:id` if cal
     #same as manual =>  user.update({}, {payload: user.pure_attributes})
   end
 ```
-  Now it'll get pretty simple
+  **Now it'll get pretty simple, after you've done auto payload conf and reponse handling you'll be able to:**
 ```
   User.show(id: 1).then do |user|
-    => get request to "users/1"
+    #=> get request to "users/1"
     p user.attributes
-    => {user: {id: 1, name: "joe"}}
+    #=> {user: {id: 1, name: "joe"}}
     user.name = "Schmoe"
     user.update.then do |user|
-      # put request to "users/1", payload: {user: {id: 1, name: "Schmoe"}}
+      #=> put request to "users/1", payload: {user: {id: 1, name: "Schmoe"}}
       p user.attributes
-      => {user: {id: 1, name: "Schmoe"}}
+      #=> {user: {id: 1, name: "Schmoe"}}
       #and e.g. set_state user: user
     end
   end
 ```
+
+``` 
+#### RequestHandler
+  As it was mentioned all route requests are managed by `RequestHandler` class, which'll spawn object for each requesy being done/ 
   `RequestHandler` has everything needed (passed from invoking model) as: `response` , `url` and etc Model || model from which RequestHadler was
   initialized; you can call it by `request_handler.caller`
 
@@ -236,6 +249,22 @@ this works as you expect it to. But then you'll have to provide the `:id` if cal
   User.find({component: self}, {payload: {foo: "bar"}});
 ```
 then the component will be available as instance accessor `@component`
+
+for example:
+```
+  #in some component
+  user.update({component: self})
+
+  #in User
+  def on_before_update(r)
+    r.component.spinner.on
+  end
+
+  def responses_on_update(r)
+    r.component.spinner.off
+  end
+```
+
 
 #### Defaults for all requests by any model
 
@@ -276,15 +305,15 @@ to use Rail's accepts_nested_attributes_for capabilities
   
   user = User.new
   p user.pure_attributes
-  => {user: {friend: {}, dogs: []}}
+  #=> {user: {friend: {}, dogs: []}}
   dog = Dog.new(nick: "Doge")
   user.dogs << dog
   friend = User.new(name: "bar")
   user.friend = friend
   p user.attributes
-  => {dogs: [<Dog_instance>], friend: <User_instance>}
+  #=> {dogs: [<Dog_instance>], friend: <User_instance>}
   p user.pure_attributes
-  => {user: {firend_attributes: {name: "bar"}, dogs_attributes: [{nick: "Doge"}]}}
+  #=> {user: {friend_attributes: {name: "bar"}, dogs_attributes: [{nick: "Doge"}]}}
 ```
 
 ###  serializing to JS FormData
@@ -307,10 +336,24 @@ if your model holds in one of it's attributes (e.g. has_many dogs) you can searc
 ```
 **same way you can search ModelCollection**
 
+#### ModelCollection
+simple array of model instances, iteratable and treated as array, everything stored in @data accessor, which is an array
+```
+col = Model.parse([{user: {name: "joe the dog"}}, {user: {name: "Luke", dogs: [{dog: {nick: "mr. woofer"}}]}}])
+p Model.data
+#=>[<User_instance>, <User_instance>]
+p col[0].dogs[0].nick
+#=>"mr. woofer"
+dogs = col.where do |dog|
+  dog.is_a? Dog
+end
+p dogs
+#=> [<Dog_instance>]
+```
 
 ###  MODEL VALIDATIONS
 
-Your model should implement `validate_#{attr_name}` for the attr you need to validate  
+Your model should implement `validate_#{attr_name}` for the attr you need or want to validate  
 This method should recieve optional `option: Hash arg`
 and it should result in `add_error(:attr_name, "bad error")` if conditions not met  
 or doing it manually, example
@@ -340,6 +383,7 @@ user.name = "f"
 user.has_errors?
 => true
 ```
+**validate will validate any nested model as well with their own validation rules**
 
 If your server responsds with errors in json e.g. user was validated on rails and responded with `{user: {errors: {name: ["too short"]}}}`
 when Model.parse 'ed those errors will present
@@ -370,7 +414,7 @@ class FormSample < RW
   
   render
     t(:div, {},
-      input(Forms::Input, state.form_model, :name, {type: "text"}),
+      input(Forms::Input, state.form_model, :name),
       t(:button, onClick: ->{handle_inputs})
     )
   end
@@ -519,7 +563,7 @@ end
       end
     end
   #####THIS WILL ALL serialize beatifully to form data, will send with all accepts_nested_attributes_for Rails ready
-  #Love it! everything is OOP clean and done by total noob just to see if it'll work! have any error everything will be shown and checked before sent to server, (even if not defined on client but are on server after request will also be shown where what and how many ), 
+ # everything will be validated shown and checked before sent to server, (even if not defined on client but are on server after request will also be shown where what and how many ), 
   #highlighted and shit. and your dealing with several models at once, image upload preview, fulll assblown WYSIWG (Voog rules), and just look how DRY it is, everything is reusable!
   #all files via XHR without hassle, super duper message BUS between your objects, everything one needs, handy right?
   end
@@ -529,7 +573,7 @@ end
 # VIEWS (React components)
 
 View part is all about react components.
-That is done via simple Opal wrapping of the React by RW class (short for React Wrapper). The main idea of wrapping/accessing React's functions taken from [zetachang/react.rb](https://github.com/zetachang/react.rb)).
+That is done via simple Opal wrapping of the React by RW class (short for React Wrapper). The main idea of wrapping/accessing React's functions taken from [zetachang/react.rb](https://github.com/zetachang/react.rb)) .
 
 Wrapping React I tried to keep it as close to React as possible without fancy-schmancy stuff. 
 You should treat and write the components the way you would do with React, but with all the Ruby beautiness (long live Opal!).
@@ -789,6 +833,9 @@ which pass themselve to provided contorller.
 
 
 ###### END NOTES
+For more info refer to source itself. I've tried to comment code as much as I could.  
+start from components/app/router components/app/main, load click everywhere, watch the demo components source, than proceed to vendor/model, vendor/react_wrapper.    
+
 one day you approach me in the dusk, and ask: "dude what the fuck is this? where are tests at least", and you'll se me putting on my hood masking my face, and me dissapearing in the shadows.
 
 
