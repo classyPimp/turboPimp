@@ -102,6 +102,7 @@ You can instantiate a model with attributes .via new as well
 ## HTTP REQUESTS/backend communication for models
   **ALL route calls are managed by RequestHandler class which configures everything on each route call**  
 **ALL route calls return Opal Promise so you have to handle responses in .then .fail.**
+**ALL route calls urls will be prefixed with "api/", this can be configured in model**
 ```
   User.show(id: 1).then do |response|
     p response.json
@@ -136,13 +137,13 @@ You can instantiate a model with attributes .via new as well
     route :Show, get: "/users"
   end
   User.show
-  => makes HTTP.get "/users" request to server
+  => makes HTTP.get "/api/users" request to server
 ```
   also you can pass wilds to url:
   `route :Show, post: "users/:id"`  
 this works as you expect it to. But then you'll have to provide the `:id` if calling that route like so:
   `Model.show({id: 1})
-  => makes HTTP.post "/users/1" request to server`
+  => makes HTTP.post "/api/users/1" request to server`
 
   you can pass `{defaults: [:your_wild, :your_2nd_wild]}` in route definition option and it will be resolved automatically
   if you have corresponding method defined (e.g. called attributes :id):
@@ -154,7 +155,7 @@ this works as you expect it to. But then you'll have to provide the `:id` if cal
   user = User.show(id: 10)
   user.name = "Joe"
   user.update
-  => makes HTTP.put "/users/10" request to server
+  => makes HTTP.put "/api//users/10" request to server
 ```
   *Behind the scenes it follows: if you will not supply wild when calling route, wild will be taken from return value of <Model>.__send__ #{wild}*
 ### adding payload to request
@@ -167,7 +168,7 @@ this works as you expect it to. But then you'll have to provide the `:id` if cal
   user = User.new
   user.name = "Joe"
   user.save({}, payload: user.pure_attributes)
-  => makes HTTP.post request to "/users", with payload: {user: {name: "Joe"}}
+  => makes HTTP.post request to "/api/users", with payload: {user: {name: "Joe"}}
 ```
 ###    Automatic payload configuration
   Simply define the following method either class or instance, corresponding your defined routes.  
@@ -188,7 +189,7 @@ this works as you expect it to. But then you'll have to provide the `:id` if cal
     user = User.parse(response.json)
     user.name = "Foo"
     user = User.update.then do |response|
-      #=> makes put request to "/users/1", with payload {user: {id: 1, name: "Foo"}}
+      #=> makes put request to "/api/users/1", with payload {user: {id: 1, name: "Foo"}}
       user = User.parse response.json
     end
   end
@@ -830,7 +831,21 @@ RW components have `assign_controllers(ControllerName)`, which ll be called upon
 which pass themselve to provided contorller.  
   *Don't worry when component will unmount everything will be autamatically cleared.
 
+# EXTRAS
+React, ReactRouter, History, Zepto are included by default. (javascripts/vendor/)
 
+now it includes couple of plugins
+PubSubBus:  
+simple observable like pub sub messaging system, refer to vendor/PubSubBus, for working example refer to components/users/login_info and model/CurrentUser
+
+Plugins::Formable:  
+super easy form handling, currently inputs for: input {file: true}, text input, textarea, select with feed from server, wysi_textarea for wrapped Voog's wysihtml. look at source in components/forms and plugins/formable
+
+bootstrap modal and dropdowns, working example menues/index, pages/new click on insert image on textarea
+
+Pagination (integration wih will paginate) for working : for working example pages/index
+
+DependsOnCurrentUser , render stuff that depends on user permissions, for working example dashboards/admin  click add user with admin and non admin user
 
 ###### END NOTES
 For more info refer to source itself. I've tried to comment code as much as I could.  
