@@ -10,8 +10,10 @@
 # Ignore the default SQLite database.
 /db/*.sqlite3
 /db/*.sqlite3-journal
-/public/system/*
-/public/system/images/*
+
+public/system/
+public/system/images/*
+
 # Ignore all logfiles and tempfiles.
 /log/*
 !/log/.keep
