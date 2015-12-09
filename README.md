@@ -18,7 +18,7 @@ Chaotic soup of React, ReactRouter, wrapped in Opal with generous dash of model.
 maybe you'll find it usefull and use yourself, or just try it and laugh, or teach me something.
 
 ### Installation
-``
+```
 git clone
 bundle
 rake db:migrate
