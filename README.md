@@ -9,7 +9,8 @@ This is the first thing I've done on my own.
 ### Preface
 The library itself is not bundled to it's own gem yet, beacuse I'm writing it in a way of building real life like app featurese, meeting problems, ammend the lib to solve them.
 You can easilly extract it manually.  
-The lib itself is not in 0.0.0.1 state, but not super stable, and it's more for the purpose of proof of concept/demo/feedback.
+The lib itself is not in 0.0.0.1 state, but not super stable, and it's more for the purpose of proof of concept/demo/feedback.  
+This repo comes as Rails demo app.  
 
 ### Short description
 Chaotic soup of React, ReactRouter, wrapped in Opal with generous dash of model.
