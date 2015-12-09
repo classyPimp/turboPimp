@@ -22,7 +22,7 @@ module Users
       t(:div, {className: "create_user_form"},
         spinner,
         if state.submitted
-          t(:h3, {}, "Confirmation letter was sent to #{self.state.form_model.email} (NO LETTER WAS SEND USER::ACTIVATABLE == false"))
+          t(:h3, {}, "Confirmation letter was sent to #{self.state.form_model.email} (NO LETTER WAS SEND USER::ACTIVATABLE == false")
         end,
         input(Forms::Input, state.form_model, :email, {type: "email"}),
         input(Forms::Input, state.form_model, :password, {type: "password"}),
