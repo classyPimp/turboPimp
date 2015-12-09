@@ -8,7 +8,7 @@ This is the first thing I've done on my own.
 
 ### Preface
 The library itself is not bundled to it's own gem yet, beacuse I'm writing it in a way of building real life like app featurese, meeting problems, ammend the lib to solve them.
-You can easilly extract it to though by manually.  
+You can easilly extract it manually.  
 The lib itself is not in 0.0.0.1 state, but not super stable, and it's more for the purpose of proof of concept/demo/feedback.
 
 ### Short description
@@ -21,14 +21,19 @@ maybe you'll find it usefull and use yourself, or just try it find what's wrong 
 ```
 git clone
 bundle
+configure postgress DB
 rake db:migrate
 rails s
 navigate to /
 signup one user
 navigate to /console
 User.first.add_role :admin
+Use demo
 
 ```
+
+To extract to your app for now copy javascripts folder and delete everything in components, models.  
+basically you need only: react.js, vendor/react_wrapper, vendor/model and that's it, copy to your app and require to pipeline.
 
 # THE MODEL
 your models should inherit from `Model`.
