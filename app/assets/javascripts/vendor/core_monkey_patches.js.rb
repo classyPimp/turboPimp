@@ -59,15 +59,16 @@ class HTTP
     settings, payload = @settings.to_n, @payload
 
     %x{
-      if (typeof(#{payload}) === 'string') {
+      if (#{@method == "get" && @payload != nil}) {
+        payload = #{@payload.to_n};
+        #{settings}.data = $.param(payload);
+      }
+      else if (typeof(#{payload}) === 'string') {
         #{settings}.data = payload;
       }
-      else if (payload != nil && #{@method != "get"}) {
+      else if (payload != nil) {
         settings.data = payload.$to_json();
         settings.contentType = 'application/json';
-      }
-      else if (payload != nil && #{@method == "get"}) {
-        #{settings}.data = $.param(#{payload.to_n});
       }
       settings.url  = #@url;
       settings.type = #{@method.upcase};
