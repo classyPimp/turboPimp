@@ -16,7 +16,7 @@ module Components
       end
 
       def component_did_mount
-        Page.index.then do |pages|
+        Page.index({component: self}).then do |pages|
           extract_pagination(pages)
           #p pages.pure_attributes
           set_state pages: pages
@@ -27,6 +27,7 @@ module Components
 
       def render
         t(:div,{},
+          spinner,
           *splat_each(state.pages) do |page|
             t(:div, {key: "#{page}"},
               t(:p, {}, "metas: m_title: #{page.m_title}, m_description: #{page.m_description}, m_keywords: #{page.m_keywords}"),

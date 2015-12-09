@@ -1,7 +1,7 @@
 class User < ActiveRecord::Base
   rolify
 # => ################AUTHENTICATION
-  ACTIVATABLE = true
+  ACTIVATABLE = false
   
   attr_accessor :activation_token #ACTIVATION
 

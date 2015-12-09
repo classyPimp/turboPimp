@@ -17,13 +17,13 @@
  */
 .cssload-container {
   width: 100%;
-  height: 50px;
+  height: 12px;
   text-align: center;
   }
 
   .cssload-speeding-wheel {
-    width: 50px;
-    height: 50px;
+    width: 10px;
+    height: 10px;
     margin: 0 auto; 
     border: 3px solid rgb(21,21,235);
     border-radius: 50%;

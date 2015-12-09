@@ -7,11 +7,12 @@ module Components
       include Helpers::UpdateOnSetStateOnly
 
       def get_initial_state
+        #Model.parse({menu_item: {menu_items: [{menu_item: {link_text: "users", menu_items: [{menu_item: {href: "/users/signup", link_text: "signup"}}, {menu_item: {href: "/users/login", link_text: "login"}}]}},
+        #                        {menu_item: {link_text: "pages", menu_items: [{menu_item: {href: "/pages/new", link_text: "new"}}, {menu_item: {href: "/pages/index", link_text: "index"}}]}},
+        #                        {menu_item: {link_text: "dashboards", menu_items: [{menu_item: {href: "/dashboards/admin", link_text: "admin"}}]}}
+        #                      ]}})
         {
-          menu: Model.parse({menu_item: {menu_items: [{menu_item: {link_text: "users", menu_items: [{menu_item: {href: "/users/signup", link_text: "signup"}}, {menu_item: {href: "/users/login", link_text: "login"}}]}},
-                                {menu_item: {link_text: "pages", menu_items: [{menu_item: {href: "/pages/new", link_text: "new"}}, {menu_item: {href: "/pages/index", link_text: "index"}}]}},
-                                {menu_item: {link_text: "dashboards", menu_items: [{menu_item: {href: "/dashboards/admin", link_text: "admin"}}]}}
-                              ]}}),
+          menu: false,
           collapsed: false
         }
       end
@@ -70,7 +71,7 @@ module Components
             )
           )
         else
-          t(:p, {}, "loading")
+          spinner
         end
       end
 
