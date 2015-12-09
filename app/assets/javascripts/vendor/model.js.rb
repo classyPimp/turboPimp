@@ -753,7 +753,7 @@ class RequestHandler
     @promise
   end
 
-  def yield_response(response, promise)
+  def yield_response
     if @response.ok?
       @promise.resolve @response
     else

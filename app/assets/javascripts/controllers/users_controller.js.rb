@@ -4,7 +4,7 @@ class UsersController < BaseController
     c.collect_inputs
     unless c.state.form_model.has_errors?
       c.state.form_model.sign_up({yield_response: true}, payload: {user: c.state.form_model.attributes}).then do |response|
-        if e = response[:user][:errors]
+        if e = response.json[:user][:errors]
           c.state.form_model.errors = e
           c.set_state form_model: c.state.form_model 
         else
