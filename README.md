@@ -244,13 +244,14 @@ Now it'll get pretty simple, after you've done auto payload conf and reponse han
   end
 ```
 
-``` 
+
 #### RequestHandler
   As it was mentioned all route requests are managed by `RequestHandler` class, which'll spawn object for each requesy being done/ 
   `RequestHandler` has everything needed (passed from invoking model) as: `response` , `url` and etc Model || model from which RequestHadler was
   initialized; you can call it by `request_handler.caller`
 
-  If you call Model model route from component, or any other object you can pass anything to RequestHandler in first arg (wilds);
+  If you call Model model route from component, or any other object you can pass anything to RequestHandler in first arg (wilds).
+
 ```
   User.find({component: self}, {payload: {foo: "bar"}});
 ```
