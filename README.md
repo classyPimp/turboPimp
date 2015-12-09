@@ -226,7 +226,9 @@ this works as you expect it to. But then you'll have to provide the `:id` if cal
     #same as manual =>  user.update({}, {payload: user.pure_attributes})
   end
 ```
-  **Now it'll get pretty simple, after you've done auto payload conf and reponse handling you'll be able to:**
+
+Now it'll get pretty simple, after you've done auto payload conf and reponse handling you'll be able to:
+
 ```
   User.show(id: 1).then do |user|
     #=> get request to "users/1"
