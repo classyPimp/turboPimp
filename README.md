@@ -184,6 +184,7 @@ this works as you expect it to. But then you'll have to provide the `:id` if cal
   end
 ```
   now you can simply do it like so:
+
 ```
   User.show(id: 1).then do |response|
     user = User.parse(response.json)
@@ -193,11 +194,13 @@ this works as you expect it to. But then you'll have to provide the `:id` if cal
       user = User.parse response.json
     end
   end
- ```
- ### automatic handling on response
+```
+
+###    automatic handling on response
   Your responses can also be automatically resolved via this way:  
   define class or instance methods with this naming rules
   `responses_on_#{route_name}`
+
 ```
   route "Show", get: "users/:id"
   route "update", put: "users/:id", defaults: [:id]
