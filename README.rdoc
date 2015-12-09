@@ -1,208 +1,605 @@
-TurboPimp:
+# TurboPimp:
 
-THE unlegendary, and notoriously unknown simplistic, shitty, easy extendable React + ReactRouter + Opal + Rails + clientside MV+1/2C + whatnot + single_page_application + dijital_teknolodgy Framework from lawyer at day, coder at night :)
+##### Greetings! And thanks for visiting!
 
-#Why I did this
-I LOVE RUBY! 
-I stumbled upon my coding path on Opal, and totally fell in love with it. Then I stumbled upon a React, not looking on
-that I hate JS, I found it super cool. Some time later I found a React.rb (/zetaChang) opal wrapper for React. That gem was totally awesome, but as I tried to tinker with it's internals I met with difficulties in fully understanding it. That's high profile and well engineered code was above my level.
-So I've decided to build my own. I took the base of how the React.rb wraps the React (the create_class method, and slightly modified it), and having in mind that wrapper shoould be close to vanilla React, I tried to do it as simplistic as possible.
-After some tries I found that Opal(Ruby) plays fantastic on client side, and things where hard to achive with JS, go so smooth with Ruby!
-I added Model layer to it and found out, wow that's cool, maybe someone even find it fun,
-so please try it! 
+I don't have a CS degree and I'm not even close related to IT field, and my coding (as a pure hobby from absolute beginner I could't even "hello world!") began on previous year's (July 2014 (Ruby since Dec 2014)) vacation, and teaching myself on spare time after day job.  
+Please don't laugh on code quality, and if you see something wrong please tell me where and teach me if you can.   
+This is the first thing I've done on my own.  
 
-#Preface
-The library itself is not bundled to it's own gem yet, beacuse I'm writing it in a way of building real life like app, meeting problems, ammend the lib to solve them.
-You can easilly extract it to though, just copy assets/javascripts/folder and delete the components and models contents.
-The lib itself is not in 0.0.0.1 state, but not yet stable, and it's more for the playing and proof of concept.
+### Preface
+The library itself is not bundled to it's own gem yet, beacuse I'm writing it in a way of building real life like app featurese, meeting problems, ammend the lib to solve them.
+You can easilly extract it to though by manually.  
+The lib itself is not in 0.0.0.1 state, but not super stable, and it's more for the purpose of proof of concept/demo/feedback.
 
-#What it is about
-Chaotic soup react of React, ReactRouter, wrapped in opal with generous dash of model layer
+### Short description
+Chaotic soup of React, ReactRouter, wrapped in Opal with generous dash of model.
 
-#the purpose
-maybe you'll find it usefull and use yourself, or just try it and laugh.
-SNEAK PEAK
+### the purpose
+maybe you'll find it usefull and use yourself, or just try it and laugh, or teach me something.
 
-models/user
-class Profile < Model
-  attributes :name, :bio
-end
-
-class Avatar
-  attributes :file
-  def validate_file
-    self.has_file = true if file
-  end
-end
-
-class User < Model
-
-  attributes :id, :email, :password, :password_confirmation
-
-  route "sign_up", post: "users"
-  route "Show", get: "users/:id"
-  route "create", post: "users"
-  route "update", put: "users/:id", defaults: [:id]
- 
-  has_one :profile, :avatar
-  has_many :roles
-  accepts_nested_attributes_for :profile, :avatar
-
-  def validate_email(options={})
-    unless email.match /^[-a-z0-9~!$%^&*_=+}{\'?]+(\.[-a-z0-9~!$%^&*_=+}{\'?]+)*@([a-z0-9_][-a-z0-9_]*(\.[-a-z0-9_]+)*\.(aero|arpa|biz|com|coop|edu|gov|info|int|mil|museum|name|net|org|pro|travel|mobi|[a-z][a-z])|([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}))(:[0-9]{1,5})?$/i
-      add_error :email, "you should provide a valid email"
-    end
-  end
-
-  def has_role?(role)
-    roles.each do |_role|
-      return true if role.include? _role.name 
-    end
-  end
-
-  def validate_password
-    if password.length < 6
-      add_error :password, "password is too short"
-    end
-    if password != password_confirmation
-      add_error :password_confirmation, "confirmation does not match"
-    end
-  end
-
-end
-module Components
-  module Users
-    class New < RW
-      expose
-
-      include Plugins::Formable #<= makes forms extra EASY
-
-      include Plugins::DependsOnCurrentUser #<= will load the permisions on component_did_mount automatically
-      set_roles_to_fetch :admin #<= needed for above
-
-      def get_initial_state
-        user = User.new
-        user.profile = Profile.new
-        user.avatar = Avatar.new
-        {
-          form_model: user # also could be done like User.new(profile: {profile: {}}, avatar: {avatar: {}})
-        }
-      end
-
-      def render
-        t(:div, {},
-          spinner, #'ll spin when model requests are started and stops when recieved automatically
-          t(:div, {className: "form"},
-            input(Forms::Input, state.form_model.profile, :name), 
-            input(Forms::Input, state.form_model, :email, {type: "text"}),
-            input(Forms::Input, state.form_model, :password, {type: "password"}),
-            input(Forms::Input, state.form_model, :password_confirmation, {type: "password"}),
-            input(Forms::WysiTextarea, state.form_model.profile, :bio), # Wysi with image upload image browse fulltext search and shit
-            input(Forms::Input, state.form_model.avatar, :file, {type: "file", has_file: true, preview_image: true}), #< preview your avatar before saving user will get js File
-            if state.current_user.has_role? :admin #<== that'll be set by plugin #<= will automatically show if has thanks to DependsOnCurrentUser plugin
-              input(Forms::Select, state.form_model, :role, {multiple: true, load_from_server: {url: "/api/feed"}}) #select option will be feeded by server
-            end,
-            t(:br, {}),
-            t(:button, {onClick: ->(){handle_inputs}}, "create user")
-          )
-        )
-      end
-
-      def handle_inputs
-        collect_inputs 
-        unless state.form_model.has_errors?
-          state.form_model.create({component: self #needed for spinner only#}, {serialize_as_form: true}).then do |model|
-           if model.has_errors?
-              set_state form_model: model
-            else
-              App::Router.replaceState({}, "/users/#{model.id}")
-            end
-          end
-        else
-          set_state form_model: state.form_model #setting state with errors will show errors near each input that was invalid 
-        end
-      end
-
-    end
-  end
-end
-
-
-How to try
+### Installation
+``
 git clone
 bundle
 rake db:migrate
+rails s
 navigate to /
+```
 
+# THE MODEL
+your models should inherit from `Model`.
 
-VIEWS (React components)
-
-view part is all about react components.
-that is done via simple Opal wrapping of the React by RW class (short for React Wrapper) (the main idea taken from zeta_chang/react.rb)
-
-class HelloName < RW
+Model has `.parse` class method that traverses Hash || Array or stringified JSON and
+  instantiates models if it meets them.
   
+**Rails, should respond with json root true (can be enabled in config) eg {user: {id: 1}} not the default {id: 1}** (this can be done in Rails config or manually on serialization to JSON)
+
+ When `Model.parse` is called, if it will meet `{model_name: {atr: "some", foo: "some"}}` it will instantiate that `#{model_name}` and and its attributes wll
+  go to `@attributes` of `#{model_name}`. If attribute holds another model it will also be instantiated.
+  
+  > example:
+ ```
+  x = Model.parse({user: {id: 1, friend: {user: {id: 2}}}})
+  p x.attributes
+  =>{id: 1, friend: <User_instance>}
+  p x.pure_attributes
+  => {user: {id: 1, friend: {user: {id: 2}}}}
+# if array of models given to model parse it will retun ModelCollection wich 
+# is basicaly the array of models
+  x = Model.parse([{user: {id: 1}}, {user: {id: 2}}])
+  p x.data
+  [<User_instance>, <User_instance>]
+```
+
+  **attributes are stored in `@attributes` accessor which is a simple hash.**
+
+  each model has `.attributes` runtime called class method that defines getter setter methods which will basically get/set values from @attributes
+```  
+  class User
+    attributes :id, :name
+  end
+  x = User.parse({user: {id: 1, name: "Joe", nickname: "Schmoe"}})
+  p x.attributes
+  => {id: 1, name: "Joe", nickname: "Schmoe"}
+  p x.name
+  => "Joe"
+  x.name = "Foo"
+  p x.nickname
+  => method missing
+  p x.attributes[:nickname]
+  => "Schmoe"
+  x.attributes[:nickname] = "Bar"
+  p x.attributes[:nickname]
+  => "Bar"
+  p x.pure_attributes
+  => {user: {id: 1, name: "Foo", nickname: "Bar"}}
+```
+
+  to update attributes call `update_attributes({hash})` which will merge it to `@attributes`
+
+  `@attributes` is a hash containing what was given to `Model.parse`
+  but when model was parsed, it will instantiate all meeting instances (if they're defined). E.g.
+```
+  x = Model.parse({user: {id: 1, friend: {user: {id: 2}}}})
+  p x.attributes
+  =>{id: 1, friend: <User_instance>}
+  p x.friend.attributes
+  => {id: 2}
+  if you need "pure" attributes structure, simply call #pure_attributes
+  p x.pure_attributes
+  => {user: {id: 1, friend: {user: {id: 2}}}}
+```
+You can instantiate a model with attributes .via new as well
+
+## HTTP REQUESTS/backend communication for models
+  **ALL route calls are managed by RequestHandler class which configures everything on each route call**  
+**ALL route calls return Opal Promise so you have to handle responses in .then .fail.**
+```
+  User.show(id: 1).then do |response|
+    p x = response.json
+    {user: {id: 1, name: "F"}}
+    user = Model.parse(x)
+    p user
+    <User:instance>
+    p user.attributes
+    {id: 1, name: "F"}
+    user.name = "Foo"
+    user.save.then do |response|
+      p response.status_code
+      => 200
+    end
+  end.fail do |r|
+    raise "failed"
+  end
+```
+### map of backend communication routes
+  you define the map of HTTP calls via class .route method like this which shall be called in class body definition:
+```
+  class User
+    
+    route :find => will define method instance method #find 
+    route :Find => (capitalized name for route) will define method class method .find 
+  
+  end  
+```
+  second arg is http method and url pair
+```
+  class User
+    route :Show, get: "/users"
+  end
+  User.show
+  => makes HTTP.get "/users" request to server
+```
+  also you can pass wilds to url:
+  `route :Show, post: "users/:id"`  
+this works as you expect it to. But then you'll have to provide the `:id` if calling that route like so:
+  `Model.show({id: 1})
+  => makes HTTP.post "/users/1" request to server`
+
+  you can pass `{defaults: [:your_wild, :your_2nd_wild]}` in route definition option and it will be resolved automatically
+  if you have corresponding method defined (e.g. called attributes :id):
+```
+  class User
+    attributes :id, :name
+    route :update, put: "users/:id", {defaults: [:id]}
+  end
+  user = User.show(id: 10)
+  user.name = "Joe"
+  user.update
+  => makes HTTP.put "/users/10" request to server
+```
+  *Behind the scenes it follows: if you will not supply wild when calling route, wild will be taken from return value of <Model>.__send__ #{wild}*
+### adding payload to request
+  When making request you can add some payload to it.
+  There are two ways:
+
+###    Manual payload configuration
+  To add the payload to request you should pass hash containing what you want to send, as 2nd arg. Usually that'll be #pure_attributes, but it can be anything 
+```
+  user = User.new
+  user.name = "Joe"
+  user.save({}, payload: user.pure_attributes)
+  => makes HTTP.post request to "/users", with payload: {user: {name: "Joe"}}
+```
+###    Automatic payload configuration
+  Simply define the following method either class or instance, corresponding your defined routes.  
+ Such method shall have one argument, before the request will be made `RequestHandler` instance for that request is passed to that method
+  you can access requst options by using `request_handler`'s accessor `req_options`, basically treat it like the second arg for route call
+```
+  attributes :id
+  route "update", put: "users/:id", defaults: [:id]
+
+  def on_before_update(r) ## #{route_name} 
+    r.req_options = {payload: self.attributes}
+    #same as manual =>  user.update({}, {payload: user.pure_attributes})
+  end
+```
+  now you can simply do it like so:
+```
+  User.show(id: 1).then do |response|
+    user = User.parse(response.json)
+    user.name = "Foo"
+    user = User.update.then do |response|
+      => makes put request to "/users/1", with payload {user: {id: 1, name: "Foo"}}
+      user = User.parse response.json
+    end
+  end
+ ```
+  Your responses can also be automatically resolved via this way:  
+  define class or instance methods with this naming rules
+  `responses_on_#{route_name}`
+```
+  route "Show", get: "users/:id"
+  route "update", put: "users/:id", defaults: [:id]
+
+  def self.responses_on_show(request_handler)
+    if request_handler.response.ok?
+      request_handler.promise.resolve Model.parse(request_handler.response.json)
+    else
+      "raise http error"
+    end
+  end
+
+  def  responses_on_update(r)
+    if r.response.ok?
+      r.promise.resolve Model.parse(r.response.json)
+    else
+      #handle error
+    end
+  end
+
+  def on_before_update(r) ## #{route_name} 
+    r.req_options = {payload: self.attributes}
+    #same as manual =>  user.update({}, {payload: user.pure_attributes})
+  end
+```
+  Now it'll get pretty simple
+```
+  User.show(id: 1).then do |user|
+    => get request to "users/1"
+    p user.attributes
+    => {user: {id: 1, name: "joe"}}
+    user.name = "Schmoe"
+    user.update.then do |user|
+      # put request to "users/1", payload: {user: {id: 1, name: "Schmoe"}}
+      p user.attributes
+      => {user: {id: 1, name: "Schmoe"}}
+      #and e.g. set_state user: user
+    end
+  end
+```
+  `RequestHandler` has everything needed (passed from invoking model) as: `response` , `url` and etc Model || model from which RequestHadler was
+  initialized; you can call it by `request_handler.caller`
+
+  If you call Model model route from component, or any other object you can pass anything to RequestHandler in first arg (wilds);
+```
+  User.find({component: self}, {payload: {foo: "bar"}});
+```
+then the component will be available as instance accessor `@component`
+
+#### Defaults for all requests by any model
+
+  You can monkeypatch Model in Helpers, (you mostly will need it for defaults before and after response handling modethods); they are  
+  
+  `defaults_before_request` (as expected)  
+  `defaults_on_response` (just add if @response.ok else and will run defaultly)
+
+#### Defaults for rest actions
+
+  Default `on_before_#{rest_action_name}` and `responses_on_#{rest_action_name}` for standard REST actions are predefined in model
+  They are:
+  create  
+  before: will payload: pure_attributes  
+  after: on 200 instantiate model and yield it to then  
+
+  Index  
+  afer: on 200 instantiate collection and yield it to then
+
+  destroy  
+  after: on 200 will yield model self to then
+
+  Show  
+  after: on 200 will instatiate model and yield it to then
+
+  update  
+  before: will payload: pure_attributes  
+  after: on 200 instantiate model and yield it to then
+
+#### accepts_nested_attributes_for
+
+to use Rail's accepts_nested_attributes_for capabilities
+```
+  has_one :friend
+  has_many :dogs
+  
+  accepts_nested_attributes_for :friend, :dogs
+  
+  user = User.new
+  p user.pure_attributes
+  => {user: {friend: {}, dogs: []}}
+  dog = Dog.new(nick: "Doge")
+  user.dogs << dog
+  friend = User.new(name: "bar")
+  user.friend = friend
+  p user.attributes
+  => {dogs: [<Dog_instance>], friend: <User_instance>}
+  p user.pure_attributes
+  => {user: {firend_attributes: {name: "bar"}, dogs_attributes: [{nick: "Doge"}]}}
+```
+
+###  serializing to JS FormData
+
+  need sending payload as form data (maybe you need to send JS File via route)
+```  
+  user.update({}, serialize_as_form: true)
+  => will payload valid FormData object to HTTP request no matter how many stuff is nested
+```
+
+### searching in model or in collection
+
+if your model holds in one of it's attributes (e.g. has_many dogs) you can search them via #where method
+```
+  x = user.where do |foo|
+    foo[:attributes][:nick] == "Doge"
+  end
+  p x => <Dog_instance>
+  
+```
+**same way you can search ModelCollection**
+
+
+###  MODEL VALIDATIONS
+
+Your model should implement `validate_#{attr_name}` for the attr you need to validate  
+This method should recieve optional `option: Hash arg`
+and it should result in `add_error(:attr_name, "bad error")` if conditions not met  
+or doing it manually, example
+```
+  def validate_name(opt)
+   if name.length < 8
+     add_error :name, "too short"
+   end
+  end
+```
+**for convinience errors are assumed to have structure**
+repeating it's attributes hash
+```
+model.attributes => {name: "foo"}
+model.validate
+model.errors => {name: ["too short"]}
+model.attributes => {name: "foo"}
+```
+
+if you don't have corresponding attributes defined those validation won't run
+```
+User.new
+user.validate
+user.has_errors?
+=> false
+user.name = "f"
+user.has_errors?
+=> true
+```
+
+If your server responsds with errors in json e.g. user was validated on rails and responded with `{user: {errors: {name: ["too short"]}}}`
+when Model.parse 'ed those errors will present
+```
+User.new
+user.name = "f"
+user.validate(only: ["email"]) # skipping :name validation
+user.has_errors? #=> false
+user.create.then do |user|
+  user.validate
+  user.has_errors? 
+  #=> true
+end
+```
+
+  to reset errors call `#reset_errors`
+
+  example in react component
+```  
+class FormSample < RW
   expose
 
+  include Plugins::Formable
+
+  def get_initial_state
+    form_model: User.new
+  end
+  
+  render
+    t(:div, {},
+      input(Forms::Input, state.form_model, :name, {type: "text"}),
+      t(:button, onClick: ->{handle_inputs})
+    )
+  end
+
+  def  handle_inputs
+    collect_inputs #given by plugin will collect all inputs, form_model.reset_errors (to clear errors from previous validate) and call validate
+    #or your own way of collecting inputs and then
+    #state.form_model.validate
+    unless state.form_model.has_errors?
+      state.model.create.then do |user|
+        user.validate
+        unless user.has_errors? #or add validate in responses_on_create and just use in .then has_errors?
+          App::Router.replaceState({}, "/users/#{user.id}")
+        end
+      end
+    else
+      set_state form_model: state.form_model
+      #formable plugin will render errors for each input if attr on model has corresponding error
+    end 
+  end
+end
+```
+
+##### skipping validations
+
+  validate can accept options like `only: [:name]` will validate only those and etc.
+
+#### validation and files and `has_file` for automatic serialization to FormData
+
+  if you have attribute that supposed to recive JS File from file input
+  in order to send it via XHR (route).
+  youe model should `has_file = true`
+  it can be done via
+```
+  attributes :avatar
+
+  def  validate_avatar
+    if avatar
+      self.has_file = true
+    end
+  end
+```
+
+  than validate your model and next time you'll call route payload will be serialized to form data/
+
+  Model has more stuff, will document them later/ And it can be used solely as model layer for any app or another JS library/
+
+  SNEAK PEAK ON HOW MODEL CAN BE USED IN RW COMPONENT
+```
+  class User < Model
+
+    attributes :id, :email, :password, :password_confirmation
+
+    route "sign_up", post: "users"
+    route "Show", get: "users/:id"
+    route "create", post: "users"
+    route "update", put: "users/:id", defaults: [:id]
+   
+    has_one :profile, :avatar
+    has_many :roles
+    accepts_nested_attributes_for :profile, :avatar
+
+    def validate_email(options={})
+      unless email.match /^[-a-z0-9~!$%^&*_=+}{\'?]+(\.[-a-z0-9~!$%^&*_=+}{\'?]+)*@([a-z0-9_][-a-z0-9_]*(\.[-a-z0-9_]+)*\.(aero|arpa|biz|com|coop|edu|gov|info|int|mil|museum|name|net|org|pro|travel|mobi|[a-z][a-z])|([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}))(:[0-9]{1,5})?$/i
+        add_error :email, "you should provide a valid email"
+      end
+    end
+
+    def has_role?(role)
+      roles.each do |_role|
+        return true if role.include? _role.name 
+      end
+    end
+
+    def validate_password
+      if password.length < 6
+        add_error :password, "password is too short"
+      end
+      if password != password_confirmation
+        add_error :password_confirmation, "confirmation does not match"
+      end
+    end
+  end
+  
+  module Users
+  class New < RW
+    expose
+
+    include Plugins::Formable <= makes forms extra EASY
+
+    include Plugins::DependsOnCurrentUser #<= will load the permision on component_did_mount automatically
+    set_roles_to_fetch :admin #<= needed for above
+
+    def get_initial_state
+      {
+        form_model: User.new(profile: {profile: {}}, avatar: {avatar: {}}) 
+      }
+    end
+
+    def component_will_mount
+      AppController.sub_to(:general_channel, self)
+    end
+
+    def  general_channel(msg)
+      if msg = "reset"
+        force_update
+      end
+    end
+
+    def  component_will_unmount
+      AppController.unsub_from(:generall_channel, self)
+    end
+
+    def render
+      t(:div, {},
+        spinner, #THAt shit'll spin when model requests are done and stops when recieved automatically
+        t(:div, {className: "form"},
+          input(Forms::Input, state.form_model.profile, :name), 
+          input(Forms::Input, state.form_model, :email, {type: "text"}),
+          input(Forms::Input, state.form_model, :password, {type: "password"}),
+          input(Forms::Input, state.form_model, :password_confirmation, {type: "password"}),
+          input(Forms::WysiTextarea, state.form_model.profile, :bio), # Wysi with image upload image browse fulltext search and shit
+          input(Forms::Input, state.form_model.avatar, :file, {type: "file", has_file: true, preview_image: true}), #< preview your avatar before saving user
+          if state.current_user.has_role? :admin <== that'll is set by plugin #<= will automatically show if has thanks to DependsOnCurrentUser plugin
+            input(Forms::Select, state.form_model, :role, {multiple: true, load_from_server: {url: "/api/test"}}) #select option will be feeded by server
+          end,
+          t(:br, {}),
+          t(:button, {onClick: ->(){handle_inputs}}, "create user")
+        )
+      )
+    end
+
+    def handle_inputs
+      collect_inputs 
+      unless state.form_model.has_errors?
+        state.form_model.attributes[:by_admin] = 1 if state.form_model.has_role? :admin
+        state.form_model.create({component: self #needed for spinner only#}, {serialize_as_form: true}).then do |model|
+         if model.has_errors?
+            set_state form_model: model
+          else
+            pub_to(:user_created_channel, model)
+          end
+        end
+      else
+        set_state form_model: state.form_model
+      end
+    end
+  #####THIS WILL ALL serialize beatifully to form data, will send with all accepts_nested_attributes_for Rails ready
+  #Love it! everything is OOP clean and done by total noob just to see if it'll work! have any error everything will be shown and checked before sent to server, (even if not defined on client but are on server after request will also be shown where what and how many ), 
+  #highlighted and shit. and your dealing with several models at once, image upload preview, fulll assblown WYSIWG (Voog rules), and just look how DRY it is, everything is reusable!
+  #all files via XHR without hassle, super duper message BUS between your objects, everything one needs, handy right?
+  end
+end
+```
+
+# VIEWS (React components)
+
+View part is all about react components.
+That is done via simple Opal wrapping of the React by RW class (short for React Wrapper). The main idea of wrapping/accessing React's functions taken from [zetachang/react.rb](https://github.com/zetachang/react.rb)).
+
+Wrapping React I tried to keep it as close to React as possible without fancy-schmancy stuff. 
+You should treat and write the components the way you would do with React, but with all the Ruby beautiness (long live Opal!).
+
+### the hello world example 
+
+```
+class HelloName < RW
+  expose
   def get_initial_state
     {
       name: "Johny"
     }
   end
-
   def render
     t(:div, {}, 
-      t(:p, {}, "Hello #{state.name}!"),
-      children
+      t(:p, {}, "Hello #{state.name}!")
     )
   end
 end
+```
 
-#your opal component should call expose in definition... always ...or it will not work. That expose method exposes RW class to be acessible from
-outside Opal, the rules are Users::LogIn will become window["Users_LogIn"], so you can access it from outside.
 
-if you'll say that rendering method looks weird, you're right.. it really is but we'll get back to it.
-####
+Your RW component should call expose in definition... always ...or it will not work. That expose method exposes RW class to be acessible from outside of Opal (e.g. by reactrails ujs). Calling expose will make Users::LogIn to window["Users_LogIn"], so you can access it from outside.
 
-#native component functions and their RW counterparts:
-name one native method, fantasise on how they would look in Ruby, get the name of RW method.
+## native React functions and their RW counterparts:
 
-getInitialState => get_initial_state
-should return hash representing state
-def initial_state
-  { foo: "bar", user: User.parse(user: {id: 1})}
+Name one native method, snake_case it, get the name of RW method.
+```
+getInitialState #=> will beacome get_initial_state
+#should return hash representing state
+def get_initial_state
+  { foo: "bar", user: User.new({name: "Foo"})}
 end
-
-getDefaultProps => self.default_props #is class method
+```
+```
+getDefaultProps #=> self.get_default_props
 should return hash representing props
-def self.default_props
+def self.get_default_props
   {name: "Defaulteria"}
 end
+```
+ALL other methods are #underscore representation of functions e.g. 
+```
+componentWillUpdate -> component_will_update
+```
+All React's native functions are wrapped in instance methods, except for get_default_props which is a class one, createElement can by used by `#t` method.
 
-ALL other methods are #underscore representation of functions e.g. componentWillUpdate -> component_will_update
-and they all behave as expected EXCEPT FOR createElement.
+All the methods behave absolutely same as vanilla React. And can be used with predictable result.
+You can easily mix with JS React Compoonents easily (more on that later).
 
-the #createElement method in RW the one you use in render
-
+##### the createElement() method in RW 
+```
 t(<component_name: Klass < RW || `VanillaComponent(any)` || String || Symbol>, <props : Hash>, *<children>)
+```
 
-t is short for tag and it's short, in case you've wondered why t.
-  short QA.
-  that's ugly and looks weird.
-  let's say that it looks as not as appealing, but it's faster to type than JSX or even if it would be implemented through do end, and is basically same as vanilla createElement. the reason why i didn't follow react.rb and it's dsl is: it sometimes behaved not the way I wanted, and it all was based on method_missing (for any call).
-  This way it's easy to debug (thanks to opal), and if you mistyped something or missed comma you'll find that easily.
+> t is short for tag and it's short, in case you've wondered why t.
 
-  Moreover I've prepared sublime autocompletions for you. With which it'll be unnoticable.
+> `children` behave as `*args`, so that means you have to separate them with comma.
 
-children behave as *args, so that means you have to separate them with comma.
-html tags called as strings or symbols ("div", :button etc). to create Opal class you simply pass it, for vanilla pass their name with backsticks.
+> html tags called as strings or symbols (`"div"`, `:button` etc). 
 
-example:
+To create RW component simply pass it: `t(Components::Users::Index, {})`
 
-class Users::Message < RW
-  
+> For vanilla pass their name with backsticks.
+
+#### example:
+```
+class Components::Users::Messager < RW
   expose
-
   def render
     t(:div, {}, 
       t(Components::Users::Message, {name: "Johny"},
@@ -213,26 +610,23 @@ class Users::Message < RW
     )
   end
 end
-
-  short QA.
-  that's comma separating sucks.
-  yeah it does Sir, BUT you'll get used to it in no time, and if you miss one comma, Opal will point you to the exact line at compile time, so it will not bring you the horors.
-
-props are passed as hash to second arg of t, if no props given be kind to supply an emty Hash {}.
-  t(:div, {className: "la-la-la", id: "baz", style: {display: "none"}}, "THE CONTENT")
-
-functions to events are added as lambdas:
-
-class Users::Show
+```
+ ###### short QA.
+  > that's comma separating sucks.
   
+  > yeah it does Sir, BUT you'll get used to it in no time, and compiler will show you to the exact line at compile time, so it will not bring you to much of a problem.
+
+## props
+props are passed as hash to second arg of `#t`, if no props given be kind to supply an emty Hash `{}`.  
+`t(:div, {className: "la-la-la", id: "baz", style: {display: "none"}}, "THE CONTENT")`
+
+**functions to events are added as lambdas**:
+```
+class Users::Show
   expose
-
   def initial_state
-    {
-      user: User.new(name: "Foo")
-    }
+    { user: User.new(name: "Foo") }
   end
-
   def render
     t(:div, {className: "html-class"},
       t(:button, {onClick: ->{handler(state.user)}}, 
@@ -240,24 +634,22 @@ class Users::Show
       )
     )
   end
-  
   def handler(e)
     alert "get outa here you little #{e.name}"
   end
-
 end
+```
 
-if youll pass function as prop from parent like:
+##### passing function as props from parent:
+```
 Components::PropsAsMeth::Example < RW
   expose
-
   def render
     t(:div, {},
       t(Components::SomeComponent::Screamer, {on_shout: ->(wat){shout(wat)}},
       )
     )
   end
-
   def on_shout(wat)
     alert wat
   end
@@ -265,24 +657,27 @@ end
 
 class Components::SomeComponent::Screamer < RW
   expose
-
   def render
-    t(:button, {onClick: ->{props.on_shout("WHATTT?")}}, "shout from parent!")
+    t(:button, {onClick: ->{shout_from_parent}}, "shout from parent!")
   end
-
+  
+  def shout_from_parent
+    props.on_shout("WHAAT!")
+  end
 end
-    
-###
+```   
 
-WARNING to use initialize use #init instead in RW component;
+##### WARNING to use initialize use #init instead in RW component;
+```
   class Users::Foo
     def init
-      #doing stuff that you would do in initialize
-      #handy? of course it is, you save 5 chars! (and there are coupla reasons more for that)
+      @full_name = "#{props.user.first_name} #{props.user.last_name}"
     end
   end
+```
+> #init will be called parallel to native getInitiaState() in a lifecycle.
 
-#Refs:
+### Refs:
 refs are defined traditionally and are so awesome to use with ruby
 class Users::Messager < RW
   def render
@@ -297,17 +692,16 @@ class Users::Messager < RW
   end
 end
 
-#BEWARE STRANGER:
-state, ref, props are accessed as wrapped in Native, they are not ruby structures (but you wont meet any problems with that).
-to get refs as Ruby Hash, you can call #refs_as_hash  or props_to_h
+> BEWARE STRANGER:
+**state, ref, props are accessed as wrapped in Native, they are not ruby structures (but you wont meet any problems with that).**
+to get refs as Ruby Hash, you can call `#refs_as_hash`  ruby hash of props is get via `props_to_h`
 
-###But you know what's even more awesome? that you can get the opal instance backing the component
+*But you know what's even more awesome? that you can get the opal instance backing the component*
+```
 class Foo < RW
   expose
   def initial_state
-   {
-      message_of_truth: ""
-   }
+   { message_of_truth: ""}
   end
 
   def render
@@ -320,24 +714,23 @@ class TheMainComponent < RW
   def render
     t(:div, {}, 
       t(Foo, {ref: "foo"}),
-      t(:p, {onClick: ->{somthing}} )
+      t(:p, {onClick: ->{change_state_of_foo}} )
     )
   end
-
-  def somthing
+  def change_state_of_foo
     ref(:foo).__opalInstance.set_state message_of_truth: "you are human!"
   end
 end
-
-#beacuse we roll our little special t method, traditional iterations wont work
+```
+## iterations in render
+beacuse we roll our little special `#t` method, traditional iterations won't work
+```
 def initial_state
   x = []
   100.times do |i|
     x << i
   end
-  {
-    ar: x
-  }
+  { ar: x }
 end
 
 def render
@@ -347,15 +740,17 @@ def render
     end
   )
 end
+```
+there are defined `splat_each(enum)` and `splat_each_with_index(enum)`, but you can easily add your
+own in simply patching the RW class (or monkey patch the Array or Hash classes), so your iteration returns an array of values returned from it. look at source and youll see why. and star * also should be added before your `splat_iteration_method` (as well as to any arrays that are being passed as children)
 
-there are defined splat_each(to_iterate) and splat_each_with_index(to_iterate), but you can easily add your
-own in simply patching the RW class (or monkey patch the Array or Hash classes), so your iteration returns an array of values returned from it. look at source and youll see why. and star * also should be added before your splat_iteration_method (as well as to any arrays that are being passed as children)
-    SHORT QA
-    q: ...
-    a: shh, don't even ask, you'll get used to it super fast. look at it as the situation where vanilla React render function should return single element
+    *SHORT QA*
+   > q: ...
+    
+   > a: shh, don't even ask, you'll get used to it super fast. look at it as the situation where vanilla React render function should return single element
 
-###loading data from server example
-
+### loading data from server example
+```
   def initial_state
     {
       user: false
@@ -377,257 +772,24 @@ own in simply patching the RW class (or monkey patch the Array or Hash classes),
       end
     )
   end
+```
 
-  ######Controllers
+# Controllers
+
 it's shame to call them so, but I'm used to that name, and it's simply a couplea line class 
 which has an accessor to Opal RW instance passed to it on new.
 
 I didn't yet find that much of necessity in them, so basically components are controller views themselves.
 But for the sake of incapsulation they may be used.
 
-RW components have assign_controllers(ControllerName), which ll be called upon their instantiation.
-which pass themselve to provided contorller.
+RW components have `assign_controllers(ControllerName)`, which ll be called upon their instantiation,
+which pass themselve to provided contorller.  
   *Don't worry when component will unmount everything will be autamatically cleared.
-Controller is ment for handling user interactions and other stuff that by it's meaning should belong to component.
 
-THE CONCEPT of views and controllers
-as far as you are using ReactRouter, or alternative, (or run SPA).
-
-Your app always has a meta component that is always there. in turbopimp it's the Components::App::Main component. (the cotroller-view)
-It has the AppController. this is a director, and one who is in global charge.
-your Main component resides in '/' route.
-
-There's also an app_router component that defines your routes and the one that's being mounted. 
-
-your components should be namespaced by their purpose e.g. you'll have Users, or Pages
-so they have a Components::Users::Main component residing at "/users" route, and all child routes (like Components::Users::Login, Components::Users::SigUp) will be defined
-under the same namespace (module). It helps you to structure your code.
-
-Those fancy names like Flux and stuff look super cool, *(dapandsi ingection, tastableity, alien space ship em drives). let's not complicate (keep in mind i'm total hobby coder noob) stuff and keep it simple, I mean Ruby) and our base controller be of two lines of code))
-
-####
-
-######## THE MODEL
- your models should inherit from Model
-  Model has parse class method tha traverses Hash || Array or stringified JSON and
-  instantiates meeting models.
-  Rails, should respond with json root eg {user: {id: 1}}
-  When Model.parse if it will meet {model_name: {atr: "some", foo: "some"}} it will instantiate that #{model_name} and [:model_name] wll
-  go to attributes; if in attributes there is model it will also be instantiated.
-  if array of models given to model parse it will retun ModelAssociation wich is basicaly the arry of models
-  attributes are stored in @attributes wich are passed on init
-  each model has .attributes runtime called method that defines getter setter methods on @attributes
-  to update attributes call update_attributes({hash}) which will merge it to attributes TODO implement deep_merge on ::Hash
-
-  #MODEL VALIDATION
-   ####
-  #IMPORTANT!
-  #your model should implement validate_attr_name for the attr you want to validate
-  #this method should recieve optional option : Hash arg
-  #and it should result in either add_error(:attr_name, "bad error")
-  #or doing it manually, example
-  #def validate_name
-  # if name.length < 8
-  #   add_error :name, "too short"
-  # end
-  #end
-  #for convinience errors are assumed to have structure
-  #repeating it's attributes hash
-  #model.attributes => {name: "foo"}
-  #model.validate
-  #model.errors => {name: ["too short"]}
-  #model.attributes => {name: "foo"}
-
-        HTTP REQUESTS
-  in your model you define routes as:
-  route :find => will define method #find
-  for class method routes route shall be capitalized
-  route :Find => will define method .find
-  second arg is url
-  route :find, "/users"
-  so model.find will make request to /users
-  also you can pass wilds to url
-  route :find, "users/:id"
-  this works as expected
-  to add the payload to request you should pass hash as 2nd arg
-  .find {}, {user: {email: user.email}} => will result in payload: {users: {email: user.email}}
-  if you had wild in route definition, you have to supply it in first arg as
-  .find {id: 1}, {payload : Hash}
-  you can pass {defaults: [:your wild, :your 2nd wild]} in route definition option
-  route :find, "users/:id", {defaults: [:id]} =>
-  so if you will not supply wild when calling wild will be taken from return value of Model || model.__send__ #{wild}
-  
-  if you need to handle response in .then .fail customly, supply {yield_response: true} as first arg; as
-  .find {yield_response: true, id: 2}.then {|response| do somethind with esponse}.fail {|response| do spmething else} 
-
-  when you call defined route request is handled by RequestHandler class
-
-  RequestHandler has everything needed (passed from invoking model) as: response , urld and etc Model || model from which RequestHadler was
-  initialized; you can call it by request_handler.caller
-
-  If you call Model model route from component, or any other object you can pass components self to RequestHandler in first arg (wilds)
-  as render; User.find({component: self}, {payload: {foo: "bar"}}); then the component will be available as instance var @component
-
-  to define custom scenarios of response automatic handling you should define
-  responses_on_#{your route name} methods that accepts RequestHandler instance
-  that instance has accessors on everything you need e.g. .response .promise and etc
-  example:
-      def self.responses_on_find(request_handler)
-        if request_handler.response.ok?
-          request_handler.promise.resolve Model.parse(request_handler.response.json)
-        else
-          "raise http error"
-        end
-      end
-
-  to provide default actions on response there is RequestHandler#defaults_on_response where you put code that should run
-  for any response
-
-  You can monkeypatch Model in Helpers, (you mostly will need it for defaults modethods); now they are
-  #defaults_before_request (as expected)
-  #defaults_on_response (just add if @response.ok else and will run defaultly)
-
-  Model defaultly prepares payload of HTTP, and repsonses for it for standatrd 
-  REST actions
-  create
-  before: will payload: pure_attributes
-  after: on 200 instantiate model and yield it to then
-
-  index
-  afer: on 200 instantiate collection and yield it to then
-
-  destroy
-  after: on 200 will yield model self to then
-
-  show
-  after: on 200 will instatiate model and yield it to then
-
-  update
-  before: will payload: pure_attributes
-  after: on 200 instantiate model and yield it to then
-
-  eg
-  you can easily override them with defining your own 
-  def responses_on_#{route_name}(request_handler)
-    if request_handler.ok?
-      p request_handler.response.json
-    end
-  end
-
-  better see code than read!
-
-  class Friend < Model
-    attributes :id, :nick_name
-  end
-
-  class User < Model
-    attributes :id, :name
-
-    route "Show", get: "users/:id"
-    route "create", post: users
-    route "update", {put: "users/:id"}, {defaults: [:id]}
-    route "destroy", {delete: "users/:id"}, {defaults: [:id]}
-    route "some", {post: "users/some/:id"}
-
-    def validate_name
-      if name.lenght < 3
-        add_error(:name, "names too short")
-      end
-    ned
-
-    has_many :friends
-    accepts_nested_attributes_for :friends
-
-    def on_before_some(r)
-      r.arbitrary[:status] = "awesome"
-      r.req_options = payload: pure_attributes
-    end
-
-    def responses_on_some(r)
-      r.response.ok?
-        resp = r.response.json
-        resp[:user][:mark] = "delete it later"
-        r.promise.resolve User.parse(resp)
-      end
-    end
-
-  end
-
-  User.show({id: 1}).then do |user| < ===== server responds with {user: {name: "johny", id: "1"}}
-    p user
-    => <user instance>
-    p user.name
-    => johny
-    p user.attributes
-    {id: 1, name: "johny", friends: []}
-    p user.pure_attributes
-    => {user: {id: 1, name: "johny", friends: []}}
-    user.destroy.then do |response| <========= server: {destroyed_id: 1}
-      User.find({id: 1}).then do |user|
-
-      end.fail do |response|
-        p response.status_code
-        => 404
-        user = User.new
-        user.name = "FOO"
-        user.create.then do |user| <===server: {user: {id: 2, name: "FOO"}}
-          p user.pure_attributes
-          => {user: {id: 2, name: "FOO", friends: []}}
-          user.name = "baz"
-          user.update.then do |user| <======server: {user: {id: 2, name: "baz"}}
-            p user.pure_attributes
-            => {user: {id: 2, name: "baz", friends: []}}
-            user.some(id: user.id).then do |res|
-              p res.pure_attributes
-              => {user: {id: 2, name: "baz", friends: [], mark: "delete it later"}}
-            end
-          end
-        end
-      end
-    end
-  end
-
-#validation
-x = User.new
-x.name = "jo"
-x.validate
-x.has_errors? 
-=> true
-x.errors
-{name: ["names too short"]}
-x.name = "jon"
-x.validate
-x.has_errors?
-=> false
-
-if youll have any attr wich shall get JS File instance from input and then flag it as has_file
-eg.
-def validate_file_holing_attr
-  has_file = true
-end
-on HTTP your payload will be serialize to valid JS FormData understandable by Rails
-
-#WARNING
-validation are run only on attributes that were assigned to some val
-if you'll instantiate it without this attr they wont be run
-
-options that you can call on #route .route
-User.show(id: 1).then do |user|
-  user.update({}, {extra_params: {foo: "bar"}}) ==> request payload will be {user: {id: 1, name: "john", foo: "bar"}}
-end
-
-user.update({skip_before_handler: true}, {yield_response: true}).then do |response|
-  #response will be unprocessed response do what you want with it
-  user = Model.parse(response.json)
-end
-
-#HELPERS
 
 
 ###### END NOTES
 one day you approach me in the dusk, and ask: "dude what the fuck is this? where are tests at least", and you'll se me putting on my hood masking my face, and me dissapearing in the shadows.
 
-At least try it. And share your feedback please. I don't have a CS degree and I'm not even close related to IT field, and my coding (as a pure hobby from absolute beginner i could't even "hello world!") began on previous year's (July 2014) vacation.
-and sorry for my English as well (it's not my first language)
 
 Thank you for scrolling to here!
