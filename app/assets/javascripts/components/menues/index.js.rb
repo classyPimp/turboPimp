@@ -22,9 +22,9 @@ module Components
       end
 
       def component_did_mount
-        #menu = MenuItem.index.then do |_menu|
-        #  self.set_state menu: _menu
-        #end
+        menu = MenuItem.index.then do |_menu|
+          self.set_state menu: _menu
+        end
       end
       
       def render
