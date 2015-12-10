@@ -12,6 +12,7 @@ You can easilly extract it manually.
 The lib itself is not in 0.0.0.1 state, but not super stable, and it's more for the purpose of proof of concept/demo/feedback.  
 This repo comes as Rails demo app.  
 
+The demo for the app in this repo [DEMO](https://desolate-inlet-2252.herokuapp.com) 
 ### Short description
 Chaotic soup of React, ReactRouter, wrapped in Opal with generous dash of model.
 
