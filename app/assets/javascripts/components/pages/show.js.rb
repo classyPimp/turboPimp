@@ -10,7 +10,8 @@ module Components
       end
 
       def component_did_mount
-        Page.show({id: props.params.id}).then do |page|
+        page_to_query = (x = props.page_id) ? x : props.params.id
+        Page.show({id: page_to_query, component: self}).then do |page|
           set_state page: page
         end.fail do |resp|
           raise resp
@@ -19,6 +20,7 @@ module Components
 
       def render
         t(:div, {},
+          spinner,
           if state.page
             t(:div, {},
               t(:div, {dangerouslySetInnerHTML: {__html: state.page.body}})

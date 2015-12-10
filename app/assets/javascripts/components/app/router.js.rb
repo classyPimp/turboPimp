@@ -19,6 +19,7 @@ module Components
       def render
         t(`Router`, {history: @@history},
           t(`Route`, {path: "/", component: Components::App::Main.create_class},
+            t(`IndexRoute`, {component: Components::App::IndexRoute.create_class}),
 
             t(`Route`, {path: "/users", component: Users::Main.create_class}, 
               t(`Route`, {path: "signup", component: Users::SignUp.create_class }),

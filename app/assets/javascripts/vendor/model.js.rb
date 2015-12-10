@@ -1,6 +1,7 @@
 =begin
   NOTICE
   *****************OPAL JQUERY needs hack
+  UPDATE: MONKEY PATCHED IN core_monkey_patches
   after this line
     settings, payload = @settings.to_n, @payload
   this should be inserted in opal_jquery opal gem 

@@ -15,6 +15,7 @@ require 'native'
 window.Router = ReactRouter.Router
 window.Route = ReactRouter.Route
 window.Link = ReactRouter.Link
+window.IndexRoute = ReactRouter.IndexRoute
 `
 
 class RW

@@ -30,7 +30,8 @@ navigate to /
 signup one user
 navigate to /console
 User.first.add_role :admin
-Use demo
+
+browse source, build components!
 
 ```
 
