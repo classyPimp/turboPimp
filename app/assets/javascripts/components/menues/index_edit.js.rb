@@ -60,7 +60,7 @@ module Components
                 )
               end,
               t(:button, {onClick: ->{update_menu}}, "save changes"),
-              t(:button, {onClick: ->{refetch}}, "cancel edit")
+              t(:button, {onClick: ->{refetch}}, "clear unsaved")
             )
           end
         )
@@ -99,7 +99,9 @@ module Components
 
       def update_menu
         state.menu.update.then do |menu|
+          alert "updated, look at menu now!"
           set_state menu: menu
+          Components::App::Main.instance.ref(:menu).__opalInstance.set_state menu: menu
         end.fail do |resp|
           raise resp
         end

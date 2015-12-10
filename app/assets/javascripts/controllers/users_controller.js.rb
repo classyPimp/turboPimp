@@ -8,7 +8,9 @@ class UsersController < BaseController
           c.state.form_model.errors = e
           c.set_state form_model: c.state.form_model 
         else
-          c.set_state submitted: true
+          alert "signed in"
+          CurrentUser.get_current_user
+          Components::App::Router.history.replaceState({}, "/users/#{response.json[:user][:id]}")
         end
       end.fail do |response|
         `console.log(#{response})`

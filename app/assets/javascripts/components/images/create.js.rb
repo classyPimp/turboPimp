@@ -19,7 +19,7 @@ module Components
 			  t(:div, {},
 		      if state.form_model
 		        t(:div, {}, 
-		          input(Forms::Input, state.form_model, :file, {type: "file", has_file: true}),
+		          input(Forms::Input, state.form_model, :file, {type: "file", has_file: true, preview_image: true}),
               input(Forms::Input, state.form_model, :alt, {type: "text"}),
               input(Forms::Input, state.form_model, :description, {type: "text"}),
 		          t(:button, {onClick: ->(){handle_inputs}}, "upload")

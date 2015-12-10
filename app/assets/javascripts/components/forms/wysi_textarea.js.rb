@@ -74,7 +74,8 @@ module Forms
     end
 
     def insert_image(image)
-      @wysi_editor.composer.commands.exec("insertImage", { src: image.url, alt: image.alt });
+      @wysi_editor.composer.commands.exec("insertImage", { src: image.url, alt: image.alt })
+      ref(:modal).__opalInstance.close
     end
 
 		def component_did_mount

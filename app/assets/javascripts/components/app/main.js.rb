@@ -5,8 +5,15 @@ module Components
       expose
 
       class << self
-        attr_accessor :history
+        attr_accessor :instance
         attr_accessor :props_from_server
+      end
+
+      def init
+        self.class.instance = self
+      end
+      def check
+        alert "FOOOO!"
       end
 
       def get_initial_state  
@@ -24,7 +31,7 @@ module Components
       
       def render
         t(:div, {},
-          t(Components::Menues::Index, {}),
+          t(Components::Menues::Index, {ref: "menu"}),
           spinner,
           t(:div, {},
             children

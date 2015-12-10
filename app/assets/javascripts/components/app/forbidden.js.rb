@@ -5,7 +5,7 @@ module Components
 
       def render
         t(:div, {}, 
-          t(:h1, {}, "forbidden 401")
+          t(:h1, {}, "forbidden 403")
         )
       end
     end

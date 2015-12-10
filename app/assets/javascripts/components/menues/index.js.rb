@@ -17,10 +17,6 @@ module Components
         }
       end
 
-      def component_will_update
-        p "#{self} updated"
-      end
-
       def component_did_mount
         menu = MenuItem.index.then do |_menu|
           self.set_state menu: _menu
@@ -39,7 +35,7 @@ module Components
                   t(:span, {className: "icon-bar"}),
                   t(:span, {className: "icon-bar"})
                 ),
-                t(:a, {className: "navbar-brand"}, "Home")
+                link_to("home", "/")
               ),
               t(:form, {className: "navbar-form navbar-left"},
                 t(:ul, {},

@@ -9,4 +9,10 @@ class Image < Model
   def validate_file
   	self.has_file = true
   end
+
+  def validate_alt
+    if alt.length < 2
+      add_error :alt, "provide alt"
+    end
+  end
 end

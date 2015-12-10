@@ -4,13 +4,14 @@ module Shared
     expose
 
     def get_initial_state
+      on = props.display ? props.display : "none"
       {
-        on: "none"
+        on: on
       }
     end
 
     def render
-      t(:div, {className: "cssload-container", style: {display: props.display}}, 
+      t(:div, {className: "cssload-container", style: {display: state.on}}, 
         t(:div, {className: "cssload-speeding-wheel"})
       )
     end

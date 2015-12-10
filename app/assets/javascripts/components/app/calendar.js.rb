@@ -46,7 +46,8 @@ class Calendar < RW
   end
 
   def render
-    t(:div, {}, 
+    t(:div, {},
+      t(:p, {}, "click on week"), 
       t(:button, {onClick: ->(){prev_month}}, "<"),
       t(:button, {onClick: ->(){next_month}}, ">"),
       t(:p, {}, "the month is #{state.date.month}, of year #{state.date.year}"),

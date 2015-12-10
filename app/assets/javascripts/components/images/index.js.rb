@@ -26,7 +26,6 @@ module Components
   		    Image.index.then do |images|
   		      extract_pagination(images)
   		      set_state images: images
-            p "set_state"
   		    end.fail do |pr|
   		      `console.log(#{pr})`
   		    end

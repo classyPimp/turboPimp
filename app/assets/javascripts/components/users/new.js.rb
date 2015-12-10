@@ -41,7 +41,6 @@ module Users
 
     def handle_inputs
       collect_inputs
-      p state.form_model.attributes and return
       unless state.form_model.has_errors?
         state.form_model.attributes[:by_admin] = 1
         state.form_model.create({}, {serialize_as_form: true}).then do |model|
