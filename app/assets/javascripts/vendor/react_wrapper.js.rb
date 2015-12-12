@@ -146,7 +146,7 @@ class RW
           render: function() {
             return this.__opalInstance.$render();
           },
-          getInstance: function(){
+          rb: function(){
             return this.__opalInstance
           }
         })

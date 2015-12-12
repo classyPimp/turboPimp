@@ -39,7 +39,7 @@ module Components
               ),
               t(:form, {className: "navbar-form navbar-left"},
                 t(:ul, {},
-                  t(Users::LoginInfo, {})
+                  t(Components::Users::LoginInfo, {})
                 )
               ),
               t(:div, {className: "collapse navbar-collapse #{state.collapsed ? "in" : ""}"},

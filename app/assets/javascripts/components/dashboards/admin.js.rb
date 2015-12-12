@@ -25,7 +25,7 @@ module Components
       end
 
       def init_user_creation
-        set_state current_control_component: Native(t(Users::New, {on_create: ->(user){on_user_added(user)}}))
+        set_state current_control_component: Native(t(Components::Users::New, {on_create: ->(user){on_user_added(user)}}))
       end
 
       def on_user_added(user)

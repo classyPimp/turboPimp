@@ -50,9 +50,6 @@ module Components
         end
       end
 
-      
-
-
     end
   end 
 end

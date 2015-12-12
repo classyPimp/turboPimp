@@ -12,9 +12,6 @@ module Components
       def init
         self.class.instance = self
       end
-      def check
-        alert "FOOOO!"
-      end
 
       def get_initial_state  
         if x = self.class.props_from_server.current_user
@@ -32,6 +29,7 @@ module Components
       def render
         t(:div, {},
           t(Components::Menues::Index, {ref: "menu"}),
+          t(Shared::Flash::Holder, {ref: "flash"}),
           spinner,
           t(:div, {},
             children
@@ -42,6 +40,10 @@ module Components
         )
       end
 
+      #flash message example
+      #msg = Shared::Flash::Message.new( t(:button, {onClick: ->{self.x}}, "PRREASS ME"), "success")
+      #Components::App::Main.instance.ref(:flash).rb.add_message(msg)
+      #
       #modal example
       #def modal_handler 
       #  ref(:modal).__opalInstance.open(t(:p, {}, "THE HEADER"))
