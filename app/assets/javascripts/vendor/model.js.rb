@@ -225,7 +225,7 @@ class Model
   #TODO: fallback for ie < 10 and other shitty versions via iframe. But is there a true neccessity in such? 
     if val.is_a? Array
       val.each_with_index do |v, i| 
-        track = track + "[#{i}]"
+        (track = track + "[]") unless (track[-2..-1] == "[]")
         iterate_for_form(v, form_data, track)  
       end
     elsif val.is_a? Hash
@@ -279,7 +279,9 @@ class Model
       #weird part of v.dup is needed when native objects (in single case I encounterd
       #the native file from input would otherwise niled)
       if self.class.nested_attributes.has_key? k
-        x["#{k}_attributes"] = normalize_attributes( (v.nil? ? v : ( (v.dup.nil? || v.dup == 0) ? v : v.dup)), false )
+        unless x["#{k}_attributes"].try(:empty?) 
+          x["#{k}_attributes"] = normalize_attributes( (v.nil? ? v : ( (v.dup.nil? || v.dup == 0) ? v : v.dup)), false )
+        end
       else
         x[k] = normalize_attributes( (v.nil? ? v : ((v.dup.nil? || v.dup == 0) ? v : v.dup)))
       end

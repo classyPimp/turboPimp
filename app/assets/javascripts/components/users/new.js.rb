@@ -21,33 +21,31 @@ module Users
 
     def render
       t(:div, {},
-        t(:div, {className: "form"},
-          input(Forms::Input, state.form_model.profile, :name),
-          input(Forms::Input, state.form_model, :email, {type: "text"}),
-          input(Forms::Input, state.form_model, :password, {type: "password"}),
-          input(Forms::Input, state.form_model, :password_confirmation, {type: "password"}),
-          input(Forms::Textarea, state.form_model.profile, :bio),
-          input(Forms::Input, state.form_model.avatar, :file, {type: "file", has_file: true, preview_image: true}),
-          if state.current_user.has_role? :admin
-            input(Forms::Select, state.form_model, :bole, {multiple: true, load_from_server: {url: "/api/test"}})
-          else
-            spinner(true)
-          end,
-          t(:br, {}),
-          t(:button, {onClick: ->(){handle_inputs}}, "create user")
-        )
+        if state.form_model
+          t(:div, {className: "form"},
+            input(Forms::Input, state.form_model.profile, :name),
+            input(Forms::Input, state.form_model, :email, {type: "text"}),
+            input(Forms::Input, state.form_model, :password, {type: "password"}),
+            input(Forms::Input, state.form_model, :password_confirmation, {type: "password"}),
+            input(Forms::Textarea, state.form_model.profile, :bio),
+            input(Forms::Input, state.form_model.avatar, :file, {type: "file", has_file: true, preview_image: true}),
+            if state.current_user.has_role? :admin
+              input(Forms::Select, state.form_model, :roles_array, {multiple: true, load_from_server: {url: "/api/users/roles_feed"}})
+            end,
+            t(:br, {}),
+            t(:button, {onClick: ->(){handle_inputs}}, "create user")
+          )
+        end 
       )
     end
 
     def handle_inputs
       collect_inputs
       unless state.form_model.has_errors?
-        state.form_model.attributes[:by_admin] = 1
         state.form_model.create({}, {serialize_as_form: true}).then do |model|
-         if model.has_errors?
+          if model.has_errors?
             set_state form_model: model
           else
-            set_state form_model: false
             props.on_create(model)
           end
         end

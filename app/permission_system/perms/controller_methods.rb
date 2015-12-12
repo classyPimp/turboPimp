@@ -9,7 +9,7 @@ module Perms
     end
 
     def perms_for(model, options = {})
-      Perms::Factory.build(model, self, options)
+      @perms = Perms::Factory.build(model, self, options)
     end
   end
 end

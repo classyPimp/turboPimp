@@ -43,7 +43,7 @@ module Forms
         t(:select, {value: state.selected, onChange: ->(e){select(Native(e))}, ref: "#{self}"}.merge(@props_to_select),
           t(:option, {value: ""}, ""),
           *splat_each(state.options) do |v|
-            t(:option, { value: "#{v}" }, v.value)
+            t(:option, { value: "#{v.value}" }, v.value)
           end,
         )     
       )   
@@ -82,7 +82,6 @@ module Forms
 
     def initialize(value)
       @value = value
-      @selected = selected
     end
 
   end

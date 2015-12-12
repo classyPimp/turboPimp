@@ -74,7 +74,8 @@ module Forms
 
     def collect
       if props.has_file 
-        props.model.attributes[props.attr.to_sym] = ref("#{self}").files[0]
+        props.model.attributes[props.attr.to_sym] = ref("#{self}").files[0] || ""
+        #props.model.attributes[props.attr.to_sym] = "" if props.model.attributes[props.attr.to_sym] == nil
       else
         props.model.attributes[props.attr.to_sym] = ref("#{self}").value
       end

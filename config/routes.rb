@@ -22,6 +22,8 @@ Rails.application.routes.draw do
 
     get "restricted_asset" => "faker#restricted_asset" 
 
+    post "users/roles_feed" => "users#roles_feed"
+
   end
 
   get "/console" => "faker#console"

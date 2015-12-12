@@ -13,13 +13,14 @@ module Perms
     #FUCK IM SLEEPY AND SEE ME WRITING SHIT!
     #TODO: rewrite docs
 
-    attr_accessor :permitted_attributes
+    attr_accessor :permitted_attributes, :arbitrary
 
     def initialize(model, controller, options)
       @options = options
       @current_user = controller.current_user
       @controller = controller
       @model = model
+      @arbitrary = {}
       @permitted_attributes = false
     end
 

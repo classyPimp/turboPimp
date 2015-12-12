@@ -6,17 +6,28 @@ class UsersController < ApplicationController
   before_action :correct_user,   only: [:edit, :update]
 
   def new
-    @user = User.new
+    @user = User.new  
   end
 
   def create
-    @user = User.new(create_user_params)
+    #@user = User.new(create_user_params) #<= standart auth uncoment
+    perms_for :User #added !standart_auth
+    auth! @perms #added !standart_auth
+    #render json: @perms.permitted_attributes and return
+    @user = User.new(@perms.permitted_attributes)
+
+    if @perms.arbitrary[:as_admin] #added !standart_auth
+      @perms.arbitrary[:roles_array].each do |role| #
+        @user.add_role role #
+      end #
+    end
+
     if @user.save
       if User::ACTIVATABLE
         @user.send_activation_email
         render json: @user.as_json(only: [:id, :email])
       else
-        log_in @user
+        log_in @user unless @perms.arbitrary[:as_admin] #modified starting from unless
         #remember user
         render json: @user.as_json(only: [:id, :email])
       end
@@ -63,5 +74,10 @@ class UsersController < ApplicationController
       @response["user"][:arbitrary] = "current_user"
     end
     render json: @response
+  end
+
+  def roles_feed
+    auth! Services::RoleManager.new
+    render json: {options: Services::RoleManager.allowed_roles}
   end
 end
