@@ -3,7 +3,12 @@ module Components
     class Index < RW
 
       expose
-        
+
+      include Plugins::DependsOnCurrentUser
+      set_roles_to_fetch :admin
+
+      include Plugins::Paginatable
+
       def get_initial_state
         {
           users: ModelCollection.new
@@ -12,6 +17,7 @@ module Components
 
       def component_did_mount
         User.index.then do |users|
+          extract_pagination(users)
           set_state users: users
         end
       end
@@ -20,12 +26,26 @@ module Components
         t(:div, {},
           *splat_each(state.users) do |user|
             t(:div, {},
-              t(:div, {style: {width: "60px", height: "60px"}}),
-              t(:p, {}, email: user.email),
-              t(:p, {}, name: link_to(user.profile.name, "/users/show/#{user.id}")),
-              t(:button, {onClick: ->{edit_selected(user)}}, "edit"),
-              t(:button, {onClick: ->{destroy_selected}}, "destroy")
+              if user.avatar 
+                t(:image, {src: user.avatar.url, style: {width: "60px", height: "60px"}})
+              end,
+              t(:p, {},"email: #{user.email}"),
+              t(:p, {}, (link_to("name: #{user.profile.name}", "/users/show/#{user.id}" ) if user.profile) ),
+              unless user.roles.empty?
+                t(:p, {}, "rights:", 
+                  *splat_each(user.roles) do |role|
+                    t(:span, {className: "label label-default"}, role.name)
+                  end,
+                  t(:br, {}),
+                  t(:button, {onClick: ->{edit_selected(user)} }, "edit user"),
+                  t(:button, {onClick: ->{destroy_selected(user)}}, "delete user")
+                )
+              end,
+              t(:hr, {style: {color: "grey", height: "1px", backgroundColor: "black"}}),      
             )
+          end,
+          unless state.users.data.empty?
+            will_paginate
           end
         )
       end

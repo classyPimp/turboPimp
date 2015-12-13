@@ -53,20 +53,33 @@ module Plugins
     #or nil if state.pagination is not set
     #just call it in render as regular #t
     #used after pagination was extracted from response
+
     def will_paginate
-      t(:div, {}, 
-        *if state.pagination
-          to_return = [] 
-          state.pagination.total_pages.times do |page|
-            page += 1
-            if page == state.pagination.current_page
-              to_add  = t(:span, {}, "#{page} - current_page")
-            else
-              to_add = t(:a, {onClick: ->(){pagination_switch_page(page)}}, "\t#{page}\t")
+      t(:nav, {},
+        *if p_n = state.pagination
+          t(:ul, {className: "pagination", style: {cursor: "pointer"}}, 
+            t(:li, {className: x = "#{p_n.current_page == 1 ? "disabled" : ""}", style: {cursor: "pointer"}},
+              t(:a, {}.merge(x == '' ? {onClick: ->{pagination_switch_page(p_n.current_page - 1)}} : {}), "<<")
+            ),         
+            *(to_return = [] 
+            p_n.total_pages.times do |page|
+              page += 1
+              if page == p_n.current_page
+                to_add  = t(:li, {className: "active"}, 
+                            t(:span, {}, "#{page}")
+                          )
+              else
+                to_add = t(:li, {onClick: ->(){pagination_switch_page(page)}},
+                  t(:span, {}, "#{page}")
+                )
+              end
+              to_return << to_add
             end
-            to_return << to_add
-          end
-          to_return
+            to_return),            
+            t(:li, {className: x = "#{p_n.current_page == p_n.total_pages ? 'disabled' : ''}", style: {cursor: "pointer"} }, 
+              t(:span, {}.merge(x == '' ? {onClick: ->{pagination_switch_page(p_n.current_page + 1)}} : {}), ">>")
+            )
+          )
         end
       )
     end
@@ -81,9 +94,10 @@ module Plugins
   #    set_state images: images
   #  end
   #end
+  #as well you can make it dependent to load on query params to be indexable
 
     def pagination_switch_page(page)
-      raise "#{self} must implement #pagination_switch_page(page) because pagination plugin was included"
+      raise "#{self} must implement #pagination_switch_page(page) refer to #{self.class} for info"
     end
 
   end

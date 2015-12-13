@@ -28,7 +28,7 @@ module Components
               t(`Route`, {path: "password_reset", component: Users::PasswordReset.create_class}),
               t(`Route`, {path: "update_new_password/:digest", component: Users::PasswordResetForm.create_class}),
               t(`Route`, {path: "new", component: Users::New.create_class}),
-              t(`Route`, {path: ":id", component: Users::Show.create_class})
+              t(`Route`, {path: "show/:id", component: Users::Show.create_class})
             ),
 
             t(`Route`, {path: "/pages", component: Components::Pages::Main.create_class},

@@ -18,7 +18,7 @@ module Components
 				t(:div, {}, 
 					t(:p,{}, @message),
 					if @ok
-						link_to("to users::show", "/users/#{@id}")
+						link_to("to users::show", "/users/show/#{@id}")
 					end
 				)
 			end

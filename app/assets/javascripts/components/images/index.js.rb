@@ -56,7 +56,7 @@ module Components
 		  end
 
       def perform_search(img)
-        Components::App::Router.history.replaceState(nil, "#{props.location.pathname}?#{`$.param({search_query: #{img.attributes[:search_query].to_n}})`}") unless props.should_expose
+        Components::App::Router.history.pushState(nil, "#{props.location.pathname}?#{`$.param({search_query: #{img.attributes[:search_query].to_n}})`}") unless props.should_expose
         Image.index({},{extra_params: img.attributes}).then do |images|
           extract_pagination(images)
           set_state images: images
@@ -64,7 +64,7 @@ module Components
       end
 
 		  def pagination_switch_page(page)
-		  	#Components::App::Router.history.replaceState(nil, "#{props.location.pathname}?page=#{page}")
+		  	#Components::App::Router.history.pushState(nil, "#{props.location.pathname}?page=#{page}")
 		    Image.index({},{extra_params: {page: page}}).then do |images|
 		      extract_pagination(images)
 		      set_state images: images

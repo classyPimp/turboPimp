@@ -12,5 +12,39 @@ module Perms
       end      
     end
 
+
+  #***********************
+    def index
+
+      if @current_user && @current_user.has_any_role?(:admin, :root)
+
+        @model = ::User.includes(:profile_id_name, :avatar, :roles).all.paginate(page: params[:page], per_page: 2)
+        
+        @model = @model.as_json(
+          only:    ::User::EXPOSABLE_ATTRIBUTES,
+          include: {
+            avatar:  { root: true, only: [:id], methods: [:url]},
+            profile: { root: true, only: [:id,  :name]},
+            roles: { root: true, only: [:name] }
+          }
+        ) << @controller.extract_pagination_hash(@model)
+      
+      else  
+
+        @model = User.includes(:profile_id_name, :avatar).all.paginate(page: params[:page], per_page: 10)
+
+        @model = @model.as_json(
+          only:    User::EXPOSABLE_ATTRIBUTES,
+          include: {
+            avatar:  { root: true, only: [:id], methods: [:url] },
+            profile: { root: true, only: [:id,  :name]}
+          }
+        ) << @controller.extract_pagination_hash(@model)
+
+      end
+      
+    end    
+  #********************
+
   end
 end

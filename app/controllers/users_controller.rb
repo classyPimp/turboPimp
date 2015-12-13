@@ -57,6 +57,16 @@ class UsersController < ApplicationController
   end
   ######################END AUTHENTICATION
 
+  def index
+    
+    @perms = perms_for :User
+
+    auth! @perms
+
+    render json: @perms.model
+    
+  end
+
   def expose_current_user
     unless current_user == nil
       render json: current_user.as_json(only: [:id, :email], include: {roles: {root: true, only: [:name]}})

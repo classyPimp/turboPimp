@@ -8,7 +8,7 @@ class AppController < BaseController
 
   def self.logout_user
     CurrentUser.logout.then do |r|
-      Components::App::Router.history.replaceState(nil, "/users/login")
+      Components::App::Router.history.pushState(nil, "/users/login")
     end.fail do |r|
       p "logout failed"
     end

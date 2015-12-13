@@ -15,6 +15,8 @@ class User < Model
   route "update", {put: "users/:id"}, {defaults: [:id]}
 
   route "create", post: "users"
+
+  route "Index", get: "users"
  
   has_one :profile, :avatar
   has_many :roles

@@ -36,7 +36,7 @@ module Components
       def render
         t(:div, {}, 
           if state.logged_in
-            link_to("you are logged_in as #{state.current_user.email}", "/users/#{CurrentUser.user_instance.id}")
+            link_to("you are logged_in as #{state.current_user.email}", "/users/show/#{CurrentUser.user_instance.id}")
           else
             
           end

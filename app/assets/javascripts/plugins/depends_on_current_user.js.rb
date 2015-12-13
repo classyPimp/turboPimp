@@ -5,6 +5,7 @@ module Plugins
       state.current_user = User.new
       CurrentUser.get_current_user({}, {extra_params: {roles: self.class.roles_to_fetch}}).then do |user|
         if user.is_a? User
+          CurrentUser.user_instance = user
           if user.has_role? self.class.roles_to_fetch 
             set_state current_user: user
           end

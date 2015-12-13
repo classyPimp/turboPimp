@@ -1,3 +1,3 @@
 class Role < Model
-  attributes :name
+  attributes :name, :id
 end

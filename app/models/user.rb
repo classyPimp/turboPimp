@@ -81,7 +81,10 @@ class User < ActiveRecord::Base
   end
   #//////         END AUTHENTICATION
 
+  EXPOSABLE_ATTRIBUTES = [:id, :email, :created_at, :updated_at]
+
   has_one :profile, dependent: :destroy
+  has_one :profile_id_name, ->{ select(:id, :user_id, :name) }, class_name: :Profile
 
   has_one :avatar, dependent: :destroy
 
