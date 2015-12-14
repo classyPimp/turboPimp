@@ -61,7 +61,7 @@ module Forms
         end,
         t(:input, {className: valid_or_not?, defaultValue: props.model.attributes[props.attr], ref: "#{self}", 
                    type: props.type, key: props.keyed}.merge(optional_props)),
-        if props.preview_image
+        if props.preview_image && state.image_to_preview != ""
           t(:div, {className: "image_preview"},
             t(:div, {style: {width: "300px", height: "300px"}},
               t(:img, {src: state.image_to_preview, alt: "image_preview", style: {width: "300px", height: "300px"}})

@@ -1,5 +1,5 @@
 class Profile < Model
-  attributes :id, :bio, :name
+  attributes :id, :bio, :name, :user_id
 
   def validate_name
     if name.length < 2

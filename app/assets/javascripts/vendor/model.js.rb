@@ -416,7 +416,7 @@ class Model
 
   def responses_on_destroy(r)
     if r.response.ok?
-      r.promise.resolve self          
+      r.promise.resolve Model.parse(r.response.json)          
     end
   end
 

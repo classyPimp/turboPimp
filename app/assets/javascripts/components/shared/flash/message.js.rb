@@ -5,7 +5,7 @@ module Shared
 
       attr_accessor :type, :dismissible, :body
 
-      def initialize(body, type = "sucess",d_ble = true)
+      def initialize(body, type = "success",d_ble = true)
         @data = []
         @type = type
         @body = body

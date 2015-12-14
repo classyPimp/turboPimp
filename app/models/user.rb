@@ -15,7 +15,9 @@ class User < ActiveRecord::Base
                     format: { with: VALID_EMAIL_REGEX },
                     uniqueness: { case_sensitive: false }
   
-  validates :password, presence: true, length: { minimum: 6 }
+  validates :password, presence: true, length: { minimum: 6 }, presence: true,
+                        confirmation: true,
+                        if: ->{ new_record? || !password.nil? }
 
   before_save :downcase_email
 

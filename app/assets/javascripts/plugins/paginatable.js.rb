@@ -55,30 +55,44 @@ module Plugins
     #used after pagination was extracted from response
 
     def will_paginate
-      t(:nav, {},
+      t(:div, {},    
         *if p_n = state.pagination
-          t(:ul, {className: "pagination", style: {cursor: "pointer"}}, 
-            t(:li, {className: x = "#{p_n.current_page == 1 ? "disabled" : ""}", style: {cursor: "pointer"}},
-              t(:a, {}.merge(x == '' ? {onClick: ->{pagination_switch_page(p_n.current_page - 1)}} : {}), "<<")
-            ),         
-            *(to_return = [] 
-            p_n.total_pages.times do |page|
-              page += 1
-              if page == p_n.current_page
-                to_add  = t(:li, {className: "active"}, 
-                            t(:span, {}, "#{page}")
-                          )
-              else
-                to_add = t(:li, {onClick: ->(){pagination_switch_page(page)}},
-                  t(:span, {}, "#{page}")
-                )
+          t(:nav, {},
+            t(:ul, {className: "pagination", style: {cursor: "pointer"}}, 
+              t(:li, {className: x = "#{p_n.current_page == 1 ? "disabled" : ""}", style: {cursor: "pointer"}},
+                t(:a, {}.merge(x == '' ? {onClick: ->{_pagination_switch_page(p_n.current_page - 1)}} : {}), "<<")
+              ),         
+              *(to_return = [] 
+              p_n.total_pages.times do |page|
+                page += 1
+                if page == p_n.current_page
+                  to_add  = t(:li, {className: "active"}, 
+                              t(:span, {}, "#{page}")
+                            )
+                else
+                  to_add = t(:li, {onClick: ->(){_pagination_switch_page(page)}},
+                    t(:span, {}, "#{page}")
+                  )
+                end
+                to_return << to_add
               end
-              to_return << to_add
-            end
-            to_return),            
-            t(:li, {className: x = "#{p_n.current_page == p_n.total_pages ? 'disabled' : ''}", style: {cursor: "pointer"} }, 
-              t(:span, {}.merge(x == '' ? {onClick: ->{pagination_switch_page(p_n.current_page + 1)}} : {}), ">>")
-            )
+              to_return),            
+              t(:li, {className: x = "#{p_n.current_page == p_n.total_pages ? 'disabled' : ''}", style: {cursor: "pointer"} }, 
+                t(:span, {}.merge(x == '' ? {onClick: ->{_pagination_switch_page(p_n.current_page + 1)}} : {}), ">>")
+              ),
+              t(:li, {},
+                t(:span, {},
+                  "per page", 
+                  t(:select, {ref: "pagination_select", onChange: ->{per_page_select} },
+                    t(:option, {value: 25}, "25"),
+                    t(:option, {value: 50}, "50"),
+                    t(:option, {value: 100}, "100"),
+                    t(:option, {value: 200}, "200")
+                  )
+                )
+              )
+            ),
+            
           )
         end
       )
@@ -95,9 +109,23 @@ module Plugins
   #  end
   #end
   #as well you can make it dependent to load on query params to be indexable
+    def _per_page_select
+      _per_page = self.ref(:pagination_select).value
+      @_per_page = _per_page
+      on_per_page_select(@_per_page)
+    end
 
-    def pagination_switch_page(page)
-      raise "#{self} must implement #pagination_switch_page(page) refer to #{self.class} for info"
+    def _pagination_switch_page(page)
+      @_per_page ||= 25
+      pagination_switch_page(page, @_per_page)
+    end
+
+    def pagination_switch_page(page, per_page = 25)
+      raise "#{self} must implement #pagination_switch_page(page, per_page) refer to #{self.class} for info"
+    end
+
+    def on_per_page_select(p_p)
+      raise "#{self} must implement #on_per_page_select(per_page) refer to #{self.class} for info"
     end
 
   end

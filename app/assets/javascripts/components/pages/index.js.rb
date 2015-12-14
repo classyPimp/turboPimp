@@ -16,7 +16,7 @@ module Components
       end
 
       def component_did_mount
-        Page.index({component: self}).then do |pages|
+        Page.index({component: self}, {extra_params: {per_page: 1}}).then do |pages|
           extract_pagination(pages)
           #p pages.pure_attributes
           set_state pages: pages
@@ -43,8 +43,8 @@ module Components
         )
       end
 
-      def pagination_switch_page(_page)
-        Page.index({},{extra_params: {page: _page}}).then do |pages|
+      def pagination_switch_page(_page, per_page)
+        Page.index({},{extra_params: {page: _page, per_page: per_page}}).then do |pages|
           extract_pagination(pages)
           set_state pages: pages
         end

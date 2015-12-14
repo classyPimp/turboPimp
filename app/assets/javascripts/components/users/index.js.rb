@@ -16,7 +16,7 @@ module Components
       end
 
       def component_did_mount
-        User.index.then do |users|
+        User.index({}, {extra_params: {per_page: 25}}).then do |users|
           extract_pagination(users)
           set_state users: users
         end
@@ -31,16 +31,20 @@ module Components
               end,
               t(:p, {},"email: #{user.email}"),
               t(:p, {}, (link_to("name: #{user.profile.name}", "/users/show/#{user.id}" ) if user.profile) ),
-              unless user.roles.empty?
-                t(:p, {}, "rights:", 
-                  *splat_each(user.roles) do |role|
-                    t(:span, {className: "label label-default"}, role.name)
-                  end,
-                  t(:br, {}),
-                  t(:button, {onClick: ->{edit_selected(user)} }, "edit user"),
-                  t(:button, {onClick: ->{destroy_selected(user)}}, "delete user")
-                )
-              end,
+                if state.current_user.has_role? :admin
+                  t(:div, {},  
+                    unless user.roles.empty?
+                      t(:p, {}, "rights:", 
+                        *splat_each(user.roles) do |role|
+                          t(:span, {className: "label label-default"}, role.name)
+                        end
+                      )
+                    end,
+                    t(:br, {}),
+                    t(:button, {onClick: ->{edit_selected(user)} }, "edit user"),
+                    t(:button, {onClick: ->{destroy_selected(user)}}, "delete user")
+                  )
+                end,
               t(:hr, {style: {color: "grey", height: "1px", backgroundColor: "black"}}),      
             )
           end,
@@ -54,8 +58,11 @@ module Components
         
       end
 
-      def destroy_selected(user)
-        
+      def destroy_selected(_user)
+        _user.destroy.then do |user|
+          state.users.remove(_user)
+          set_state users: state.users
+        end
       end
 
     end
