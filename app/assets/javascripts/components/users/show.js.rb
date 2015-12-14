@@ -32,7 +32,11 @@ module Components
                 t(:p, {}, "bio: #{state.user.try(:profile).try(:bio)}")
               ),
               if state.user.attributes[:arbitrary] == "current_user"
-                t(:p, {onClick: ->(){logout_user}}, "click here to logout")
+                t(:div, {},
+                  t(:a, {onClick: ->(){logout_user}, style: {cursor: "pointer"}}, "click here to logout"),
+                  t(:br, {}),
+                  link_to("edit my account data", "/users/edit/#{state.user.id}")
+                )
               end
             )
           end

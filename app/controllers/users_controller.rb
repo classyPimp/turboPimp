@@ -76,6 +76,10 @@ class UsersController < ApplicationController
   end
 
   def show
+    @perms = perms_for :User
+
+    auth! @perms
+
     @user = User.includes(:profile, :avatar).find params[:id]
     @response = @user.as_json(only: [:email, :id], 
                               include: {profile: {root: true, only: [:id, :name, :bio, :user_id]},

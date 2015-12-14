@@ -18,7 +18,9 @@ Rails.application.routes.draw do
 
     resources :images 
 
-    resources :menu_items, only: [:index, :update]  
+    resources :menu_items, only: [:index, :update]
+
+    resources :roles, only: [:index]  
 
     get "restricted_asset" => "faker#restricted_asset" 
 

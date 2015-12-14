@@ -31,7 +31,7 @@ module Components
               input(Forms::Textarea, state.form_model.profile, :bio),
               input(Forms::Input, state.form_model.avatar, :file, {type: "file", has_file: true, preview_image: true}),
               if state.current_user.has_role? :admin
-                input(Forms::Select, state.form_model, :roles_array, {multiple: true, load_from_server: {url: "/api/users/roles_feed"}})
+                input(Forms::Select, state.form_model, :roles_array, {multiple: [], load_from_server: {url: "/api/users/roles_feed"}})
               end,
               t(:br, {}),
               t(:button, {onClick: ->(){handle_inputs}}, "create user")

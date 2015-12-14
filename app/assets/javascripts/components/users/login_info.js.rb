@@ -38,7 +38,10 @@ module Components
           if state.logged_in
             link_to("you are logged_in as #{state.current_user.email}", "/users/show/#{CurrentUser.user_instance.id}")
           else
-            
+            t(:div, {}, 
+              link_to("Login  |", "/users/login"),
+              t(:span, {}, link_to(" signup", "/users/signup"))
+            )
           end
         )
       end

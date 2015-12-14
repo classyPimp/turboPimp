@@ -1,27 +1,26 @@
 module Forms
   class Select < RW
     expose
-
+    
     #PROPS
     #multiple: boolean #multiple select or not
     #options: [*String] #options that be given to select
     #load_from_server: Hash{url*required: <String "urld from where options be fetched">, extra_params: <Hash defaults to nil>}
     #attr: from_model of parent @attributes to populate with this input on collect
 
-    def get_initial_state
-      options = props.options ? ( props.options.each.map(){|v| SelectOption.new(v) } ) : []
-      multiple = props.multiple ? [] : ""
-      @props_to_select = (multiple == "") ? {nil => nil} : {multiple: true}
+    def get_initial_state 
       {
-        options: options,
-        selected: multiple
+        selected: props.model
+        options: props.options
+        mark_for_destruction: props.mark_for_destruction
       }
+
     end  
 
     def component_did_mount
       if x = props.load_from_server
-        HTTP.post(x[:url], payload: x[:extra_params]).then do |response|
-          options = response.json[:options].each.map(){|v| SelectOption.new(v) }
+        Role.index({}, {to_fetch: "general"}).then do |roles|
+          options = Model.parse(roles)
           set_state options: options
         end
       end
@@ -29,43 +28,29 @@ module Forms
 
     def render
       t(:div, {},
-        t(:p, {}, props.attr),
-        *if props.model.errors[props.attr]
-          splat_each(props.model.errors[props.attr]) do |er|
-            t(:div, {},
-              t(:p, {},
-                er
-              ),
-              t(:br, {})    
-            )             
-          end
-        end,
-        t(:select, {value: state.selected, onChange: ->(e){select(Native(e))}, ref: "#{self}"}.merge(@props_to_select),
+
+        *props.model do |role|          
+          t(:span, {className: "label label-default", ref: "#{role}"}, role.name, " x")
+        end
+
+        t(:select, {onChange: ->(e){select(Native(e))}, ref: "#{self}"},
           t(:option, {value: ""}, ""),
           *splat_each(state.options) do |v|
-            t(:option, { value: "#{v.value}" }, v.value)
+            t(:option, { value: "#{v}" }, v.name)
           end,
         )     
       )   
     end
 
     def select(e)
-      if props.multiple
-        x = e.target.options
-        to_select = []
-        (0...x.length).each do |i|
-          if x[i].selected
-            to_select << x[i].value
-          end
-        end
-      else
-        to_select = ref("#{self}").value
-      end
-      set_state selected: to_select
+      to_select = ref("#{self}").value
     end
 
     def collect
-      props.model.attributes[props.attr.to_sym] = state.selected
+      state.selected.each do |role|
+        Role.new(name: role)
+      end
+      props.model.attributes[props.attr.to_sym] = 
     end
 
     def clear_inputs

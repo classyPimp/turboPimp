@@ -36,8 +36,18 @@ module Components
               t(:p, {}, "email: #{state.form_model.email}"),
               t(:button, {onClick: ->{init_auth_data_edit}}, "edit login credentials"),
               input(Forms::Input, state.form_model.profile, :bio),
+              unless state.form_model.roles.empty?
+                t(:div, {},
+                  t(:p, {}, "rights:", 
+                    *splat_each(user.roles) do |role|
+                      t(:span, {className: "label label-default"}, role.name)
+                    end
+                  ),
+                  input(Forms::Select, state.form_model, :roles_array, {multiple: ([] << user.roles.each {|role| role.name}).flatten, load_from_server: {url: "/api/users/roles_feed"}})
+                )
+              end,
               t(:button, {onClick: ->{handle_inputs}}, "update"),
-              t(:button, {onClick: ->{cancel_edit}}, "cancel"),
+              t(:button, {onClick: ->{cancel_edit}}, "cancel")
             )
           end
         )

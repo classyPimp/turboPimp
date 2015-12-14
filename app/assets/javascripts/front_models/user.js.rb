@@ -22,7 +22,7 @@ class User < Model
  
   has_one :profile, :avatar
   has_many :roles
-  accepts_nested_attributes_for :profile, :avatar
+  accepts_nested_attributes_for :profile, :avatar, :roles
 
   def on_before_test(r)
     r.req_options = {payload: pure_attributes}

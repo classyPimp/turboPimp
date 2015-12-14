@@ -32,7 +32,7 @@ module Perms
       
       else  
 
-        @model = User.includes(:profile_id_name, :avatar).all.paginate(page: params[:page], per_page: 10)
+        @model = ::User.includes(:profile_id_name, :avatar).all.paginate(page: params[:page], per_page: 10)
 
         @model = @model.as_json(
           only:    User::EXPOSABLE_ATTRIBUTES,
@@ -56,6 +56,21 @@ module Perms
         @permitted_attributes = params.require(:user).permit(:email, :password, :password_confirmation, avatar_attributes: [:file, :id, :user_id], profile_attributes: [:name, :bio, :id, :user_id])
       else
         false
+      end
+    end
+
+    def show
+      if @current_user && @current_user.has_role? :admin
+        @model = ::User.includes(:profile_id_name, :avatar, :roles)
+
+        @model = @model.as_json(
+          only:    ::User::EXPOSABLE_ATTRIBUTES,
+          include: {
+            avatar:  { root: true, only: [:id], methods: [:url]},
+            profile: { root: true, only: [:id,  :name, :user_id]},
+            roles: { root: true, only: [:name] }
+          }
+        )
       end
     end
 

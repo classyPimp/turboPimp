@@ -55,7 +55,7 @@ module Components
       end
 
       def edit_selected(user)
-        
+        Components::App::Router.history.replaceState({}, "/users/edit/#{user.id}")
       end
 
       def destroy_selected(_user)
