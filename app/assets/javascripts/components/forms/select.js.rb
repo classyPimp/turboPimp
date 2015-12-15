@@ -1,73 +1,54 @@
 module Forms
   class Select < RW
     expose
-    
-    #PROPS
-    #multiple: boolean #multiple select or not
-    #options: [*String] #options that be given to select
-    #load_from_server: Hash{url*required: <String "urld from where options be fetched">, extra_params: <Hash defaults to nil>}
-    #attr: from_model of parent @attributes to populate with this input on collect
 
-    def get_initial_state 
-      {
-        selected: props.model
-        options: props.options
-        mark_for_destruction: props.mark_for_destruction
-      }
+    #input(Forms::MultipleSelect, user, :roles, {serialize_value: {model_name: :role, value_attr: :name}})
 
-    end  
 
-    def component_did_mount
-      if x = props.load_from_server
-        Role.index({}, {to_fetch: "general"}).then do |roles|
-          options = Model.parse(roles)
-          set_state options: options
-        end
+
+    def get_initial_state
+      @options = ["foo", "bar", "baz"]
+      @options_map = {}
+
+      @options.each do |val|
+        x = SelectOption.new val
+        @options_map["#{x}"] = x
       end
+      p @options_map
+      {}
     end
 
     def render
-      t(:div, {},
-
-        *props.model do |role|          
-          t(:span, {className: "label label-default", ref: "#{role}"}, role.name, " x")
-        end
-
-        t(:select, {onChange: ->(e){select(Native(e))}, ref: "#{self}"},
-          t(:option, {value: ""}, ""),
-          *splat_each(state.options) do |v|
-            t(:option, { value: "#{v}" }, v.name)
-          end,
-        )     
-      )   
+      t(:div, {}, 
+        t(:select, {onChange: ->{handle}, ref: "select" }, 
+          *splat_each(@options_map) do |k, v|
+            t(:option, {value: k}, v.value_to_show)
+          end
+        )
+      )
     end
 
-    def select(e)
-      to_select = ref("#{self}").value
-    end
-
-    def collect
-      state.selected.each do |role|
-        Role.new(name: role)
-      end
-      props.model.attributes[props.attr.to_sym] = 
-    end
-
-    def clear_inputs
-      state.options.each do |opt|
-        opt.selected = false
-      end
+    def handle
+      x = ref("select").value
+      p @options_map[x].data
     end
 
   end
 
   class SelectOption
     
-    attr_accessor :value
+    attr_accessor :value_to_show, :data
 
-    def initialize(value)
-      @value = value
+    def initialize(data, value_attr = false)
+      
+      @data = data
+
+      if @data.is_a? String
+        @value_to_show = @data 
+      end
+
     end
 
   end
 end
+

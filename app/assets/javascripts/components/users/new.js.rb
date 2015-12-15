@@ -34,7 +34,8 @@ module Components
                 input(Forms::Select, state.form_model, :roles_array, {multiple: [], load_from_server: {url: "/api/users/roles_feed"}})
               end,
               t(:br, {}),
-              t(:button, {onClick: ->(){handle_inputs}}, "create user")
+              t(:button, {onClick: ->(){handle_inputs}}, "create user"),
+              input(Forms::Select, "foo", "bat", {})
             )
           end 
         )
