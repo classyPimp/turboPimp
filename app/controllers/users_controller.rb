@@ -120,6 +120,6 @@ class UsersController < ApplicationController
 
   def roles_feed
     auth! Services::RoleManager.new
-    render json: {options: Services::RoleManager.allowed_roles}
+    render json: Services::RoleManager.allowed_roles
   end
 end

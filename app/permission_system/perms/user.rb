@@ -60,7 +60,7 @@ module Perms
     end
 
     def show
-      if @current_user && @current_user.has_role? :admin
+      if @current_user && @current_user.has_role?(:admin)
         @model = ::User.includes(:profile_id_name, :avatar, :roles)
 
         @model = @model.as_json(
