@@ -10,7 +10,7 @@ module Components
 
       def prepare_new_user
         ->{
-          User.new(profile: {profile: {}}, avatar: {avatar: {}}, roles: [{role: {name: "admin"}}])
+          User.new(profile: {profile: {}}, avatar: {avatar: {}})
         }
       end
 
@@ -31,12 +31,13 @@ module Components
               input(Forms::Textarea, state.form_model.profile, :bio),
               input(Forms::Input, state.form_model.avatar, :file, {type: "file", has_file: true, preview_image: true}),
               if state.current_user.has_role? :admin
-                #input(Forms::SingleSelect, state.form_model, :roles_array, {multiple: [], load_from_server: {url: "/api/users/roles_feed"}})
+                t(:div, {},
+                  t(:p, {}, "choose roles"),
+                  input(Forms::Select, state.form_model, :roles_array, {multiple: true, server_feed: {url: "/api/users/roles_feed"}})
+                )
               end,
               t(:br, {}),
-              t(:button, {onClick: ->(){handle_inputs}}, "create user"),
-              input(Forms::MultipleSelect, state.form_model, :roles, { serialize_value: {model_name: :role, value_attr: :name, mark_for_destruction: true},
-                                                                    server_feed: {url: "/api/users/roles_feed"} , allow_blank: true})
+              t(:button, {onClick: ->(){handle_inputs}}, "create user")
             )
           end 
         )

@@ -12,6 +12,10 @@ module Forms
     # allow_blank: bool , if true will include "" option
     # server_feed: {url: string (will make a post request here), extra_params: extra_params(will be passed to HTTP request)}
 
+
+              # DEPRECATED
+              # leaving it be in case will need html select
+
     def init
       server_feed
       prepare_all       

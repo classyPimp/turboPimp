@@ -51,6 +51,8 @@ module Perms
       @current_user && @current_user.has_any_role?(:admin, :root)
     end
 
+  #*********************
+
     def update
       if ::User.find(params[:id]).id == @current_user.try(:id)
         @permitted_attributes = params.require(:user).permit(:email, :password, :password_confirmation, avatar_attributes: [:file, :id, :user_id], profile_attributes: [:name, :bio, :id, :user_id])
@@ -59,19 +61,41 @@ module Perms
       end
     end
 
+  #********************
+    
     def show
+
       if @current_user && @current_user.has_role?(:admin)
-        @model = ::User.includes(:profile_id_name, :avatar, :roles)
+
+        @model = ::User.includes(:profile, :avatar, :roles).find(@controller.params[:id])
 
         @model = @model.as_json(
           only:    ::User::EXPOSABLE_ATTRIBUTES,
           include: {
-            avatar:  { root: true, only: [:id], methods: [:url]},
-            profile: { root: true, only: [:id,  :name, :user_id]},
+            avatar:  { root: true, only: [:id, :user_id], methods: [:url]},
+            profile: { root: true, only: [:id,  :name, :bio, :user_id]},
             roles: { root: true, only: [:name] }
           }
         )
+
+        @model
+
+      else 
+
+        @model = ::User.includes(:profile, :avatar).find(@controller.params[:id])
+
+        @model = @model.as_json(
+          only:  ::User::EXPOSABLE_ATTRIBUTES,
+          include: {
+            avatar:  { root: true, only: [:id, :user_id], methods: [:url] },
+            profile: { root: true, only: [:id,  :name, :bio, :user_id]}
+          }
+        )
+
+        @model
+
       end
+
     end
 
   end

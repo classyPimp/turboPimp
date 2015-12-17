@@ -103,8 +103,8 @@ class User < ActiveRecord::Base
   def before_role_add(role)
     if role.resource_type == "Page"
       raise "assigned role to #{self} not in the allowed role names" unless Services::RoleManager.allowed_page_roles.include? role.name
-    else Services::RoleManager.allowed_global_roles.include? role.name
-      raise "assigned role to #{self} not in the allowed role names"
+    else 
+      raise "assigned role to #{self} not in the allowed role names" unless Services::RoleManager.allowed_global_roles.include? role.name
     end
   end
 

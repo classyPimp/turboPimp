@@ -76,18 +76,17 @@ class UsersController < ApplicationController
   end
 
   def show
+
     @perms = perms_for :User
 
     auth! @perms
 
-    @user = User.includes(:profile, :avatar).find params[:id]
-    @response = @user.as_json(only: [:email, :id], 
-                              include: {profile: {root: true, only: [:id, :name, :bio, :user_id]},
-                                        avatar: {root: true, only: [:id, :user_id], methods: [:url]}})
-    if @user == current_user
-      @response["user"][:arbitrary] = "current_user"
+    if current_user.id.to_s == params[:id]
+      @perms.model["user"]["arbitrary"] = "current_user"
     end
-    render json: @response
+
+    render json: @perms.model
+
   end
 
   def destroy

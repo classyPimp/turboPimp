@@ -13,7 +13,7 @@ module Components
 
       def component_did_mount
         id = props.params.id
-        unless CurrentUser.user_instance.id == id.to_i
+        unless CurrentUser.user_instance.id == id.to_i || CurrentUser.user_instance.has_role?(:admin)
           props.history.replaceState({}, "/forbidden")
         else
           User.show({id: id}).then do |form_model|
@@ -36,15 +36,9 @@ module Components
               t(:p, {}, "email: #{state.form_model.email}"),
               t(:button, {onClick: ->{init_auth_data_edit}}, "edit login credentials"),
               input(Forms::Input, state.form_model.profile, :bio),
-              unless state.form_model.roles.empty?
-                t(:div, {},
-                  t(:p, {}, "rights:", 
-                    *splat_each(user.roles) do |role|
-                      t(:span, {className: "label label-default"}, role.name)
-                    end
-                  ),
-                  input(Forms::Select, state.form_model, :roles_array, {multiple: ([] << user.roles.each {|role| role.name}).flatten, load_from_server: {url: "/api/users/roles_feed"}})
-                )
+              if CurrentUser.user_instance.has_role?(:admin)
+                input(Forms::Select, state.form_model, :roles, { serialize_value: {model_name: "role", value_attr: "name"}, 
+                                                        multiple: true, server_feed: {url: "/api/users/roles_feed"} })
               end,
               t(:button, {onClick: ->{handle_inputs}}, "update"),
               t(:button, {onClick: ->{cancel_edit}}, "cancel")

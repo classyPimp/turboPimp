@@ -36,8 +36,11 @@ class CurrentUser < User
         @logged_in = false
         r.promise.reject(User.new)
       else
+
         @user_instance = Model.parse(r.response.json)      
-        
+          
+        p @user_instance.pure_attributes
+
         login_success
         
         r.promise.resolve(@user_instance)
