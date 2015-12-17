@@ -98,10 +98,12 @@ class User < ActiveRecord::Base
   accepts_nested_attributes_for :avatar, allow_destroy: true, reject_if: :all_blank
   accepts_nested_attributes_for :profile, allow_destroy: true
 
-  rolify :before_add => :before_add_method
+  rolify :before_add => :before_role_add
 
-  def before_add_method(role)
-    unless Services::RoleManager.allowed_roles.include? role.name
+  def before_role_add(role)
+    if role.resource_type == "Page"
+      raise "assigned role to #{self} not in the allowed role names" unless Services::RoleManager.allowed_page_roles.include? role.name
+    else Services::RoleManager.allowed_global_roles.include? role.name
       raise "assigned role to #{self} not in the allowed role names"
     end
   end

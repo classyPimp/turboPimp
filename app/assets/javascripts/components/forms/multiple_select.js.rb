@@ -8,33 +8,44 @@ module Forms
     
 
     def init
-      @options = props.options || []
+      server_feed?
+      prepare_all
+    end
+
+    def prepare_all
+      @options ||= props.options || []
       @selected = []
       @substract_from_options = []
 
+      if s_v = props.serialize_value
 
-      if props.options
+        props.model.attributes[props.attr].each do |pre_selected|
 
-        if s_v = props.serialize_value
-
-          props.model.attributes[props.attr].each do |pre_selected|
-
-            pre_selected.arbitrary[:initially_selected] = true
-            @substract_from_options << pre_selected.attributes[s_v[:value_attr]]
-            @selected << pre_selected
-          
-          end
-
-          @options = @options - @substract_from_options
-
-          @options.map! do |option|
-            Model.parse({s_v[:model_name] => {s_v[:value_attr] => option}})
-          end
-
+          pre_selected.arbitrary[:initially_selected] = true
+          @substract_from_options << pre_selected.attributes[s_v[:value_attr]]
+          @selected << pre_selected
+        
         end
 
+        @options = @options - @substract_from_options
+
+        @options.map! do |option|
+          Model.parse({s_v[:model_name] => {s_v[:value_attr] => option}})
+        end        
       end
 
+    end
+
+    def server_feed?
+      if s_f = props.server_feed
+        @options = []
+        HTTP.post(s_f[:url], payload: s_f[:extra_params]).then do |response|
+          @options = response.json
+          prepare_all
+          state.selected = @selected
+          set_state options: @options
+        end
+      end
     end
 
     def get_initial_state

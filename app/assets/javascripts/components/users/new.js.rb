@@ -36,7 +36,7 @@ module Components
               t(:br, {}),
               t(:button, {onClick: ->(){handle_inputs}}, "create user"),
               input(Forms::MultipleSelect, state.form_model, :roles, { serialize_value: {model_name: :role, value_attr: :name, mark_for_destruction: true},
-                                                                    server_feed: {url: "/api/users/roles_feed"} , allow_blank: true, options: ["foo", "admin", "bar"]})
+                                                                    server_feed: {url: "/api/users/roles_feed"} , allow_blank: true})
             )
           end 
         )

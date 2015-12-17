@@ -1,5 +1,7 @@
 class Page < ActiveRecord::Base
 
+  resourcify
+
   extend FriendlyId
   friendly_id :title, use: :slugged
 
