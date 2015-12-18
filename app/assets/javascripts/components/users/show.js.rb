@@ -10,7 +10,7 @@ module Components
       end
 
       def component_did_mount
-        User.show({id: props.params.id}).then do |user|
+        User.show(wilds: {id: props.params.id}).then do |user|
           set_state user: user
         end.fail do |response|
           `console.log("error:")`

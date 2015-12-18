@@ -19,6 +19,8 @@ class User < Model
   route "Index", get: "users"
 
   route "destroy", {delete: "users/:id"}, {defaults: [:id]} 
+
+  route "Edit", {get: "users/:id/edit"}
  
   has_one :profile, :avatar
   has_many :roles

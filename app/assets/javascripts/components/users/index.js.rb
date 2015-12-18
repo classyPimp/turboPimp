@@ -16,7 +16,8 @@ module Components
       end
 
       def component_did_mount
-        User.index({}, {extra_params: {per_page: 25}}).then do |users|
+        @as_admin = props.as_admin ? {namespace: "admin"} : {}
+        User.index({extra_params: {per_page: 25}}.merge(@as_admin)).then do |users|
           extract_pagination(users)
           set_state users: users
         end
@@ -55,7 +56,8 @@ module Components
       end
 
       def edit_selected(user)
-        Components::App::Router.history.replaceState({}, "/users/edit/#{user.id}")
+        url = props.as_admin ? "/admin/users/#{user.id}/edit" : "/users/edit/#{user.id}"
+        Components::App::Router.history.pushState({}, url)
       end
 
       def destroy_selected(_user)

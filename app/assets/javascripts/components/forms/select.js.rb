@@ -89,7 +89,8 @@ module Forms
             t(:p, {},
               *splat_each(state.selected) do |selected|
                 t(:span, {className: "label label-default", style: {cursor: "pointer"}, onClick: ->{delete(selected)}},
-                  if @serialize_value
+                  if @serialize_value 
+                    next if selected.attributes[:_destroy]
                     "#{selected.attributes[props.serialize_value[:value_attr]]} X"
                   else
                     "#{selected} X"
@@ -117,9 +118,11 @@ module Forms
       if @serialize_value
         if selected.arbitrary[:initially_selected]
           selected.attributes[:_destroy] = "1"
+          state.options << selected
         end
+      else
+        state.options << state.selected.delete(selected)
       end
-      state.options << state.selected.delete(selected)
       set_state options: state.options
     end
 

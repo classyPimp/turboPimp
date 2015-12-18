@@ -26,6 +26,10 @@ Rails.application.routes.draw do
 
     post "users/roles_feed" => "users#roles_feed"
 
+    namespace :admin do
+      resources :users
+    end
+
   end
 
   get "/console" => "faker#console"

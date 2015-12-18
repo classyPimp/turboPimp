@@ -11,7 +11,7 @@ module Components
 
       def component_did_mount
         page_to_query = (x = props.page_id) ? x : props.params.id
-        Page.show({id: page_to_query, component: self}).then do |page|
+        Page.show(wilds: {id: page_to_query}, component: self).then do |page|
           set_state page: page
         end.fail do |resp|
           raise resp

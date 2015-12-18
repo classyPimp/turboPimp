@@ -1,7 +1,6 @@
 module Components
-  module Dashboards
+  module Admin
     class Main < RW
-      
       expose
 
       def render

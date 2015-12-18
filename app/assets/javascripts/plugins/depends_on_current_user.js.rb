@@ -3,7 +3,7 @@ module Plugins
 
     def component_will_mount
       state.current_user = User.new
-      CurrentUser.get_current_user({}, {extra_params: {roles: self.class.roles_to_fetch}}).then do |user|
+      CurrentUser.get_current_user(extra_params: {roles: self.class.roles_to_fetch}).then do |user|
         if user.is_a? User
           depends_on_current_user_loaded(user) if self.respond_to? :user_loaded
           CurrentUser.user_instance = user

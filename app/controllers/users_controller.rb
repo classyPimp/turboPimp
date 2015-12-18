@@ -16,18 +16,12 @@ class UsersController < ApplicationController
     #render json: @perms.permitted_attributes and return
     @user = User.new(@perms.permitted_attributes)
 
-    if @perms.arbitrary[:as_admin] #added !standart_auth
-      @perms.arbitrary[:roles_array].each do |role| #
-        @user.add_role role #
-      end #
-    end
-
     if @user.save
       if User::ACTIVATABLE
         @user.send_activation_email
         render json: @user.as_json(only: [:id, :email])
       else
-        log_in @user unless @perms.arbitrary[:as_admin] #modified starting from unless
+        log_in @user 
         #remember user
         render json: @user.as_json(only: [:id, :email])
       end
@@ -37,8 +31,7 @@ class UsersController < ApplicationController
   end
 
   def create_user_params
-    #params.require(:user).permit(:email, :password, :password_confirmation) DEFAULT AUTHENTICATION. FOR PURE UNCOMMENT AND DELETE REST OF METHOD
-    params.require(:user).permit(:email, :password, :password_confirmation, avatar_attributes: [:file], profile_attributes: [:name, :bio] )
+    params.require(:user).permit(:email, :password, :password_confirmation) #DEFAULT AUTHENTICATION. FOR PURE UNCOMMENT AND DELETE REST OF METHOD
   end
 
   # Confirms a logged-in user.
@@ -89,6 +82,16 @@ class UsersController < ApplicationController
 
   end
 
+  def edit
+    
+    @perms = perms_for :User 
+
+    auth! @perms
+
+    render json: @perms.model
+
+  end
+
   def destroy
     @perms = perms_for :User
     auth! @perms
@@ -99,6 +102,7 @@ class UsersController < ApplicationController
   end
 
   def update
+    
     @perms = perms_for :User
 
     auth! @perms

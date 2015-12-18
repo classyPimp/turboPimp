@@ -384,13 +384,13 @@ class Model
 =end
   def self.route(name, method_and_url, options ={})
     if name[0] == name.capitalize[0]
-      self.define_singleton_method(name.downcase) do | wilds = {}, req_options = {}|
-        RequestHandler.new(self, name, method_and_url, options, wilds, req_options).promise
+      self.define_singleton_method(name.downcase) do |req_options = {}|#| wilds = {}, req_options = {}|
+        RequestHandler.new(self, name, method_and_url, options, req_options).promise
       end
     else
       #route :save, post: "pages/:id", defaults: [:id]
-      self.define_method(name) do |wilds = {}, req_options = {}|
-        RequestHandler.new(self, name, method_and_url, options, wilds, req_options).promise
+      self.define_method(name) do |req_options = {}|#|wilds = {}, req_options = {}|
+        RequestHandler.new(self, name, method_and_url, options, req_options).promise
       end  
     end
   end
@@ -424,6 +424,10 @@ class Model
     if r.response.ok?
       r.promise.resolve Model.parse(r.response.json)
     end
+  end
+
+  def self.responses_on_edit(r)
+     self.responses_on_show(r)
   end
 
   def on_before_update(r)
@@ -639,32 +643,33 @@ class RequestHandler
   
   attr_accessor :caller, :promise, :name, :response, :req_options
 
-  def initialize(caller, name, method_and_url, options, wilds, req_options)
+  def initialize(caller, name, method_and_url, options, req_options = {})
     @caller = caller
     #the model that called either instance or class
     @name = name
     #name of the route
     @options = options
-    @wilds = wilds
+    @wilds = req_options[:wilds] || {}
     #handy little :foo s
     #as well as options holder like 
     #yield_response: true => will override default response handlers
     #component: component's self => will make RW comonent available
     #TODO: should wilds be renamed now? they're more options now than wilds as back then when they were young and silly little args
-    @component = wilds[:component]
+    @component = req_options[:component]
     #if you need to pass component to Http (e.g. turn on spinner before request, swith off after)
     #or any other sort of that
     #pass component in first arg like
     #user.some_route({component: self})
     #and youll have access to it in automatic response handlers (or anywhere in requesthandler)
-    @should_yield_response = wilds[:yield_response]
+    @should_yield_response = req_options[:yield_response]
     #handy if you need unprocessed response
     #e.g. simply pass user.some_route({yield_response: true}, {}) {|response| unprocessed response}
-    @skip_before_handler = wilds[:skip_before_handler]
+    @skip_before_handler = req_options[:skip_before_handler]
     #if you need to override defualts before request is made
     #pass this option to wild as {skip_before_handler: true}
     #else it's false by defaul
-    @url = prepare_http_url_for(method_and_url)
+    name_space = req_options[:namespace] || false
+    @url = prepare_http_url_for(method_and_url, name_space)
     #makes youre route get: "url/:foo",
     #passes default for wilds, or attaches one from wilds option
 
@@ -692,14 +697,12 @@ class RequestHandler
       @req_options[:processData] = false
       @req_options[:contentType] = false
       #For info on this method refer to validation part of model
-    else
-      @req_options = {payload: @req_options}
     end
     #TODO: NEED TO THROUGHLY PLAN AND STANDARTIZE THE OPTIONS THAT CAN BE PASSED FOR REQUEST!
     send_request
   end
 
-  def prepare_http_url_for(method_and_url)
+  def prepare_http_url_for(method_and_url, name_space)
     url = method_and_url[method_and_url.keys[0]].split('/')
     url.map! do |part|
       if part[0] == ":"
@@ -712,6 +715,9 @@ class RequestHandler
         part
       end
       #TODO: raise if route is defined with wild but no wild was resolved defaultly or not was given through wild arg
+    end
+    if name_space
+      url.unshift(name_space)
     end
     url.unshift('api')
     #adds prefix to url as apiv1/url

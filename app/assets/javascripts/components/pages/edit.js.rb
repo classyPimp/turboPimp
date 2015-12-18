@@ -16,7 +16,7 @@ module Components
       end
 
       def component_did_mount
-        Page.show({id: props.params.id}).then do |page|
+        Page.show(wilds: {id: props.params.id}).then do |page|
           set_state form_model: page
         end.fail do |res|
           alert res

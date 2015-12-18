@@ -44,8 +44,11 @@ module Components
               t(`Route`, {path: "new", component: Components::Images::Create.create_class})
             ),
 
-            t(`Route`, {path: "/dashboards", component: Components::Dashboards::Main.create_class, onEnter: ->(n, r, cb){check_role(n, r, cb, [:admin])}},
-              t(`Route`, {path: "admin", component: Components::Dashboards::Admin.create_class})
+            t(`Route`, {path: "/admin", component: Components::Admin::Main.create_class, onEnter: ->(n, r, cb){check_role(n, r, cb, [:admin])}},
+              t(`Route`, {path: "dashboards", component: Components::Admin::Dashboards::Main.create_class},
+                t(`Route`, {path: "general", component: Components::Admin::Dashboards::General.create_class})
+              ),
+              t(`Route`, {path: "users/:id/edit", component: Components::Admin::Users::Edit.create_class})
             ),
 
             t(`Route`, {path: "menues/index_edit", component: Components::Menues::IndexEdit.create_class}),

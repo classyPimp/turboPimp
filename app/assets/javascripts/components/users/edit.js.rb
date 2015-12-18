@@ -13,10 +13,11 @@ module Components
 
       def component_did_mount
         id = props.params.id
-        unless CurrentUser.user_instance.id == id.to_i || CurrentUser.user_instance.has_role?(:admin)
+        @as_admin = props.as_admin ? {namespace: "admin"} : {}
+        unless CurrentUser.user_instance.id == id.to_i || props.as_admin
           props.history.replaceState({}, "/forbidden")
         else
-          User.show({id: id}).then do |form_model|
+          User.edit({wilds: {id: id}}.merge(@as_admin)).then do |form_model|
             set_state form_model: form_model
           end
         end
@@ -36,7 +37,7 @@ module Components
               t(:p, {}, "email: #{state.form_model.email}"),
               t(:button, {onClick: ->{init_auth_data_edit}}, "edit login credentials"),
               input(Forms::Input, state.form_model.profile, :bio),
-              if CurrentUser.user_instance.has_role?(:admin)
+              if props.as_admin
                 input(Forms::Select, state.form_model, :roles, { serialize_value: {model_name: "role", value_attr: "name"}, 
                                                         multiple: true, server_feed: {url: "/api/users/roles_feed"} })
               end,
@@ -49,8 +50,9 @@ module Components
 
       def handle_inputs
         collect_inputs
+        p state.form_model.pure_attributes
         unless state.form_model.has_errors?
-          state.form_model.update({}, {serialize_as_form: true}).then do |model|
+          state.form_model.update({serialize_as_form: true}.merge(@as_admin)).then do |model|
             unless model.has_errors?
               msg = Shared::Flash::Message.new(t(:div, {}, "updated successfully"))
               Components::App::Main.instance.ref(:flash).rb.add_message(msg)

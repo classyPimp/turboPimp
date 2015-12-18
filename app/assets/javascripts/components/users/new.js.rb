@@ -10,7 +10,7 @@ module Components
 
       def prepare_new_user
         ->{
-          User.new(profile: {profile: {}}, avatar: {avatar: {}})
+          User.new(profile: {profile: {}}, avatar: {avatar: {}}, roles: [])
         }
       end
 
@@ -33,7 +33,8 @@ module Components
               if state.current_user.has_role? :admin
                 t(:div, {},
                   t(:p, {}, "choose roles"),
-                  input(Forms::Select, state.form_model, :roles_array, {multiple: true, server_feed: {url: "/api/users/roles_feed"}})
+                  input(Forms::Select, state.form_model, :roles, {multiple: true, server_feed: {url: "/api/users/roles_feed"},
+                                                                  serialize_value: {model_name: "role", value_attr: "name"}})
                 )
               end,
               t(:br, {}),
@@ -46,7 +47,7 @@ module Components
       def handle_inputs
         collect_inputs
         unless state.form_model.has_errors?
-          state.form_model.create({}, {serialize_as_form: true}).then do |model|
+          state.form_model.create(serialize_as_form: true, namespace: "admin").then do |model|
             if model.has_errors?
               set_state form_model: model
             else
