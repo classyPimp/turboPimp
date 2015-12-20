@@ -81,6 +81,8 @@ module Helpers
         Components::App::Router.history.replaceState(nil, "/404")
       elsif @response.status_code == 500
         Components::App::Router.history.replaceState(nil, "/505?status_code=500")
+      elsif @response.status_code == 400
+        Components::App::Router.history.replaceState(nil, "/505?status_code=400")
       end
     end
 

@@ -1,4 +1,4 @@
-require "front_models/user"
+require "models/user"
 
 class CurrentUser < User
 
@@ -13,7 +13,7 @@ class CurrentUser < User
   route "Request_password_reset", post: "password_resets"
   route "Update_new_password", put: "password_resets/:id"
 
-  @user_instance ||= User.new
+  @user_instance ||= User.new(roles: [{role: {name: "guest"}}])
   @logged_in = false
 
   class << self

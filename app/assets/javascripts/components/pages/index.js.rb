@@ -16,7 +16,7 @@ module Components
       end
 
       def component_did_mount
-        Page.index(component: self, extra_params: {per_page: 1}).then do |pages|
+        Page.index(component: self, extra_params: {per_page: 25}).then do |pages|
           extract_pagination(pages)
           #p pages.pure_attributes
           set_state pages: pages

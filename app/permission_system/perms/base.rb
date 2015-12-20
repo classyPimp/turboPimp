@@ -13,7 +13,7 @@ module Perms
     #FUCK IM SLEEPY AND SEE ME WRITING SHIT!
     #TODO: rewrite docs
 
-    attr_accessor :permitted_attributes, :arbitrary, :model
+    attr_accessor :permitted_attributes, :arbitrary, :model, :serialize_on_success, :serialize_on_error
 
     def initialize(model, controller, options)
       @options = options

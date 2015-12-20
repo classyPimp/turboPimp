@@ -54,13 +54,27 @@ module Plugins
     #just call it in render as regular #t
     #used after pagination was extracted from response
 
-    def will_paginate
+    def will_paginate(update_location = false)
+      if update_location && state.pagination
+        @per_page = props.location.query.per_page || 25
+        prev_query = Hash.new(props.location.query.to_n)
+        prev_query[:page] = state.pagination.current_page - 1
+        prev_query[:per_page] = @per_page
+        @_previous_page_href = props.history.createHref(props.location.pathname, prev_query)
+        next_query = prev_query.clone
+        next_query[:page] = prev_query[:page] + 2
+        next_query[:per_page] = @per_page
+        @_next_page_href = props.history.createHref(props.location.pathname, next_query)
+      end
       t(:div, {},    
         *if p_n = state.pagination
           t(:nav, {},
             t(:ul, {className: "pagination", style: {cursor: "pointer"}}, 
-              t(:li, {className: x = "#{p_n.current_page == 1 ? "disabled" : ""}", style: {cursor: "pointer"}},
-                t(:a, {}.merge(x == '' ? {onClick: ->{_pagination_switch_page(p_n.current_page - 1)}} : {}), "<<")
+              t(:li, {className: x = "#{p_n.current_page == 1 ? "disabled" : ""}", 
+                      style: {cursor: "pointer"}},
+                unless x == "disabled" 
+                  t(:a, {href: @_previous_page_href, onClick: ->(e){_pagination_switch_page(p_n.current_page - 1, Native(e))}}, "<<")
+                end
               ),         
               *(to_return = [] 
               p_n.total_pages.times do |page|
@@ -77,8 +91,11 @@ module Plugins
                 to_return << to_add
               end
               to_return),            
-              t(:li, {className: x = "#{p_n.current_page == p_n.total_pages ? 'disabled' : ''}", style: {cursor: "pointer"} }, 
-                t(:span, {}.merge(x == '' ? {onClick: ->{_pagination_switch_page(p_n.current_page + 1)}} : {}), ">>")
+              t(:li, {className: x = "#{p_n.current_page == p_n.total_pages ? 'disabled' : ''}",
+                      style: {cursor: "pointer"} },
+                unless x == "disabled" 
+                  t(:a, {href: @_next_page_href, onClick: ->(e){_pagination_switch_page(p_n.current_page + 1, Native(e))} }, ">>")
+                end
               ),
               t(:li, {},
                 t(:span, {},
@@ -115,7 +132,8 @@ module Plugins
       on_per_page_select(@_per_page)
     end
 
-    def _pagination_switch_page(page)
+    def _pagination_switch_page(page, e)
+      e.preventDefault
       @_per_page ||= 25
       pagination_switch_page(page, @_per_page)
     end

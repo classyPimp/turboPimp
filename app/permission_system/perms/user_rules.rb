@@ -1,5 +1,5 @@
 module Perms
-  class User < Perms::Base
+  class UserRules < Perms::Base
 
     def create
       @permitted_attributes = @controller.params.require(:user).permit(:email, :password, :password_confirmation, profile_attributes: [:name, :bio], avatar_attributes: [:file])      
@@ -21,7 +21,7 @@ module Perms
       per_page = params[:per_page] || 25
 
       
-        @model = ::User.includes(:profile_id_name, :avatar).all.paginate(page: params[:page], per_page: 10)
+        @model = ::User.includes(:profile_id_name, :avatar).all.paginate(page: params[:page], per_page: per_page)
 
         @model = @model.as_json(
           only:    ::User::EXPOSABLE_ATTRIBUTES,

@@ -35,15 +35,23 @@ module Components
       
       def render
         t(:div, {}, 
-          if state.logged_in
-            link_to("you are logged_in as #{state.current_user.email}", "/users/show/#{CurrentUser.user_instance.id}")
+          *if state.logged_in
+            [
+              link_to("my account", "/users/dashboard"),
+              "|",
+              t(:a, {onClick: ->(){logout_user}, style: {cursor: "pointer"}}, "logout")
+            ]
           else
             t(:div, {}, 
-              link_to("Login  |", "/users/login"),
+              link_to("Login  |  ", "/users/login"),
               t(:span, {}, link_to(" signup", "/users/signup"))
             )
           end
         )
+      end
+
+      def logout_user
+        AppController.logout_user
       end
 
     end

@@ -9,7 +9,7 @@ module Perms
         model_klass = model.class.name
       end
 
-      "Perms::#{model_klass}".constantize.new(model, controller, options)
+      "Perms::#{model_klass}Rules".constantize.new(model, controller, options)
 
     end
 

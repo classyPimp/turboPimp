@@ -7,6 +7,7 @@ module Components
       class << self
         attr_accessor :instance
         attr_accessor :props_from_server
+        attr_accessor :history
       end
 
       def init

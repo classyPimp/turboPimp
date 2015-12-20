@@ -20,7 +20,7 @@ class User < ActiveRecord::Base
                     format: { with: VALID_EMAIL_REGEX },
                     uniqueness: { case_sensitive: false }
   
-  validates :password, presence: true, length: { minimum: 6 }, presence: true,
+  validates :password, presence: true, length: { minimum: 6 },
                         confirmation: true,
                         if: ->{ new_record? || !password.nil? }
 
@@ -95,6 +95,8 @@ class User < ActiveRecord::Base
 
   has_one :avatar, dependent: :destroy
 
+  has_many :blogs
+
   accepts_nested_attributes_for :avatar, allow_destroy: true, reject_if: :all_blank
   accepts_nested_attributes_for :profile, allow_destroy: true
 
@@ -103,6 +105,8 @@ class User < ActiveRecord::Base
   def before_role_add(role)
     if role.resource_type == "Page"
       raise "assigned role to #{self} not in the allowed role names" unless Services::RoleManager.allowed_page_roles.include? role.name
+    elsif role.resource_type == "Blog"
+      raise "ssigned role to #{self} not in the allowed role names" unless Services::RoleManager.allowed_blog_roles.include? role.name
     else 
       raise "assigned role to #{self} not in the allowed role names" unless Services::RoleManager.allowed_global_roles.include? role.name
     end

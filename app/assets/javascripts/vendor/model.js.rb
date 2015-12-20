@@ -437,6 +437,7 @@ class Model
   def responses_on_update(r)
     if r.response.ok?
       self.update_attributes(r.response.json[self.class.name.to_snake_case])
+      self.validate
       r.promise.resolve self
     end
   end
@@ -675,11 +676,11 @@ class RequestHandler
 
     @http_method = method_and_url.keys[0]
     @req_options ||= {}
-    extra_params = {}
+    @extra_params = {}
     #TODO: WATCH the behaviour
-    if req_options[:extra_params] != nil
-      extra_params = req_options[:extra_params]
-      @req_options.merge! extra_params
+    if req_options[:extra_params]
+      @extra_params = req_options[:extra_params]
+      @req_options.merge! @extra_params
     end
     if req_options[:data]
     #ve done it for these reasons:
@@ -692,11 +693,13 @@ class RequestHandler
     elsif @caller.has_file || req_options[:serialize_as_form]
       #this skip before is needed to override default's on model class which result in payload: something; not data
       @skip_before_handler = true
-      @caller.update_attributes extra_params
+      @caller.update_attributes @extra_params
       @req_options[:data] = @caller.serialize_attributes_as_form_data
       @req_options[:processData] = false
       @req_options[:contentType] = false
       #For info on this method refer to validation part of model
+    else
+      (@req_options[:payload] ||= {}).merge!(@extra_params)
     end
     #TODO: NEED TO THROUGHLY PLAN AND STANDARTIZE THE OPTIONS THAT CAN BE PASSED FOR REQUEST!
     send_request
@@ -743,6 +746,9 @@ class RequestHandler
     end
     HTTP.__send__(@http_method, @url, @req_options) do |response|
       @response = response 
+      #SUPER DEFAULTS ON RESPONSE
+      #TODO: make option to override
+      defaults_on_response
       if @should_yield_response
         yield_response
         #handy if you need unprocessed response
@@ -754,10 +760,7 @@ class RequestHandler
         #else defaults will run
       else
         default_response
-      end
-      defaults_on_response
-      #SUPER DEFAULTS ON RESPONSE
-      #TODO: make option to override
+      end   
     end
     @promise
   end

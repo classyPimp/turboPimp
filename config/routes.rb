@@ -30,6 +30,14 @@ Rails.application.routes.draw do
       resources :users
     end
 
+    namespace :blogger do
+      get "blogs/last_ten" => "blogs#last_ten"
+      put "blogs/toggle_published" => "blogs#toggle_published"
+      resources :blogs
+    end
+
+    resources :blogs, only: [:index, :create, :update, :destroy, :edit]
+
   end
 
   get "/console" => "faker#console"

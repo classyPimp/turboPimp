@@ -43,6 +43,8 @@ module Denty
 
     config.generators.stylesheets = false
     config.generators.javascripts = false
+    config.generators.helper = false
+    config.generators.template_engine = false
 
 ######## OPAL CONFIG
 
