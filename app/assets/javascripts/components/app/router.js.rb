@@ -30,7 +30,7 @@ module Components
               t(`Route`, {path: "new", component: Users::New.create_class}),
               t(`Route`, {path: "dashboard", component: Components::Users::Dashboard.create_class}),
               t(`Route`, {path: "show/:id", component: Users::Show.create_class}),
-              t(`Route`, {path: "edit/:id", component: Users::Edit.create_class})
+              t(`Route`, {path: ":id/edit", component: Users::Edit.create_class})
             ),
 
             t(`Route`, {path: "/pages", component: Components::Pages::Main.create_class},
@@ -45,12 +45,12 @@ module Components
               t(`Route`, {path: "new", component: Components::Images::Create.create_class})
             ),
 
-            # t(`Route`, {path: "/admin", component: Components::Admin::Main.create_class, onEnter: ->(n, r, cb){check_role(n, r, cb, [:admin])}},
-            #   t(`Route`, {path: "dashboards", component: Components::Admin::Dashboards::Main.create_class},
-            #     t(`Route`, {path: "general", component: Components::Admin::Dashboards::General.create_class})
-            #   ),
-            #   t(`Route`, {path: "users/:id/edit", component: Components::Admin::Users::Edit.create_class})
-            # ),
+            t(`Route`, {path: "/admin", component: Components::Admin::Main.create_class, onEnter: ->(n, r, cb){check_role(n, r, cb, [:admin])}},
+              # t(`Route`, {path: "dashboards", component: Components::Admin::Dashboards::Main.create_class},
+              #   t(`Route`, {path: "general", component: Components::Admin::Dashboards::General.create_class})
+              # ),
+              t(`Route`, {path: "users/:id/edit", component: Components::Admin::Users::Edit.create_class})
+            ),
 
             t(`Route`, {path: "/blogs", component: Components::Blogs::Main.create_class},
               t(`Route`, {path: "index", component: Components::Blogs::Index.create_class}),

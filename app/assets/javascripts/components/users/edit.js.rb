@@ -18,6 +18,8 @@ module Components
           props.history.replaceState({}, "/forbidden")
         else
           User.edit({wilds: {id: id}}.merge(@as_admin)).then do |form_model|
+            form_model.profile ? nil : (form_model.profile = Profile.new)
+            form_model.avatar ? nil : (form_model.avatar = Avatar.new) 
             set_state form_model: form_model
           end
         end
