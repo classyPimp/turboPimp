@@ -3,30 +3,42 @@ class PagesController < ApplicationController
 	before_action :require_logged_in_user, only: [:create, :update]	
 
 	def create
-		@page = Page.new(create_params)
-		if @page.save
-			render json: @page.as_json(only: [:id, :title, :body])
-		else
-			render json: {page: {errors: @page.errors}}
-		end
+		@page = Page.new
+    perms_for @page
+    auth! @perms
+
+    @page.update_attributes @perms.permitted_attributes
+    current_user.pages << @page
+
+    if @page.save && current_user.save
+      render json: @page.as_json(@perms.serialize_on_success)
+    else
+      render json: @page.as_json(@perms.serialize_on_error)
+    end
 	end
 
+	def edit
+    @page = Page.find(params[:id])
+    perms_for @page
+    auth! @perms
+    render json: @page.as_json
+  end
+
 	def index
-    per_page = params[:per_page] || 25
-		@pages = Page.all.paginate(page: params[:page], per_page: per_page)
-		@pages = @pages << {pagination: {current_page: @pages.current_page, total_entries: @pages.total_entries, total_pages: @pages.total_pages,
-												offset: @pages.offset}} 
-		render json: @pages
+    perms_for Page
+    auth! @perms
+    render json: @perms.model
 	end
 
 	def update
 		@page = Page.find(params[:id])
-		@page.body, @page.title  = update_params[:body], update_params[:title]
-		if @page.save
-			render json: @page
-		else
-			render json: {errors: @page.errors}
-		end
+    perms_for @page
+    auth! @perms
+    if @page.update(@perms.permitted_attributes)
+      render json: @page.as_json(@perms.serialize_on_success)
+    else
+      render json: @page.as_json(@perm.serialize_on_error)
+    end
 	end
 
   def show
@@ -36,15 +48,11 @@ class PagesController < ApplicationController
 
 	def destroy
 		@page = Page.find params[:id]
-		@page.destroy
-		render json: @page
+		perms_for @page
+		auth! @perms
+		if @page.destroy
+			render json: @page
+		end
 	end
 
-	def create_params
-		params.require(:page).permit(:title, :body, :m_title, :m_keywords, :m_description)
-	end
-
-	def update_params
-		params.require(:page).permit(:title, :body, :m_title, :m_keywords, :m_description)
-	end
 end

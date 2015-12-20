@@ -96,6 +96,7 @@ class User < ActiveRecord::Base
   has_one :avatar, dependent: :destroy
 
   has_many :blogs
+  has_many :pages
 
   accepts_nested_attributes_for :avatar, allow_destroy: true, reject_if: :all_blank
   accepts_nested_attributes_for :profile, allow_destroy: true

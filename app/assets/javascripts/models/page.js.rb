@@ -1,4 +1,4 @@
-class Page < Model
+class Page < Model  
 
   attributes :id, :body, :title, :user,
              :m_title, :m_description, :m_keywords, :slug
@@ -8,6 +8,7 @@ class Page < Model
   route "destroy", {delete: "pages/:id"}, {defaults: [:id]}
   route "update", {put: "pages/:id"}, {defaults: [:id]}
   route "Show", {get: "pages/:id"}
+  route "Edit", {get: "pages/:id/edit"}
 
   def validate_body(options = {})
     if body.length < 4

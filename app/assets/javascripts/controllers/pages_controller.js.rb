@@ -40,8 +40,6 @@ class PagesController < BaseController
     page.destroy.then do |r|
       c.state.pages.remove(page)
       c.set_state pages: c.state.pages
-    end.fail do |r|
-      raise "#{self}#destroy!"
     end
   end
 

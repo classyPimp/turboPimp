@@ -5,10 +5,13 @@ module Components
 
       include Plugins::DependsOnCurrentUser
 
+      def init
+        @blank_control_component = ->{Native(t(:div, {}))}
+      end
 
       def get_initial_state
         {
-          current_control_component: Native(t(:div, {}))
+          current_control_component: @blank_control_component
         }
       end
 
@@ -24,7 +27,10 @@ module Components
                 t(:button, {onClick: ->{init_users_index} }, "list users"),
                 t(:br, {}),
                 t(:button, {onClick: ->{init_menues_index_edit}}, "edit menu"),
-                t(:br, {})
+                t(:br, {}),
+                t(:button, {onClick: ->{init_pages_new}}, "create new page"),
+                t(:br, {}),
+                t(:button, {onClick: ->{init_pages_index}}, "list and search for pages" )
               )
             end,
             if state.current_user.has_role? [:blogger]
@@ -62,6 +68,20 @@ module Components
         Components::App::Main.instance.ref(:flash).rb.add_message(msg)
         set_state current_control_component: @blank_control_component
       end
+
+      def init_pages_new
+        p "init_pages_new"
+        set_state current_control_component: Native(t(Components::Pages::New, {as_admin: true}))
+      end
+
+      def init_pages_index
+        set_state current_control_component: Native(t(Components::Pages::Index, {as_admin: true, location: props.location,
+                                                                                 history: props.history}))
+      end
+
+      
+
+
 #*******************************    END ROLE ADMIN
 #*******************************    ROLE BLOGGER
       
