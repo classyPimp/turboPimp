@@ -53,3 +53,44 @@ module Components
     
   end
 end
+
+
+Document.ready? do 
+require "benchmark"
+  @array = [
+    {id: 1, parent_id: 0},
+    {id: 2, parent_id: 1},
+    {id: 3, parent_id: 0},
+    {id: 4, parent_id: 2},
+    {id: 5, parent_id: 3},
+    {id: 6, parent_id: 1},
+    {id: 7, parent_id: 6},
+    {id: 8, parent_id: 2}
+  ]
+  target_array = []
+
+  def build_hierarchy target_array, n
+      @array.select { |h| h[:parent_id] == n }.each do |h|
+        target_array << {id: h[:id], children: build_hierarchy([], h[:id])}
+      end
+      target_array
+  end
+
+
+  time = Benchmark.measure do
+    100000.times do
+      target_hash = Hash.new { |h,k| h[k] = { id: nil, children: [ ] } }
+
+      @array.each do |n|
+          id, parent_id = n.values_at(:id, :parent_id)
+          target_hash[id][:id] = n[:id]
+          target_hash[parent_id][:children].push(target_hash[id])  
+      end
+      target_hash = nil
+    end
+    
+  end
+  
+    puts time
+  
+end

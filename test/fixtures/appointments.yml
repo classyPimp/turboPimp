@@ -1,0 +1,17 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  start: 2015-12-25 10:48:15
+  end: 2015-12-25 10:48:15
+  patient_id: 1
+  doctor_id: 1
+  user_id: 
+  scheduled: false
+
+two:
+  start: 2015-12-25 10:48:15
+  end: 2015-12-25 10:48:15
+  patient_id: 1
+  doctor_id: 1
+  user_id: 
+  scheduled: false
