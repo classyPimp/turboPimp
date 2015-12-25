@@ -1,0 +1,11 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  appointment_id: 
+  note: MyText
+  extra_details: MyText
+
+two:
+  appointment_id: 
+  note: MyText
+  extra_details: MyText

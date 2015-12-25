@@ -43,6 +43,13 @@ module Components
                 t(:br, {}),
                 t(:button, {onClick: ->{init_blogs_index}}, "list and search my blogs")
               )
+            end,
+            if state.current_user.has_role? [:doctor]
+              t(:div, {},
+                "actions for doctor",
+                t(:br, {}),
+                t(:button, {onClick: ->{init_doctor_appointments_index}}, "appointments")
+              )
             end
           ),
           t(:div, {className: "col-lg-9"},
@@ -99,6 +106,13 @@ module Components
       end
   
 #*******************************    END ROLE BLOGGER
+#*******************************    ROLE DOCTOR
+      
+      def init_doctor_appointments_index
+        set_state current_control_component: Native(t(Components::Appointments::Doctors::Index))
+      end
+
+#*******************************    END ROLE DOCTOR
     end
   end
 end

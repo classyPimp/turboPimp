@@ -4,7 +4,7 @@ class CurrentUser < User
 
   attributes :remember_me
 
-  extend Helpers::PubSubBus
+  extend Helpers::PubSubBus  
   allowed_channels :on_user_logged_in, :on_user_logout
 
   route "Get_current_user", post: "users/current_user"

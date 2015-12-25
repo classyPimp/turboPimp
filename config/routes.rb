@@ -39,6 +39,8 @@ Rails.application.routes.draw do
 
     resources :blogs, only: [:index, :create, :update, :destroy, :edit]
 
+    resources :appointments
+
   end
 
   get "/console" => "faker#console"
