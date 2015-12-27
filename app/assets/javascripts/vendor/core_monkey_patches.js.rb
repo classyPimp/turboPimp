@@ -1,3 +1,15 @@
+class Date
+
+  def js
+    `#{self}.date`
+  end
+
+  def to_iso
+    self.strftime("%Y-%m-%dT%H:%M:%S %z")
+  end
+
+end
+
 class String
   def to_snake_case
     self.gsub(/::/, '/').

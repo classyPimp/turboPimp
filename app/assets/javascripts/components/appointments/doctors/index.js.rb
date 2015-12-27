@@ -1,4 +1,4 @@
-require "date"
+require "date"  
 module Components
   module Appointments
     module Doctors
@@ -14,7 +14,8 @@ module Components
         def get_initial_state
           {
             date: Date.today,
-            current_controll_component: ->{month_view}
+            current_controll_component: ->{month_view},
+            current_view: "month"
           }
         end
 
@@ -34,7 +35,7 @@ module Components
         end
 
         def month_view
-          options = {index: self, date: state.date, on_init_week_view: ->(track_day){init_week_view(track_day)}}
+          options = {ref: "month", index: self, date: state.date, on_init_week_view: ->(track_day){init_week_view(track_day)}}
           Native(t(Month, options))
         end
 
@@ -44,72 +45,108 @@ module Components
         end
 
         def init_week_view(track_day)
+          state.current_view = "week"
           state.date = track_day
           set_state current_controll_component: ->{week_view(track_day: state.date)}
         end
 
         def init_month_view
+          state.current_view = "month"
           set_state current_controll_component: ->{month_view}
         end
 
         def init_day_view
+          state.current_view = "day"
           set_state current_controll_component: ->{Native(t(WeekDay, {date: state.date, index: self}))}
         end
 
         def init_appointment_new(date)
           modal_open(
-            nil,
-            t(Components::Appointments::Doctors::New, {date: date})
+            "create appointment",
+            t(Components::Appointments::Doctors::New, {date: date, on_appointment_created: ->(appo){self.on_appointment_created(appo)}})
           )
+        end
+
+        def on_appointment_created(appo)
+          (x = ref(state.current_view).rb).state.appointments << appo
+          x.set_state appointments: x.state.appointments
+          modal_close
         end
 
       end
 
       class  Month < RW
         expose
-        
-        def render
-          #@ev_feed = Eventy.prepare(state.events_feed)
+
+        def prepare_dates
           @cur_month = props.date - (props.date.day - 1)
           @first_wday = @cur_month.wday
           @track_day = @cur_month.clone - (@first_wday + 1)
+        end
 
+        def get_initial_state
+          {
+            appointments: ModelCollection.new
+          }
+        end
+
+        def component_did_mount
+          start_date = (x = (props.date - (props.date.day - 1))) -  x.wday
+          end_date = (@track_day) 
+
+          Appointment.index(namespace: "doctor", payload: {from: "#{start_date}", to: "#{end_date}"}).then do |appointments|
+            p appointments[0].pure_attributes
+            set_state appointments: appointments
+          end
+        end
+        
+        def render
+          prepare_dates       
           t(:div, {},
             t(:button, {onClick: ->{prev_month}}, "<"),
             t(:button, {onClick: ->{next_month}}, ">"),
-            t(:div, {className: "table"},
-              t(:div, {className: "row"},
-                t(:div, {className: "col-lg-2"}),
+            t(:div, {className: "table", style: {display: "table", fontSize:"10px!important"} },
+              t(:div, {className: "row", style: {display: "table-row"}},
                 *splat_each(Calendar.wdays) do |wday_name| 
-                    t(:div, {className: "col-lg-1"}, wday_name)
+                    t(:div, {className: "col-lg-1", style: {display: "table-cell", width: "12%"}}, wday_name)
                 end,
-                t(:div, {className: "col-lg-3"})
               ),
               *splat_each(0..5) do |week_num|
                 t_d = (@track_day).clone
-                t(:div, {className: "row"},
-                  t(:div, {className: "col-lg-2"}),
+                t(:div, {className: "row", style: {display: "table-row"}},
                   t(:div, {},#onClick: ->{handle(t_d)
                     *splat_each(0..6) do |d|
                       t_d_a = (@track_day + 1)
-                      t(:div, {className: "col-lg-1", style: {"height" => "6em"}}, 
-                        t(:div, {style: {display: "inline"}},
+                      t(:div, {className: "col-lg-1", style: {"height" => "12em", display: "table-cell", width: "12%", overflow: "scroll"}}, 
+                        t(:div, {},
                           t(:span, {}, (@track_day += 1).day),
-                          t(:span, {onClick: ->{init_appointment_new(t_d_a)}}, "add appointment")
-                        )
-                        # *splat_each(0..6) do |x|
-                        #   z = "#{@track_day.year}-#{@track_day.month}-#{@track_day.day}"
-                        #   val = @ev_feed[z].pop if @ev_feed[z]
-                        #   t(:p, {}, val ? "#{val.start} - #{val.finish}" : "")
-                        # end
+                          t(:button, {onClick: ->{init_appointment_new(t_d_a)}}, "add appointment")
+                        ),
+                        t(:div, {},
+                          *splat_each(fetch_appointments(@track_day)) do |appointment|
+                            t(:span, {},
+                              "#{Date.wrap(`new Date(#{appointment.start_date})`).strftime('%H:%M')} - 
+                                #{Date.wrap(`new Date(#{appointment.end_date})`).strftime('%H:%M')}",
+                              t(:br, {}),
+                              "#{appointment.patient.profile.name}",
+                              t(:br, {})
+                            )
+                          end
+                        )             
                       )
                     end
-                  ),
-                  t(:div, {className: "col-lg-3"})
+                  )
                 )
               end   
             )
           )
+        end
+
+        def fetch_appointments(t_d)
+          state.appointments.where do |a|
+            next if a == nil
+            a.attributes[:start_date].include? "#{t_d}"
+          end
         end
 
         def init_appointment_new(date)

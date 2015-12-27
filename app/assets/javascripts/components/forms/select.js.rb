@@ -11,14 +11,21 @@ module Forms
     
 
     def init
+      if props.options.is_a? Array
+        if native? props.options[0]
+          props.options.map! do |ind|
+            Hash.new ind
+          end
+        end
+      end
       server_feed?
       @multiple = props.multiple ? true : false
       @serialize_value = (s_v = props.serialize_value) ? s_v : false
+      @select_only_attr = props.select_only_attr
       prepare_all
     end
 
     def prepare_all
-
       @options ||= props.options || []
       @selected = []
       @substract_from_options = []
@@ -34,15 +41,21 @@ module Forms
       else
 
         pre_selected = props.model.attributes[props.attr]
-        handle_preselected(pre_selected)
+        handle_preselected(pre_selected) if pre_selected
 
       end
 
       @options = @options - @substract_from_options
 
-      if @serialize_value
-        @options.map! do |option|
+      if @serialize_value && !@options[0].is_a?(Model)
+        if @options[0].is_a? String
+          @options.map! do |option|
             Model.parse({@serialize_value[:model_name] => {@serialize_value[:value_attr] => option}})
+          end
+        else
+          @options.map! do |option|
+            Model.parse(option)
+          end
         end
       end        
     
@@ -119,6 +132,8 @@ module Forms
         if selected.arbitrary[:initially_selected]
           selected.attributes[:_destroy] = "1"
           state.options << selected
+        else
+          state.options << state.selected.delete(selected)
         end
       else
         state.options << state.selected.delete(selected)
@@ -152,7 +167,15 @@ module Forms
     end
 
     def collect
-      props.model.attributes[props.attr] = @multiple ? state.selected : state.selected[0]
+      unless @select_only_attr
+        props.model.attributes[props.attr] = @multiple ? state.selected : state.selected[0]
+      else
+        selected = []
+        state.selected.each do |sel|
+          selected << sel.attributes[@select_only_attr]
+        end
+        props.model.attributes[props.attr] = @multiple ? selected : selected[0]
+      end
     end
   end
 end

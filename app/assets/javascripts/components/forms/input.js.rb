@@ -1,7 +1,11 @@
 module Forms
   class Input < RW
     expose
-            
+    ##PROPS
+    # input_props: Hash, this'll go to input
+    # comp_props: Hash, this'll go to components main div
+    #
+    # NOT ALL LISTED
     def __component_will_update__
       ref("#{self}").value = "" if props.reset_value == true
       super
@@ -16,9 +20,12 @@ module Forms
     end
 
     def optional_props
-      opt = {}
+      opt = Hash.new(props.input_props.to_n)
       if props.preview_image
         opt[:onChange] = ->(){preview_image}
+      end
+      unless opt[:placeholder]
+        opt[:defaultValue] = props.model.attributes[props.attr]
       end
       opt
     end
@@ -47,7 +54,8 @@ module Forms
     end
 
     def render
-      t(:div, {},
+      props.comp_options ||= {}
+      t(:div, props.comp_options,
         t(:p, {}, props.attr),
         *if props.model.errors[props.attr]
           splat_each(props.model.errors[props.attr]) do |er|
@@ -59,7 +67,7 @@ module Forms
             )             
           end
         end,
-        t(:input, {className: valid_or_not?, defaultValue: props.model.attributes[props.attr], ref: "#{self}", 
+        t(:input, {className: valid_or_not?, ref: "#{self}", 
                    type: props.type, key: props.keyed}.merge(optional_props)),
         if props.preview_image && state.image_to_preview != ""
           t(:div, {className: "image_preview"},

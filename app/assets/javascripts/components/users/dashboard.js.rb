@@ -17,7 +17,7 @@ module Components
 
       def render
         t(:div, {className: "row"},
-          t(:div, {className: "col-lg-3"},
+          t(:div, {className: "col-lg-2"},
             if state.current_user.has_role? [:admin] 
               t(:div, {},
                 "actions for admin:",
@@ -52,7 +52,7 @@ module Components
               )
             end
           ),
-          t(:div, {className: "col-lg-9"},
+          t(:div, {className: "col-lg-10"},
             state.current_control_component.to_n
           )
         ) 
