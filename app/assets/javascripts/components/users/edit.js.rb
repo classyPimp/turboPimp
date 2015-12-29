@@ -52,7 +52,6 @@ module Components
 
       def handle_inputs
         collect_inputs
-        p state.form_model.pure_attributes
         unless state.form_model.has_errors?
           state.form_model.update({serialize_as_form: true}.merge(@as_admin)).then do |model|
             unless model.has_errors?

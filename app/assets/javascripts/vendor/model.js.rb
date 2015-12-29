@@ -206,12 +206,61 @@ class Model
   end
 
   def self.objectify_from_model(data)
+    handle_specifically_selected(data)  #refer to .handle_specifically_selected
     data.each_with_index do |(k, v), index|
       if (v.is_a? Hash) || (v.is_a? Array)
         data[k] = objectify(v)
       end
     end
+    data.delete_if {|k, v| k[0..2] == "sj_" || k[0..2] == "si_"} #refer to .handle_specifically_selected
     data
+  end
+
+  #Rails unfortunately doesn't provide a way to select columns on preloaded (or includes) table
+  # eg User.includes(:profiles).select("users.*, profiles.name") will anyway load all from profile
+  #as well as when doing joins with selecting Rails won't map selected columns on joined to corresponding models
+  #eg User.joins(:profiles).select("users.*, profiles.name AS p_name")
+  #that way youll be able to access name but it wont be on profile model
+  #so to handle that stuff so your frontend would handle the modelized way
+  #for includes with speciffically selected fields
+  #follow this: e/g/ belongs_to :si_userXid_name_password, ->{select(:id, :name, :passowrd)}, classname: User, foreign_key: "user_id"
+  #so when serialized it'll pass it to client like {profile: {foo: "bar", si_userXid_name_password: {user: {id: 1, name: "q", password: "joe"}}}}
+  #but on client it would serialize as it is regular e.g. {profile: {foo: "bar", user: {user: {id: 1, name: "q", password: "joe"}}}}
+  #for joins follow the same User.joins(:profile).select("users.*, profiles.name AS sj_profileXname")
+  #your server will {user: {foo: "bar", sj_profileXname: "the joe"}}
+  #but client will serialize it to {user: {foo: "bar", profile: {profile: {name: "joe"}}}}
+  #so no need to remember and use those arbitrary attr holders if follow this convention
+  #plus you can nest sj_ as sj_user1sj_profile1name will let {foo: {user: {user: {profile: {profile: {name: "yay!"}}}}}}
+  def self.handle_specifically_selected(data)
+    found = nil
+    to_move = Hash.new {|h,k| 
+      if k[1]
+        h[k[0]] = {k[1] => {}}
+      else
+        h[k[0]] = {k[0] => {}}
+      end
+    }
+    data.each do |k, v|
+      if k[0..2] == "sj_"
+        found = true
+        splitted = k.split("1")
+        name = splitted[0][3..-1].split("2")
+        att_n = splitted[1..-1].join("1")
+        if name[1]
+          to_move[name][name[1]][att_n] = v
+        else
+          to_move[name][name[0]][att_n] = v
+        end
+      elsif k[0..2] == "si_"
+        if k[0..2] == "si_"
+          #found = true
+          splitted = k.split("1")
+          name ||= splitted[0][3..-1]
+          data[name] = v
+        end
+      end
+    end
+    data.merge!(to_move) if found
   end
 ## END THESE ARE NEEDED FOR PARSE CLASS METHOD
 

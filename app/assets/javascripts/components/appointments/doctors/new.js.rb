@@ -12,7 +12,7 @@ module Components
 
         def get_initial_state
           {
-            form_model: Appointment.new(date_part: props.date.strftime("%Y-%m-%d"),
+            form_model: Appointment.new(date_part: props.date.format("YYYY-MM-DD"),
               appointment_detail: {appointment_detail: {}}
               ) 
           }
@@ -21,9 +21,9 @@ module Components
         def render
           t(:div, {},
             input(Forms::Input, state.form_model, :date_part, {type: "hidden", comp_options: {style: {display: "none"}}}),
-            "#{props.date}",
-            input(Forms::Input, state.form_model, :time_part_from, {input_props: {placeholder: "HH::MM"}}),
-            input(Forms::Input, state.form_model, :time_part_to, {input_props: {placeholder: "HH::MM"}}),
+            "#{props.date.format('YYYY-MM-DD')}",
+            input(Forms::Input, state.form_model, :time_part_from, {input_props: {placeholder: "HH:MM"}}),
+            input(Forms::Input, state.form_model, :time_part_to, {input_props: {placeholder: "HH:MM"}}),
             input(Forms::Select, state.form_model, :patient_id, {
                   server_feed: {url: "/api/patients/patients_feed"}, 
                   serialize_value: {model_name: "profile", value_attr: "name"},
@@ -38,8 +38,8 @@ module Components
           m_a = state.form_model.attributes
           start_str = "#{m_a[:date_part]}T#{m_a.delete(:time_part_from)}"
           end_str = "#{m_a.delete(:date_part)}T#{m_a.delete(:time_part_to)}"
-          state.form_model.start_date = Date.wrap(`new Date(#{start_str})`).to_iso
-          state.form_model.end_date = Date.wrap(`new Date(#{end_str})`).to_iso
+          state.form_model.start_date = Moment.new(start_str).format()
+          state.form_model.end_date = Moment.new(end_str).format()
           unless state.form_model.has_errors?
             state.form_model.create(namespace: "doctor").then do |model|
               if model.has_errors?

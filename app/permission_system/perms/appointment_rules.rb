@@ -14,7 +14,7 @@ module Perms
 def change
 rename_column :table_name, :old_column, :new_column
 end
-        @serialize_on_success = {}
+        @serialize_on_success = {include: [patient: {root: true, include: [profile: {root: true}]}]}
         @serialize_on_error = {methods: [:errors]}
         
       end

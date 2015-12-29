@@ -1,11 +1,11 @@
-class Date
+class Moment
 
-  def js
-    `#{self}.date`
-  end
-
-  def to_iso
-    self.strftime("%Y-%m-%dT%H:%M:%S %z")
+  def self.new(*opt)
+    if opt.empty?
+      Native(`moment()`)
+    else
+      Native(`moment.apply(null, #{opt})`)
+    end
   end
 
 end
