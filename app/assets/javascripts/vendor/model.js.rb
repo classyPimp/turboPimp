@@ -233,13 +233,6 @@ class Model
   #plus you can nest sj_ as sj_user1sj_profile1name will let {foo: {user: {user: {profile: {profile: {name: "yay!"}}}}}}
   def self.handle_specifically_selected(data)
     found = nil
-    to_move = Hash.new {|h,k| 
-      if k[1]
-        h[k[0]] = {k[1] => {}}
-      else
-        h[k[0]] = {k[0] => {}}
-      end
-    }
     data.each do |k, v|
       if k[0..2] == "sj_"
         found = true
@@ -247,9 +240,9 @@ class Model
         name = splitted[0][3..-1].split("2")
         att_n = splitted[1..-1].join("1")
         if name[1]
-          to_move[name][name[1]][att_n] = v
+          ((data[name[0]] ||= {})[name[1]] ||= {})[att_n] = v
         else
-          to_move[name][name[0]][att_n] = v
+          ((data[name[0]] ||= {})[name[0]] ||= {})[att_n] = v
         end
       elsif k[0..2] == "si_"
         if k[0..2] == "si_"
@@ -260,7 +253,6 @@ class Model
         end
       end
     end
-    data.merge!(to_move) if found
   end
 ## END THESE ARE NEEDED FOR PARSE CLASS METHOD
 

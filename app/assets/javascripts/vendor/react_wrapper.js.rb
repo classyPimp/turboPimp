@@ -50,6 +50,16 @@ class RW
     
   end
 
+  def __get_initial_state__
+    `var x = {}`
+    if get_initial_state
+      self.get_initial_state.each do |k,v|
+        `x[#{k.to_n}] = #{v}`
+      end
+    end
+    `x`
+  end
+
   def get_initial_state
     
   end
@@ -119,7 +129,7 @@ class RW
           },
           getInitialState: function(){
             this.__opalInstance = #{self.new(`this`)}
-            return #{`this.__opalInstance.$get_initial_state()`.to_n};
+            return #{`this.__opalInstance.$__get_initial_state__()`};
           },
           componentWillMount: function() {
             return this.__opalInstance.$component_will_mount();
@@ -187,7 +197,11 @@ class RW
 
   def set_state(val)
     __set_state__(val)
-    `#{@native.to_n}.setState(#{val.to_n})`
+    x = `{}`
+    val.each do |k,v|
+      `#{x}[#{k.to_n}] = #{v}`
+    end
+    `#{@native.to_n}.setState(#{x})`
   end
 
   def __set_state__(val)

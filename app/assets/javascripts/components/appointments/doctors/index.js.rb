@@ -1,16 +1,3 @@
-class Moment
-
-  def self.new(*opt)
-    if opt.empty?
-      Native(`moment()`)
-    else
-      Native(`moment.apply(null, #{opt})`)
-    end
-  end
-
-end
-
-
 module Components
   module Appointments
     module Doctors
@@ -47,7 +34,7 @@ module Components
         end
 
         def month_view
-          options = {ref: "month", index: self, date: state.date, on_init_week_view: ->(track_day){init_week_view(track_day)}}
+          options = {on_init_appointments_show: ->(appointment){init_appointments_show(appointment)}, ref: "month", index: self, date: state.date, on_init_week_view: ->(track_day){init_week_view(track_day)}}
           Native(t(Month, options))
         end
 
@@ -72,10 +59,24 @@ module Components
           set_state current_controll_component: ->{Native(t(WeekDay, {date: state.date, index: self}))}
         end
 
-        def init_appointment_new(date)
+        def init_appointments_new(date)
           modal_open(
             "create appointment",
             t(Components::Appointments::Doctors::New, {date: date, on_appointment_created: ->(appo){self.on_appointment_created(appo)}})
+          )
+        end
+
+        def init_appointments_show(appointment)
+          modal_open(
+            "appointment",
+            t(Components::Appointments::Doctors::Show, {appointment: appointment})
+          )
+        end
+
+        def init_appointments_edit(id)
+          modal_open(
+            "edit",
+            t(Components::Appointments::Doctors::Edit, {id: id})
           )
         end
 
@@ -136,8 +137,8 @@ module Components
                             t(:span, {},
                               "#{Moment.new(appointment.start_date).format("HH:mm")} - 
                                 #{Moment.new(appointment.end_date).format("HH:mm")}",
-                              t(:button, {}, "show this"),
-                              t(:button, {}, "edit this"),
+                              t(:button, {onClick: ->{props.on_init_appointments_show(appointment)}}, "show this"),
+                              t(:button, {onClick: ->{props.index.init_appointments_edit(appointment.id)}}, "edit this"),
                               t(:button, {}, "delete this"),
                               t(:br, {}),
                               "#{appointment.patient.profile.name}",
@@ -165,7 +166,7 @@ module Components
         end
 
         def init_appointment_new(date)
-          props.index.init_appointment_new(date)
+          props.index.init_appointments_new(date)
         end
 
         def handle(track_day)

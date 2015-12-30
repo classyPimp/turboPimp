@@ -20,7 +20,19 @@ end
       end
     end
 
+    def edit
+      if @current_user && @current_user.has_role?(:doctor)
+        true
+      end
+    end
+
     def index
+      if @current_user && @current_user.has_role?(:doctor)
+        true
+      end
+    end
+
+    def show
       if @current_user && @current_user.has_role?(:doctor)
         true
       end
