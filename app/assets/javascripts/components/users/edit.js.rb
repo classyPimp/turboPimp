@@ -40,8 +40,8 @@ module Components
               t(:button, {onClick: ->{init_auth_data_edit}}, "edit login credentials"),
               input(Forms::Input, state.form_model.profile, :bio),
               if props.as_admin
-                input(Forms::Select, state.form_model, :roles, { serialize_value: {model_name: "role", value_attr: "name"}, 
-                                                        multiple: true, server_feed: {url: "/api/users/roles_feed"} })
+                input(Forms::Select, state.form_model, :roles, { multiple: true, server_feed: {url: "/api/users/roles_feed"},
+                                                                  option_as_model: 'role', s_value: "name" })
               end,
               t(:button, {onClick: ->{handle_inputs}}, "update"),
               t(:button, {onClick: ->{cancel_edit}}, "cancel")

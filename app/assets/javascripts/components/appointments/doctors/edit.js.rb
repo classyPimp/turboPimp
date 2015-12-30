@@ -35,6 +35,7 @@ module Components
                       s_value: "user_id",
                       s_show: "name"}),
                 # input(Forms::Textarea, state.form_model.appointment_detail, :note),
+                t(:br, {}),
                 t(:button, {onClick: ->{handle_inputs}}, "submit")
               )
             end

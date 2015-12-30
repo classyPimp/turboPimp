@@ -130,6 +130,10 @@ class UsersController < ApplicationController
 
   def roles_feed
     auth! Services::RoleManager.new
-    render json: Services::RoleManager.allowed_global_roles
+    map = []
+    Services::RoleManager.allowed_global_roles.each do |role|
+      map << {role: {name: role}}
+    end
+    render json: map
   end
 end

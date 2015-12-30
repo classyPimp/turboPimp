@@ -34,7 +34,7 @@ module Components
                 t(:div, {},
                   t(:p, {}, "choose roles"),
                   input(Forms::Select, state.form_model, :roles, {multiple: true, server_feed: {url: "/api/users/roles_feed"},
-                                                                  serialize_value: {model_name: "role", value_attr: "name"}})
+                                                                  option_as_model: 'role', s_value: "name"})
                 )
               end,
               t(:br, {}),
