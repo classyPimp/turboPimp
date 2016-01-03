@@ -94,9 +94,28 @@ module Forms
       }
     end
 
+    def combined_errors
+      x = props.model.errors[props.attr].clone
+      y = props.model.errors[props.show_errors_for].clone
+      x = (x.is_a? Array) ? x : [] #for some reason ||= didn't work for Opal in this situation
+      y = (y.is_a? Array) ? y : []
+      x + y      
+    end
+
     def render
       if @loaded
         t(:div, {className: "dropdown #{state.open ? "open" : ""}"},
+          t(:p, {}, "#{(props.show_name || props.attr)}"),
+          *if props.model.errors[props.attr] || props.model.errors[props.show_errors_for] 
+            splat_each(combined_errors) do |er|
+              t(:div, {},
+                t(:p, {},
+                  er
+                ),
+                t(:br, {})    
+              )             
+            end
+          end,
           t(:div, {className: "input-group"},
             t(:div, {className: "input-group-btn"},
               t(:button, {role: "button", "aria-haspopup" => "true", "aria-expanded" => "#{state.open ? "true" : "false"}",
@@ -184,14 +203,12 @@ module Forms
     end
 
     def collect
-      p state.selected
-      if state.selected[-1].is_a? Model
+      if state.selected[0].is_a? Model
         props.model.attributes[props.attr] = @multiple ? state.selected : state.selected[0]
       else
         selected = []
         state.selected.each do |sel|
-          `console.log(#{sel})`
-          selected << sel.attributes[@s_value]
+          selected << sel[@s_value]
         end
         props.model.attributes[props.attr] = @multiple ? selected : selected[0]
       end

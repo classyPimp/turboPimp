@@ -37,6 +37,20 @@ end
         true
       end
     end
+
+    def update
+      if @current_user && @current_user.has_role?(:doctor)
+        @permitted_attributes = params.require(:appointment).
+          permit(:start_date, :end_date, :patient_id, appointment_detail_attributes: [:note])
+        @serialize_on_error = {methods: [:errors]}
+      end
+    end
+
+    def destroy
+      if @current_user && @current_user.has_role?(:doctor)
+        true
+      end
+    end
       
   end
 end

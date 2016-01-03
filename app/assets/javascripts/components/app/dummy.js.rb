@@ -299,7 +299,6 @@ class PageEdit < RW
         if model.has_errors?
           set_state form_model: model
         else
-          p "WHATTAP"
           set_state form_model: false
           props.on_edit_done(model)
         end

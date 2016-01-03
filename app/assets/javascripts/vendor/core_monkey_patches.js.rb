@@ -2,9 +2,9 @@ class Moment
 
   def self.new(*opt)
     if opt.empty?
-      Native(`moment()`)
+      @native = Native(`moment()`)
     else
-      Native(`moment.apply(null, #{opt})`)
+      @native = Native(`moment.apply(null, #{opt})`)
     end
   end
 

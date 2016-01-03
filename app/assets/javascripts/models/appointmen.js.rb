@@ -17,15 +17,38 @@ class Appointment < Model
 
   route "Edit", {get: "appointments/:id/edit"}
 
-  def validate_start
-    unless Date.parse(self.start)
-      add_error :date, "should provide a valid date"
+
+  def validate_time_part_from
+    unless x = Moment.new("#{self.attributes[:time_part_from]}", "HHmm").isValid()
+      add_error :time_part_from, "should provide hours and minutes in valid format like '10 30' or '1030' or '10:30' or '10.30' or '10 30'"
+    end
+  end
+
+  def validate_time_part_to
+    unless x = Moment.new("#{self.attributes[:time_part_to]}", "HHmm").isValid()
+      add_error :time_part_to, "should provide hours and minutes in valid format like '10 30' or '1030' or '10:30' or '10.30' or '10 30'"
+    end
+  end
+
+  def validate_start_date
+    unless (x = Moment.new(self.start_date)).isValid()
+      add_error :start_date, "should provide a valid date"
+    end
+    unless x.isValid && (x.isBefore Moment.new(self.end_date))
+      add_error :start_date, "start date should be before end date"
+    end
+  end
+
+  def validate_end_date
+    unless Moment.new(self.end_date).isValid()
+      add_error :end_date, "should provide a valid date"
     end
   end
 
   def validate_patient_id
-    unless patient_id.to_i.is_a? Integer
+    unless patient_id && patient_id.to_i.is_a?(Integer)
       add_error :patient_id, "you should choose a patient"
     end
   end  
+
 end

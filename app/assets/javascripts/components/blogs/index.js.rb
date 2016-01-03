@@ -30,7 +30,6 @@ module Components
       def make_query(extra_params)
         Blog.index({component: self, extra_params: extra_params}.merge(@namespace)).then do |blogs|
           extract_pagination(blogs)
-          #p pages.pure_attributes
           set_state blogs: blogs
         end
       end

@@ -287,7 +287,7 @@ class Model
   #This accessor needed if you need some arbitrary data on model at runtime temprorarily
   #for and just to have some centralized access to it without making accessors
   #you can use it
-  attr_accessor :arbitrary
+  attr_accessor :arbitrary, :attributes
  
   def initialize(data = {})
     data = self.class.objectify(data, nil, true)
@@ -303,10 +303,10 @@ class Model
     #refer to #initialize for info
   end
 
-  def attributes
-    #in case you need attributes as a hash with models (not their pure attributes) 
-    @attributes
-  end
+  # def attributes
+  #   #in case you need attributes as a hash with models (not their pure attributes) 
+  #   @attributes
+  # end
 
 
   def pure_attributes(root = true)
@@ -649,16 +649,21 @@ class ModelCollection
       @data.each(&block)
   end
 
+  def sort!(&block)
+    @data.sort!(&block)
+  end
+
   def [](value)
     @data[value]
   end
 
-  def empty?
-    @data.empty?
+  def +(value)
+    @data += value
+    self
   end
 
-  def to_s
-    "#{self.class}: [#{@data}]"
+  def empty?
+    @data.empty?
   end
 
   def remove(obj)

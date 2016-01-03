@@ -77,7 +77,6 @@ module Components
       end
 
       def init_pages_new
-        p "init_pages_new"
         set_state current_control_component: Native(t(Components::Pages::New, {as_admin: true}))
       end
 

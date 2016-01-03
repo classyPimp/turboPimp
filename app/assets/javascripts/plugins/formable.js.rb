@@ -274,7 +274,7 @@ end
 			#here it resets for it not to increment infinitely
 			#also this can help in keying inputs probably idk
 			super
-		end
+		end  
 
 		def input(elem, model, attr, options = {}, *_children)
 			#this method calls the input element that you define for single attr handling
@@ -287,7 +287,7 @@ end
 			#for further accessing it 
 			options[:model] = model
 			options[:attr] = attr
-			options[:ref] = "_input_#{@inputs_counter}"
+			options[:ref] = "_input_#{model}_#{attr}_#{@inputs_counter}"
 			#the given ref will go not to the input dom element but the RW element
 			#that has to implement collect method (which gets the concrete input)
 			#the ref is needed to get taht RW class object (as ref(_input_1).__opalInstance.collect)
@@ -323,7 +323,7 @@ end
       #CHANGED: above is not actual reset_errors are called in Model#validate before validation begins
       #and at the end attr[:errors] are cleared as well
       options[:validate_only] ||= []
-	    state.form_model.validate(only: options[:validate_only])
+	    state.form_model.validate(only: options[:validate_only]) unless (options[:validate] == false)
 	    #Model implements #validate method which does TADA validation!
 	    state.form_model
 	    #returns the model with inputs

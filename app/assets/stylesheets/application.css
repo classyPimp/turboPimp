@@ -61,3 +61,7 @@
 #im_your_father_luke {
   
 }
+
+.modal .modal-dialog { 
+  width: 80%; 
+}

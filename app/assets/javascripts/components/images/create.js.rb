@@ -38,7 +38,6 @@ module Components
 		          set_state form_model: model
 		        else
 		          set_state form_model: false
-              p "gon call add image"
 		          props.on_create(model)
 		        end
 		      end

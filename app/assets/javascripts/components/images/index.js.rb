@@ -72,10 +72,7 @@ module Components
 		  end
 
       def on_create(image)
-        p "add image"
-        p state.images
         state.images << image
-        p state.images
         self.set_state images: state.images
       end
 

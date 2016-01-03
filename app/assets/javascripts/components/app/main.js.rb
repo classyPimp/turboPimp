@@ -16,7 +16,6 @@ module Components
 
       def get_initial_state  
         if x = self.class.props_from_server.current_user
-          p Hash.new(x.to_n)
           CurrentUser.user_instance = Model.parse(Hash.new(x.to_n))
           CurrentUser.logged_in = true
         end

@@ -4,7 +4,8 @@ module Forms
     ##PROPS
     # input_props: Hash, this'll go to input
     # comp_props: Hash, this'll go to components main div
-    #
+    # show_name: String, this ill be shown near the input as input name
+    # show_errors_for: String, will merge errors for this attr (eg. in form it is :user, but server returns errors for :user_id)
     # NOT ALL LISTED
     def __component_will_update__
       ref("#{self}").value = "" if props.reset_value == true
@@ -53,12 +54,20 @@ module Forms
       `
     end
 
+    def combined_errors
+      x = props.model.errors[props.attr].clone
+      y = props.model.errors[props.show_errors_for].clone
+      x = (x.is_a? Array) ? x : [] #for some reason ||= didn't work for Opal in this situation
+      y = (y.is_a? Array) ? y : []
+      x + y      
+    end
+
     def render
       props.comp_options ||= {}
       t(:div, props.comp_options,
-        t(:p, {}, props.attr),
-        *if props.model.errors[props.attr]
-          splat_each(props.model.errors[props.attr]) do |er|
+        t(:p, {}, "#{(props.show_name || props.attr)}"),
+        *if props.model.errors[props.attr] || props.model.errors[props.show_errors_for] 
+          splat_each(combined_errors) do |er|
             t(:div, {},
               t(:p, {},
                 er
