@@ -8,8 +8,6 @@ module Components
           ["sun", "mon", "tue", "wed", "thur", "fri", "sat" ]
         end
 
-        attr_accessor :controll_date
-
         def get_initial_state
           {
             date: Moment.new,
@@ -37,14 +35,9 @@ module Components
           )
         end
 
-        def week_view(options = {})
-          options[:index] = self
-          Native t(Week, options)
-        end
-
         def init_week_view(track_day)
           state.current_view = "week"
-          set_state current_controll_component: ->{week_view(date: state.date)}
+          set_state current_controll_component: ->{Native(t(Week, {ref: "week", index: self, date: state.date}))}
         end
 
         def init_month_view
@@ -53,6 +46,7 @@ module Components
         end
 
         def init_day_view
+          state.current_view = "day"
           set_state current_controll_component: ->{Native(t(WeekDay, {ref: "day", date: state.date, index: self}))}, current_view: "day"
         end
 
@@ -214,7 +208,7 @@ module Components
         def queries(date)
           x = {}
           date = props.date.clone().startOf("week")
-          x[:from] = date.subtract(1, 'days').format('YYYY-MM-DD')
+          x[:from] = date.format('YYYY-MM-DD')
           x[:to] = date.add(8, 'days').format('YYYY-MM-DD')
           x
         end
@@ -251,7 +245,7 @@ module Components
                 end,
               ),
               t(:div, {className: "row", style: {display: "table-row"}},
-                t(:div, {},#onClick: ->{handle(t_d)
+                t(:div, {},
                   *splat_each(0..6) do |d|
                     t_d_a = (@track_day.add(1, 'days')).clone()
                     t(:div, {className: "col-lg-1", style: {display: "table-cell", width: "12%"}}, 

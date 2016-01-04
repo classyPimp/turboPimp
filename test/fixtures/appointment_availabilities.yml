@@ -1,0 +1,11 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  user_id: 
+  for_date: 2016-01-04
+  map: MyText
+
+two:
+  user_id: 
+  for_date: 2016-01-04
+  map: MyText

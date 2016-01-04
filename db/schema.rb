@@ -11,10 +11,20 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20151226174241) do
+ActiveRecord::Schema.define(version: 20160104150111) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "appointment_availabilities", force: :cascade do |t|
+    t.integer  "user_id"
+    t.date     "for_date"
+    t.text     "map"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  add_index "appointment_availabilities", ["user_id"], name: "index_appointment_availabilities_on_user_id", using: :btree
 
   create_table "appointment_details", force: :cascade do |t|
     t.integer  "appointment_id"
@@ -167,6 +177,7 @@ ActiveRecord::Schema.define(version: 20151226174241) do
 
   add_index "users_roles", ["user_id", "role_id"], name: "index_users_roles_on_user_id_and_role_id", using: :btree
 
+  add_foreign_key "appointment_availabilities", "users"
   add_foreign_key "appointment_details", "appointments"
   add_foreign_key "appointments", "users"
   add_foreign_key "avatars", "users"

@@ -15,7 +15,6 @@
   validate :validate_patient_id
   validates :doctor_id, presence: true, numericality: {only_integer: true}
   validate :validate_doctor_id
-private
 
   def validate_patient_id
     if patient_id.present?
@@ -33,5 +32,12 @@ private
     end
   end
   
+#============== CALLBACKS
+
+  after_create :configure_appointment_availability
+
+  def configure_appointment_availability
+    AppointmentAvailability.configure_appointment_availability(self)
+  end
 
 end
