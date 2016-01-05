@@ -1,4 +1,4 @@
-  class Appointment < ActiveRecord::Base
+class Appointment < ActiveRecord::Base
 
   #_--------------ASSOCIATIONS
   belongs_to :user
@@ -34,10 +34,15 @@
   
 #============== CALLBACKS
 
-  after_create :configure_appointment_availability
+  after_create :on_appointment_created
 
-  def configure_appointment_availability
-    AppointmentAvailability.configure_appointment_availability(self)
+  def on_appointment_created
+    self.sub_to(:on_appointment_created, AppointmentAvailability)
+    self.pub_to(:on_appointment_created, self)
+    self.unsub_from(:on_appointment_created, AppointmentAvailability)
   end
+
+  include Services::PubSubBus
+  allowed_channels instance: [:on_appointment_created]
 
 end

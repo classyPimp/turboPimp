@@ -60,7 +60,7 @@ module Components
 
             t(`Route`, {path: "/appointments", component: Components::Appointments::Main.create_class},
               t(`Route`, {path: "index", component: Components::Appointments::Index.create_class})
-            )
+            ),
 
             # t(`Route`, {path: "/blogger", component: Components::Blogger::Blogs::Main.create_class},
             #   t(`Route`, {path: "blogs/dashboard", component: Components::Blogger::Blogs::Dashboard.create_class})
