@@ -35,6 +35,8 @@ class Appointment < ActiveRecord::Base
 #============== CALLBACKS
 
   after_create :on_appointment_created
+  after_destroy :on_appointment_destroyed
+  after_update :on_appointment_updated
 
   def on_appointment_created
     self.sub_to(:on_appointment_created, AppointmentAvailability)
@@ -42,7 +44,25 @@ class Appointment < ActiveRecord::Base
     self.unsub_from(:on_appointment_created, AppointmentAvailability)
   end
 
+  def on_appointment_destroyed
+    self.sub_to(:on_appointment_destroyed, AppointmentAvailability)
+    self.pub_to(:on_appointment_destroyed, self)
+    self.unsub_from(:on_appointment_destroyed, AppointmentAvailability)
+  end
+
+  def on_appointment_updated
+    return true unless self.changed.include?("start_date") || self.changed.include?("end_date")
+
+    _changes = []
+    _changes << self.changes[:start_date][0].to_formatted_s(:iso8601) if self.changes[:start_date]
+    _changes << self.changes[:end_date][0].to_formatted_s(:iso8601) if self.changes[:end_date]
+
+    self.sub_to(:on_appointment_updated, AppointmentAvailability)
+    self.pub_to(:on_appointment_updated, self, _changes)
+    self.unsub_from(:on_appointment_updated, AppointmentAvailability)
+  end
+
   include Services::PubSubBus
-  allowed_channels instance: [:on_appointment_created]
+  allowed_channels instance: [:on_appointment_created, :on_appointment_updated, :on_appointment_destroyed]
 
 end
