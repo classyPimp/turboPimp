@@ -7,7 +7,7 @@ class PagesController < ApplicationController
     perms_for @page
     auth! @perms
 
-    @page.update_attributes @perms.permitted_attributes
+    @page.attributes = @perms.permitted_attributes
     current_user.pages << @page
 
     if @page.save && current_user.save

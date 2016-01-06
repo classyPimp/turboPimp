@@ -3,6 +3,7 @@ require "vendor/model"
 class User < Model
 
   attributes :id, :email, :password, :password_confirmation
+  has_many :appointment_availabilities
 
   route "sign_up", post: "users"
 

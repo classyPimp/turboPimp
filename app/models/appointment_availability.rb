@@ -1,6 +1,7 @@
 class AppointmentAvailability < ActiveRecord::Base
   
   belongs_to :user
+  
   #================= PUBSUBBUS CLASS LEVEL
   #invoked from on_create callback from Appointment
   #finds or creates appointment
@@ -21,10 +22,12 @@ class AppointmentAvailability < ActiveRecord::Base
     map << start_date
     map << end_date
 
-    a_a.update_attributes map: "#{map.to_json}", user_id: appointment.doctor_id, for_date: appointment.start_date.strftime('%Y-%m-%d')
+    a_a.attributes = {map: "#{map.to_json}", user_id: appointment.doctor_id, for_date: appointment.start_date.strftime('%Y-%m-%d')}
     a_a.save
   end
-
+  #invoked from on_create callback from Appointment
+  #finds or creates appointment
+  #map contains stringified json which shall be sen to client and serialized there and used as needed
   def self.on_appointment_destroyed(appointment)
     a_a = self.where(for_date: appointment.start_date.strftime('%Y-%m-%d'), user_id: appointment.doctor_id).first_or_create
     
@@ -38,9 +41,12 @@ class AppointmentAvailability < ActiveRecord::Base
     map.delete_if do |date|
       date[0] == start_date && date[1] == end_date
     end
-    a_a.update map: "#{map.flatten.to_json}", user_id: appointment.doctor_id, for_date: appointment.start_date.strftime('%Y-%m-%d')
+    a_a.attributes = {map: "#{map.flatten.to_json}", user_id: appointment.doctor_id, for_date: appointment.start_date.strftime('%Y-%m-%d')}
+    a_a.save
   end
-
+  #invoked from on_create callback from Appointment
+  #finds or creates appointment
+  #map contains stringified json which shall be sen to client and serialized there and used as needed
   def self.on_appointment_updated(appointment, old_values)
     a_a = self.where(for_date: appointment.start_date.strftime('%Y-%m-%d'), user_id: appointment.doctor_id).first_or_create
     
@@ -57,10 +63,13 @@ class AppointmentAvailability < ActiveRecord::Base
     map = map.each_slice(2).to_a
     map.each do |pair|
       if pair[0] == old_values[0] && pair[1] == old_values[1]
-        date = [start_date, end_date] and break
+        pair[0] = start_date
+        pair[1] = end_date
+        break
       end
     end
-    a_a.update map: "#{map.flatten.to_json}", user_id: appointment.doctor_id, for_date: appointment.start_date.strftime('%Y-%m-%d')
+    a_a.attributes = {map: "#{map.flatten.to_json}", user_id: appointment.doctor_id, for_date: appointment.start_date.strftime('%Y-%m-%d')}
+    a_a.save
   end
 
 

@@ -109,6 +109,7 @@ module Components
       def queries(date)
         date = @date.clone()
         date.startOf("month")
+        date = date.isBefore(x = Moment.new.set(hour: 0, min: 0)) ? x : date 
         wd = date.day() + 1
         x = {}
         z = date.subtract((wd), "days")
@@ -120,13 +121,30 @@ module Components
       def get_initial_state
         @date = props.date
         {
-          appointments: ModelCollection.new
+          appointment_availabilities: {}
         }
       end
 
       def component_did_mount
-        Appointment.index(component: self, namespace: "doctor", payload: {from: queries(props.date)[:from], to: queries(props.date)[:to]}).then do |appointments|
-          set_state appointments: appointments
+        AppointmentAvailability.index(component: self, payload: queries).then do |users|
+          begin
+          tree_block = lambda{|h,k| 
+            if k[0] == "2"
+              h[k] = Hash.new(&tree_block)
+            else
+              h[k] = []
+            end 
+          }
+          opts = Hash.new(&tree_block)
+          users.each do |user|
+            user.appointment_availabilities.each do |av|
+              opts[av.for_date][user.profile.name] << av 
+            end
+          end
+          set_state appointment_availabilities: opts
+          rescue Exception => e
+            p e
+          end
         end
       end
       
@@ -145,25 +163,29 @@ module Components
             *splat_each(0..5) do |week_num|
               t_d = (@track_day).clone
               t(:div, {className: "row", style: {display: "table-row"}},
-                t(:div, {},#onClick: ->{handle(t_d)
+                t(:div, {},
                   *splat_each(0..6) do |d|
                     t_d_a = (@track_day.add(1, 'days')).clone()
                     t(:div, {className: "col-lg-1", style: {"height" => "12em", display: "table-cell", width: "12%", overflow: "scroll"}}, 
                       t(:div, {},
-                        t(:span, {}, @track_day.date()),
-                        t(:button, {onClick: ->{props.index.init_appointments_new(t_d_a)}}, "add appointment")
+                        t(:span, {}, @track_day.date())#,
+                        # t(:button, {onClick: ->{props.index.init_appointments_new(t_d_a)}}, "add appointment")
                       ),
                       t(:div, {},
-                        *splat_each(fetch_appointments(@track_day.format("YYYY-MM-DD"))) do |appointment|
+                        *splat_each(fetch_appointments(@track_day.format("YYYY-MM-DD"))) do |k, v|
                           t(:span, {},
-                            "#{Moment.new(appointment.start_date).format("HH:mm")} - 
-                              #{Moment.new(appointment.end_date).format("HH:mm")}",
-                            t(:button, {onClick: ->{props.index.init_appointments_show(appointment)}}, "show this"),
-                            t(:button, {onClick: ->{props.index.init_appointments_edit(appointment)}}, "edit this"),
-                            t(:button, {onClick: ->{props.index.delete_appointment(appointment)}}, "delete this"),
-                            t(:br, {}),
-                            "#{appointment.patient.profile.name}",
-                            t(:br, {}),
+                            "#{k}",
+                            *splat_each(v[0].map) do |av|
+                              t(:span, {}, "#{av[0].format('HH:mm')} - #{av[1].format('HH:mm')}", t(:br, {}))
+                            end,
+                            # "#{Moment.new(appointment.start_date).format("HH:mm")} - 
+                            #   #{Moment.new(appointment.end_date).format("HH:mm")}",
+                            # t(:button, {onClick: ->{props.index.init_appointments_show(appointment)}}, "show this"),
+                            # t(:button, {onClick: ->{props.index.init_appointments_edit(appointment)}}, "edit this"),
+                            # t(:button, {onClick: ->{props.index.delete_appointment(appointment)}}, "delete this"),
+                            # t(:br, {}),
+                            # "#{appointment.patient.profile.name}",
+                            # t(:br, {}),
                             "------------",
                             t(:br, {})
 
@@ -180,15 +202,34 @@ module Components
       end
 
       def fetch_appointments(t_d)
-        state.appointments.where do |a|
-          next if a == nil
-          a.attributes[:start_date].include? "#{t_d}"
-        end
+        x = (z = state.appointment_availabilities[t_d]) ? z : {}
+        begining = Moment.new(t_d).set(hour: 9).format()
+        ending = Moment.new(t_d).set(hour: 19).format()
+        x.each do |k, v|
+          v.each do |av|
+            p_av = JSON.parse(av.map).each_slice(2).to_a.sort {|x, y| x[1] <=> y[1]}
+            p_av.unshift([begining, begining])
+            p_av.push([ending, ending])
+            _map = []
+            i = 0
+            while i < (p_av.length - 1)
+              first = Moment.new p_av[i][1]
+              second = Moment.new p_av[i + 1][0]
+              d = second.diff(first, "minutes")
+              if d > 20
+                _map << [first, second]
+              end
+              i += 1
+            end
+            av.map = _map
+          end
+        end 
+        x
       end
 
-      def handle(track_day)
-        props.on_init_week_view(track_day)
-      end
+      # def handle(track_day)
+      #   props.on_init_week_view(track_day)
+      # end
 
       def prev_month 
         props.index.set_state date: (@date = props.index.state.date.subtract(1, "month"))

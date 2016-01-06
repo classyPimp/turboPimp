@@ -4,7 +4,7 @@ class Doctor::AppointmentsController < ApplicationController
     @appointment = Appointment.new
     perms_for @appointment
     auth! @perms
-    @appointment.update_attributes @perms.permitted_attributes
+    @appointment.attributes = @perms.permitted_attributes
     if @appointment.save
       @appointment = Appointment.joins(:appointment_detail, patient: [:profile]).select("appointments.*, profiles.name AS sj_patient2user1sj_profile1name, appointment_details.note AS sj_appointment_detail1note").find(@appointment.id)  
       render json: @appointment.as_json(@perms.serialize_on_success)  

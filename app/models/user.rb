@@ -1,4 +1,8 @@
 class User < ActiveRecord::Base
+
+  class << self
+    attr_accessor :arbitrary
+  end
   rolify
 
   accepts_nested_attributes_for :roles,
@@ -92,11 +96,15 @@ class User < ActiveRecord::Base
 
   has_one :profile, dependent: :destroy
   has_one :profile_id_name, ->{ select(:id, :user_id, :name) }, class_name: :Profile
+  has_one :si_profile1id_name, ->{select(:id, :name, :user_id)}, class_name: "Profile"
 
   has_one :avatar, dependent: :destroy
 
   has_many :blogs
   has_many :pages
+
+  has_many :appointment_availabilities
+  has_many :si_appointment_availabilities1apsindex, ->{select(:id, :user_id, :for_date, :map).where("for_date > ? AND for_date < ?", User.arbitrary[:from], User.arbitrary[:to])}, class_name: "AppointmentAvailability"
 
   accepts_nested_attributes_for :avatar, allow_destroy: true, reject_if: :all_blank
   accepts_nested_attributes_for :profile, allow_destroy: true

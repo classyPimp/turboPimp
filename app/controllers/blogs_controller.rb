@@ -6,7 +6,7 @@ class BlogsController < ApplicationController
     perms_for @blog
     auth! @perms
 
-    @blog.update_attributes @perms.permitted_attributes
+    @blog.attributes = @perms.permitted_attributes
     current_user.blogs << @blog
 
     if @blog.save && current_user.save
