@@ -1,7 +1,7 @@
 module Services
   class RoleManager
     def self.allowed_global_roles
-      ["root", "admin", "doctor", "patient", "blogger"]   
+      ["root", "admin", "doctor", "patient", "blogger", "appointment_scheduler"]   
     end
 
     def self.allowed_page_roles

@@ -1,6 +1,6 @@
 class Appointment < Model
 
-  attributes :id, :start_date, :end_date, :patient_id, :doctor_id, :user_id, :scheduled
+  attributes :id, :start_date, :end_date, :patient_id, :doctor_id, :user_id, :scheduled, :proposal
   has_one :appointment_detail, :patient
   accepts_nested_attributes_for :appointment_detail
 

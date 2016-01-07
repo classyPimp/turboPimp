@@ -104,7 +104,8 @@ class User < ActiveRecord::Base
   has_many :pages
 
   has_many :appointment_availabilities
-  has_many :si_appointment_availabilities1apsindex, ->{select(:id, :user_id, :for_date, :map).where("for_date > ? AND for_date < ?", User.arbitrary[:from], User.arbitrary[:to])}, class_name: "AppointmentAvailability"
+  #need to set self.class.artbitrary to {from: Date.iso8601, to: Date.iso8601}
+  has_many :si_appointment_availabilities1apsindex, ->{select(:id, :user_id, :for_date, :map).where("for_date >= ? AND for_date <= ?", User.arbitrary[:from], User.arbitrary[:to])}, class_name: "AppointmentAvailability"
 
   accepts_nested_attributes_for :avatar, allow_destroy: true, reject_if: :all_blank
   accepts_nested_attributes_for :profile, allow_destroy: true

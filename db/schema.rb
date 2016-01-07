@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160104150111) do
+ActiveRecord::Schema.define(version: 20160107134727) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -32,6 +32,7 @@ ActiveRecord::Schema.define(version: 20160104150111) do
     t.text     "extra_details"
     t.datetime "created_at",     null: false
     t.datetime "updated_at",     null: false
+    t.text     "proposal_info"
   end
 
   add_index "appointment_details", ["appointment_id"], name: "index_appointment_details_on_appointment_id", using: :btree
@@ -45,6 +46,7 @@ ActiveRecord::Schema.define(version: 20160104150111) do
     t.boolean  "scheduled"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.boolean  "proposal"
   end
 
   add_index "appointments", ["doctor_id"], name: "index_appointments_on_doctor_id", using: :btree

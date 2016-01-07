@@ -52,7 +52,6 @@ class Appointment < ActiveRecord::Base
 
   def on_appointment_updated
     return true unless self.changed.include?("start_date") || self.changed.include?("end_date")
-
     _changes = []
     _changes[0] = self.changes[:start_date][0].to_formatted_s(:iso8601) if self.changes[:start_date]
     _changes[1] = self.changes[:end_date][0].to_formatted_s(:iso8601) if self.changes[:end_date]
