@@ -1,3 +1,83 @@
+class ::Hash
+
+  def block_to_n
+    @block_to_n = true
+    self
+  end
+
+  def to_n
+    if @block_to_n
+      self
+    else
+      %x{
+        var result = {},
+            keys   = self.keys,
+            _map   = self.map,
+            smap   = self.smap,
+            map, khash, value, key;
+        for (var i = 0, length = keys.length; i < length; i++) {
+          key   = keys[i];
+          if (key.$$is_string) {
+            map = smap;
+            khash = key;
+          } else {
+            map = _map;
+            khash = key.$hash();
+          }
+          value = map[khash];
+          if (#{`value`.respond_to? :to_n}) {
+            result[key] = #{`value`.to_n};
+          }
+          else {
+            result[key] = value;
+          }
+        }
+        return result;
+      }
+    end
+  end
+
+  def additive_merge!(other)
+    other.each do |k, v|
+      if self[k].is_a?(Hash) && v.is_a?(Hash)
+        v.each do |_k, _v|
+          if self[k].has_key?(_k)
+            if self[k][_k].is_a?(Array) && _v.is_a?(Array)
+              self[k][_k] = self[k][_k] + _v
+            elsif self[k][_k].is_a?(Hash) && _v.is_a?(Hash)
+              self[k][_k].additive_merge!(_v)
+            else
+              self[k][_k] = _v  
+            end
+          else
+            self[k][_k] = _v 
+          end
+        end
+      end
+    end
+  end
+
+  def subtractive_merge!(other)
+    other.each do |k, v|
+      if self[k].is_a?(Hash) && v.is_a?(Hash)
+        v.each do |_k, _v|
+          if self[k].has_key?(_k)
+            if self[k][_k].is_a?(Array) && _v.is_a?(Array)
+              self[k][_k] = self[k][_k] - _v
+            elsif self[k][_k].is_a?(Hash) && _v.is_a?(Hash)
+              self[k].delete(_k)
+            else
+              self[k].delete_if {|__k, __v| __v == _v}  
+            end      
+          end
+        end
+      end
+    end
+    self
+  end
+
+end 
+
 class Moment
 
   def self.new(*opt)
@@ -32,29 +112,10 @@ class Object
   def try(*a, &b)
     try!(*a, &b) if a.empty? || respond_to?(a.first)
   end
-
-  # Same as #try, but will raise a NoMethodError exception if the receiver is not +nil+ and
-  # does not implement the tried method.
-
-  def try!(*a, &b)
-    if a.empty? && block_given?
-      if b.arity == 0
-        instance_eval(&b)
-      else
-        yield self
-      end
-    else
-      public_send(*a, &b)
-    end
-  end
 end
 
 class NilClass
   def try(*args)
-    nil
-  end
-
-  def try!(*args)
     nil
   end
 end
