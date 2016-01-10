@@ -387,7 +387,7 @@ module Components
             )              
           )
         )
-      end
+      end  
 
       def init_appointments_proposals_new
         modal_open(

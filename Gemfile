@@ -67,8 +67,10 @@ end
 
 
 ######### OPAL INSTALL
-
+	
 	gem 'opal-rails'
+
+
 
 ######### END OPAL INSTALL
 
@@ -96,8 +98,6 @@ end
 
 
 gem 'will_paginate', '~> 3.0.6'
-
-gem "pundit"
 
 gem "rolify"
 

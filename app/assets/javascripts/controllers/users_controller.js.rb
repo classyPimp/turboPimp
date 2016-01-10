@@ -27,7 +27,14 @@ class UsersController < BaseController
         if x = response[:errors]
           c.set_state message: x
         else
-          Components::App::Router.history.pushState(nil, "/users/show/#{CurrentUser.user_instance.id}")
+          if c.props.no_redirect
+            alert "logged_in"
+          else  
+            Components::App::Router.history.pushState(nil, "/users/show/#{CurrentUser.user_instance.id}")
+          end
+          if c.props.on_login
+            c.props.on_login(CurrentUser.user_instance)
+          end
         end
       end
     else

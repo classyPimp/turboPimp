@@ -20,7 +20,8 @@ module Forms
 
     def get_initial_state
       {
-        checked: props.checked
+        checked: props.checked,
+        check_value: props.check_value ? props.check_value : "1"
       }
     end
 
@@ -54,7 +55,7 @@ module Forms
     end
 
     def collect
-      props.model.attributes[props.attr.to_sym] = state.checked ? "1" : ""  
+      props.model.attributes[props.attr.to_sym] = state.checked ? state.check_value : ""  
     end
 
     def clear_inputs

@@ -54,13 +54,18 @@ module Forms
     end
 
     def collect
-      if props.model.attributes[props.attr.to_sym].is_a? Hash
+      props.push_value.allow_to_n if props.push_value.is_a? Hash
+      if props.model.attributes[props.attr].is_a? Hash
         if state.checked
-          props.model.attributes[props.attr.to_sym].additive_merge!(props.push_value)
+          props.model.attributes[props.attr].additive_merge!(props.push_value)
         else
-          props.model.attributes[props.attr.to_sym].subtractive_merge!(props.push_value)
+          props.model.attributes[props.attr].subtractive_merge!(props.push_value)
         end
-      end  
+      elsif props.model.attributes[props.attr].is_a? Array
+        if state.checked
+          props.model.attributes[props.attr] << props.push_value
+        end
+      end
     end
 
     def clear_inputs

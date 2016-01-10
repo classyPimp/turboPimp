@@ -34,9 +34,7 @@ module Components
           t(:div, {},
             children
           ),
-          modal({},
-            t(:p, {}, "WHAT UP DOWGS")
-          )
+          modal
         )
       end
 

@@ -5,6 +5,11 @@ class ::Hash
     self
   end
 
+  def allow_to_n
+    @block_to_n = false
+    self
+  end
+
   def to_n
     if @block_to_n
       self
@@ -53,6 +58,8 @@ class ::Hash
             self[k][_k] = _v 
           end
         end
+      elsif !self[k]
+        self[k] = v 
       end
     end
   end
@@ -109,15 +116,37 @@ class String
 end
 
 class Object
-  def try(*a, &b)
+  
+  def try(*a, &b)       
     try!(*a, &b) if a.empty? || respond_to?(a.first)
+  end  
+     
+   # Same as #try, but will raise a NoMethodError exception if the receiver is not +nil+ and   
+   # does not implement the tried method.    
+     
+  def try!(*a, &b)    
+   if a.empty? && block_given?   
+     if b.arity == 0   
+       instance_eval(&b)   
+     else    
+       yield self    
+     end   
+   else    
+     public_send(*a, &b)   
+   end   
   end
 end
 
 class NilClass
+
   def try(*args)
-    nil
+    nil      
+  end  
+     
+  def try!(*args)   
+   nil   
   end
+
 end
 
 class HTTP
