@@ -2,7 +2,8 @@ class Appointment < Model
 
   attributes :id, :start_date, :end_date, :patient_id, :doctor_id, :user_id, :scheduled, :proposal
   has_one :appointment_detail, :patient
-  accepts_nested_attributes_for :appointment_detail
+  has_many :appointment_proposal_infos
+  accepts_nested_attributes_for :appointment_detail, :appointment_proposal_infos
 
 
   route "Show", get: "appointments/:id"

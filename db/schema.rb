@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160108043035) do
+ActiveRecord::Schema.define(version: 20160111090109) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -32,11 +32,23 @@ ActiveRecord::Schema.define(version: 20160108043035) do
     t.text     "extra_details"
     t.datetime "created_at",     null: false
     t.datetime "updated_at",     null: false
-    t.jsonb    "proposal_info"
   end
 
   add_index "appointment_details", ["appointment_id"], name: "index_appointment_details_on_appointment_id", using: :btree
-  add_index "appointment_details", ["proposal_info"], name: "index_appointment_details_on_proposal_info", using: :gin
+
+  create_table "appointment_proposal_infos", force: :cascade do |t|
+    t.integer  "appointment_id"
+    t.boolean  "primary"
+    t.integer  "doctor_id"
+    t.datetime "date_from"
+    t.datetime "date_to"
+    t.datetime "anytime_for_date"
+    t.datetime "created_at",       null: false
+    t.datetime "updated_at",       null: false
+  end
+
+  add_index "appointment_proposal_infos", ["appointment_id"], name: "index_appointment_proposal_infos_on_appointment_id", using: :btree
+  add_index "appointment_proposal_infos", ["doctor_id"], name: "index_appointment_proposal_infos_on_doctor_id", using: :btree
 
   create_table "appointments", force: :cascade do |t|
     t.datetime "start_date"
@@ -167,8 +179,9 @@ ActiveRecord::Schema.define(version: 20160108043035) do
     t.datetime "activated_at"
     t.string   "reset_digest"
     t.datetime "reset_sent_at"
-    t.datetime "created_at",        null: false
-    t.datetime "updated_at",        null: false
+    t.datetime "created_at",                       null: false
+    t.datetime "updated_at",                       null: false
+    t.boolean  "registered",        default: true
   end
 
   add_index "users", ["email"], name: "index_users_on_email", unique: true, using: :btree
@@ -182,6 +195,7 @@ ActiveRecord::Schema.define(version: 20160108043035) do
 
   add_foreign_key "appointment_availabilities", "users"
   add_foreign_key "appointment_details", "appointments"
+  add_foreign_key "appointment_proposal_infos", "appointments"
   add_foreign_key "appointments", "users"
   add_foreign_key "avatars", "users"
   add_foreign_key "blogs", "users"

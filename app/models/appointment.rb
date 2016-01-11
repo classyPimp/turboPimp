@@ -6,7 +6,10 @@ class Appointment < ActiveRecord::Base
   belongs_to :patient, ->{select(:id)}, class_name: "User"
   has_one :appointment_detail, dependent: :destroy
 
-  accepts_nested_attributes_for :appointment_detail, allow_destroy: true, reject_if: :all_blank 
+  has_many :appointment_proposal_infos
+
+  accepts_nested_attributes_for :appointment_detail, allow_destroy: true, reject_if: :all_blank
+  accepts_nested_attributes_for :appointment_proposal_infos, allow_destroy: true, reject_if: :all_blank 
 
 
 #===================VALIDATIONS

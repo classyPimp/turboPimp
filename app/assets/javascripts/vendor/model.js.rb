@@ -117,9 +117,7 @@ class Model
       @association_list ||= {}
     end
     #!!!!!!!!!!!!!! NOT YET IMPLEMENTED REFER TO self.json_attr
-    def json_fields
-      @json_fields ||= {}
-    end
+    
   end
 
   ####EXPERIMENTAL NEEDED ONLY FOR ACCEPTS_NESTED_ATTRIBUTES TO WORK!
@@ -214,9 +212,7 @@ class Model
   def self.objectify_from_model(data)
     handle_specifically_selected(data)  #refer to .handle_specifically_selected
     data.each_with_index do |(k, v), index|
-      if self.json_fields[k] && !v.is_a?(Model) #THIS CONDITION ADDED FOR JSON FIELD STUFF
-        data[k] = objectify({k => v})
-      else (v.is_a? Hash) || (v.is_a? Array)
+      if (v.is_a? Hash) || (v.is_a? Array)
         data[k] = objectify(v)
       end
     end
@@ -331,9 +327,6 @@ class Model
         unless x["#{k}_attributes"].try(:empty?) 
           x["#{k}_attributes"] = normalize_attributes( (v.nil? ? v : ( (v.dup.nil? || v.dup == 0) ? v : v.dup)), false )
         end
-      #used if the model declared as json field (needed to work with jsonb columns)
-      elsif self.class.json_fields[k] #<<<<<< THIS CONDITION ADDED FOR JSON FIELD STUFF
-        x[k] = normalize_attributes( (v.nil? ? v : ( (v.dup.nil? || v.dup == 0) ? v : v.dup)), false )
       else
         x[k] = normalize_attributes( (v.nil? ? v : ((v.dup.nil? || v.dup == 0) ? v : v.dup)))
       end
@@ -387,12 +380,6 @@ class Model
         @attributes[arg] = val
       end
     end
-  end
-  #!!!!!!!!!!!!!!!!!!!!!
-  #NOT YET IMPLEMENTED
-  def self.attributes_as_json_fields(model)
-    @json_fields ||= {}
-    @json_fields[model] = true
   end
 
   def where(&block)
