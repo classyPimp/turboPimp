@@ -60,22 +60,22 @@ module Forms
 		end
 
     def open_modal_for_link
-      ref(:modal).__opalInstance.open(@head_content_if_link, @content_if_link)
+      ref(:modal).rb.open(@head_content_if_link, @content_if_link)
     end
 
     def open_modal_for_image
-      ref(:modal).__opalInstance.open(@head_if_image, @content_if_image)
+      ref(:modal).rb.open(@head_if_image, @content_if_image)
     end
 
     def insert_link
       link = ref("insert_link_value").value
       @wysi_editor.composer.commands.exec("createLink", { href: link})
-      ref(:modal).__opalInstance.close
+      ref(:modal).rb.close
     end
 
     def insert_image(image)
       @wysi_editor.composer.commands.exec("insertImage", { src: image.url, alt: image.alt })
-      ref(:modal).__opalInstance.close
+      ref(:modal).rb.close
     end
 
 		def component_did_mount

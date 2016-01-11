@@ -205,7 +205,7 @@ class PageIndex < RW
   end
 
   def init_page_edit(page)
-    ref(:page_edit_form).__opalInstance.init_page_edit(page)
+    ref(:page_edit_form).rb.init_page_edit(page)
   end
 
   def add_page(page)
@@ -331,7 +331,7 @@ class Nav < RW
   def clear_opened(d_d)
     refs.each do |k,v|
       if k.include? "d_d"
-        v.__opalInstance.set_state open: false unless (v.__opalInstance == d_d)
+        v.rb.set_state open: false unless (v.rb == d_d)
       end
     end
   end

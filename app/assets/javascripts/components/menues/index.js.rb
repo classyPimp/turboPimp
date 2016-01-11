@@ -78,7 +78,7 @@ module Components
       def clear_opened(d_d)
         refs.each do |k,v|
           if k.include? "d_d"
-            v.__opalInstance.set_state open: false unless (v.__opalInstance == d_d)
+            v.rb.set_state open: false unless (v.rb == d_d)
           end
         end
       end

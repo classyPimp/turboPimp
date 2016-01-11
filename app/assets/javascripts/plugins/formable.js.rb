@@ -307,11 +307,11 @@ end
 			#now with this method you collect all the values from all the inputs
 			#at once. The input class should implement #collect method for getting the actual 
 			#values from user interactions
-			Hash.new(refs.to_n).each do |k,v|
+			refs.each do |k,v|
 	      if k.include? "_input"
 	      #in #input the ref of "_input#{@input_counter}"
 	      #so any ref starting _input is input that's how you roll now)
-	        v.__opalInstance.collect
+	        v.rb.collect
 	        #as it was mentioned RW class responsible for single attr input handling
 	        #should implement #collect method which will get the actual value from user interaction
 	      end
@@ -333,9 +333,9 @@ end
 		end
 
 		def clear_inputs
-			Hash.new(refs.to_n).each do |k,v|
+			refs.each do |k,v|
 				if k.include? "_input"
-					v.__opalInstance.clear_inputs if v.__opalInstance.respond_to? :clear_inputs
+					v.rb.clear_inputs if v.rb.respond_to? :clear_inputs
 				end
 			end
 		end

@@ -63,8 +63,8 @@ module Forms
     end
 
     def render
-      props.comp_options ||= {}
-      t(:div, props.comp_options,
+      comp_options =props.comp_options ? props.comp_options : {}
+      t(:div, comp_options,
         t(:p, {}, "#{(props.show_name || props.attr)}"),
         *if props.model.errors[props.attr] || props.model.errors[props.show_errors_for] 
           splat_each(combined_errors) do |er|

@@ -101,7 +101,7 @@ module Components
         state.menu.update.then do |menu|
           alert "updated, look at menu now!"
           set_state menu: menu
-          Components::App::Main.instance.ref(:menu).__opalInstance.set_state menu: menu
+          Components::App::Main.instance.ref(:menu).rb.set_state menu: menu
         end.fail do |resp|
           raise resp
         end

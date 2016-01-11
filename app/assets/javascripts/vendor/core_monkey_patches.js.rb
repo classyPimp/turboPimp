@@ -1,47 +1,5 @@
 class ::Hash
 
-  def block_to_n
-    @block_to_n = true
-    self
-  end
-
-  def allow_to_n
-    @block_to_n = false
-    self
-  end
-
-  def to_n
-    if @block_to_n
-      self
-    else
-      %x{
-        var result = {},
-            keys   = self.keys,
-            _map   = self.map,
-            smap   = self.smap,
-            map, khash, value, key;
-        for (var i = 0, length = keys.length; i < length; i++) {
-          key   = keys[i];
-          if (key.$$is_string) {
-            map = smap;
-            khash = key;
-          } else {
-            map = _map;
-            khash = key.$hash();
-          }
-          value = map[khash];
-          if (#{`value`.respond_to? :to_n}) {
-            result[key] = #{`value`.to_n};
-          }
-          else {
-            result[key] = value;
-          }
-        }
-        return result;
-      }
-    end
-  end
-
   def additive_merge!(other)
     other.each do |k, v|
       if self[k].is_a?(Hash) && v.is_a?(Hash)

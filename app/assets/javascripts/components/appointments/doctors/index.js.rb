@@ -11,7 +11,7 @@ module Components
         def get_initial_state
           {
             date: Moment.new,
-            current_controll_component: Native(:div, {}).to_n,
+            current_controll_component: "div",
             current_view: "month"
           }
         end

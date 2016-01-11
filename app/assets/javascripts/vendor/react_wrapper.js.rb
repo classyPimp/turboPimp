@@ -9,6 +9,7 @@ patching everything in helpers file)
 =end
 
 
+
 require 'native'
 
 `
@@ -16,6 +17,7 @@ window.Router = ReactRouter.Router
 window.Route = ReactRouter.Route
 window.Link = ReactRouter.Link
 window.IndexRoute = ReactRouter.IndexRoute
+window.browserHistory = window.History.createHistory
 `
 
 class RW
@@ -54,7 +56,7 @@ class RW
     `var x = {}`
     if get_initial_state
       self.get_initial_state.each do |k,v|
-        `x[#{k.to_n}] = #{v}`
+        `x[#{k}] = #{v}`
       end
     end
     `x`
@@ -123,41 +125,37 @@ class RW
   def self.create_class()
     (%x{
         React.createClass({
-          propselfs: #{self.respond_to?(:prop_selfs) ? self.prop_selfs.to_n : `{}`},
           getDefaultProps: function(){
             return #{self.default_props.to_n};
           },
           getInitialState: function(){
-            this.__opalInstance = #{self.new(`this`)}
-            return #{`this.__opalInstance.$__get_initial_state__()`};
+            this.rb = #{self.new(`this`)}
+            return #{`this.rb.$__get_initial_state__()`};
           },
           componentWillMount: function() {
-            return this.__opalInstance.$component_will_mount();
+            return this.rb.$component_will_mount();
           },
           componentDidMount: function() {
-            return this.__opalInstance.$component_did_mount();
+            return this.rb.$component_did_mount();
           },
           componentWillReceiveProps: function(next_props) {
-            return this.__opalInstance.$__component_will_receive_props__(next_props);
+            return this.rb.$__component_will_receive_props__(next_props);
           },
           shouldComponentUpdate: function(next_props, next_state) {
-            return this.__opalInstance.$__should_component_update__(next_props, next_state);
+            return this.rb.$__should_component_update__(next_props, next_state);
           },
           componentWillUpdate: function(next_props, next_state) {
-            return this.__opalInstance.$__component_will_update__(next_props, next_state);
+            return this.rb.$__component_will_update__(next_props, next_state);
           },
           componentDidUpdate: function(prev_props, prev_state) {
-            return this.__opalInstance.$__component_did_update__(prev_props, prev_state);
+            return this.rb.$__component_did_update__(prev_props, prev_state);
           },
           componentWillUnmount: function() {
-            return this.__opalInstance.$__component_will_unmount__();
+            return this.rb.$__component_will_unmount__();
           },
           displayName: #{self.to_s},
           render: function() {
-            return this.__opalInstance.$render();
-          },
-          rb: function(){
-            return this.__opalInstance
+            return this.rb.$render();
           }
         })
     })
@@ -168,7 +166,8 @@ class RW
   end
 
   def props
-    Native(`#{@native.to_n}.props`)
+    @native.props
+   #Native(`#{@native.to_n}.props`)
   end
 
   def props_as_hash(prop)
@@ -176,15 +175,17 @@ class RW
   end
 
   def state
-    Native(`#{@native.to_n}.state`)
+    @native.state
+    #Native(`#{@native.to_n}.state`)
   end
 
-  def state_to_h(_state)
-    Hash.new(state[_state].to_n)
+  def state_to_h
+    Hash.new(state.to_n)
   end
 
   def ref(ref)
-    Native(`#{@native.to_n}.refs[#{ref}]`)
+    @native.refs[ref]
+    #Native(`#{@native.to_n}.refs[#{ref}]`)
   end
 
   def refs
@@ -201,14 +202,11 @@ class RW
     val.each do |k,v|
       `#{x}[#{k.to_n}] = #{v}`
     end
-    `#{@native.to_n}.setState(#{x})`
+    @native.setState(x)
+    #`#{@native.to_n}.setState(#{x})`
   end
 
   def __set_state__(val)
-    
-  end
-
-  def self.get_initial_state
     
   end
 
@@ -259,17 +257,14 @@ class RW
     end
 
     `var x = {}`
-    unless _props == nil
-      _props.each do |k,v|
-        `x[#{k}] = #{v}`
-      end
+    _props.each do |k,v|
+      `x[#{k}] = #{v}`
     end
-    _props = `x`
-
-    if args.length == 0
-      params = [_klass, _props]
+    
+    if args.empty?
+      params = [_klass, `x`]
     else
-      params = [_klass, _props, *args]
+      params = [_klass, `x`, *args]
     end
     #params.compact!
     (%x{

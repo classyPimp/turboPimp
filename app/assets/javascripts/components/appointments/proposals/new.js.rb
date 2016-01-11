@@ -131,7 +131,7 @@ module Components
         def submit_non_register_info  
           collect_inputs
           unless state.form_model.has_errors?
-            self.props.on_ready({non_register_info: state.form_model}.block_to_n)
+            self.props.on_ready({non_register_info: state.form_model})
           else
             set_state form_model: state.form_model
           end

@@ -6,7 +6,7 @@ module Components
         expose
 
         def get_initial_state
-          @blank_control_component = ->{Native(t(:div, {}))}
+          @blank_control_component = ->{t(:div, {})}
           {
             current_control_component: @blank_control_component
           }
@@ -20,7 +20,7 @@ module Components
             ),
             t(:div, {className: "row"},
               t(:div, {className: "container"},
-                state.current_control_component.to_n
+                state.current_control_component
               )
             )
           ) 

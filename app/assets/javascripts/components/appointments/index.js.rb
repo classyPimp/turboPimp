@@ -392,7 +392,7 @@ module Components
       def init_appointments_proposals_new
         modal_open(
           "book an appointment",
-          t(Components::Appointments::Proposals::New, {date: props.date, appointment_availabilities: props.index.fetch_appointments(self, props.date.clone.format("YYYY-MM-DD")).block_to_n})
+          t(Components::Appointments::Proposals::New, {date: props.date, appointment_availabilities: props.index.fetch_appointments(self, props.date.clone.format("YYYY-MM-DD"))})
         )
       end
 

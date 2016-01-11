@@ -21,9 +21,10 @@ class UsersController < BaseController
   end
 
   def login
-    c.collect_inputs(validate_only: [nil])
+    c.collect_inputs(validate: false)
     unless c.state.form_model.has_errors?
       CurrentUser.login(payload: {session: c.state.form_model.attributes}).then do |response|
+      begin
         if x = response[:errors]
           c.set_state message: x
         else
@@ -36,10 +37,14 @@ class UsersController < BaseController
             c.props.on_login(CurrentUser.user_instance)
           end
         end
+      rescue Exception => e
+        p e
+      end
       end
     else
       c.set_state form_model: c.state.form_model
     end
+
   end
 
   def send_password_reset_email

@@ -13,11 +13,11 @@ module Helpers
     
     
   #### REACT ROUTER HELPERS
-    def link_to(body, link, options = nil)
+    def link_to(body, link, options = {})
      if block_given?
       body = yield
      end
-      t(`Link`, {to: link, query: options}, body)    
+      t(`Link`, {to: link, query: options.to_n}, body)    
     end
 
     def route(options, *args)
@@ -38,7 +38,7 @@ module Helpers
     end
 
     def spinner_instance
-      ref(:spinner).__opalInstance
+      ref(:spinner).rb
     end
   #####   /SPINNER
 
@@ -59,7 +59,7 @@ module Helpers
     end
 
     def modal_instance
-      ref(:modal).__opalInstance
+      ref(:modal).rb
     end
 
     def modal_open(head_content = false, content = false)

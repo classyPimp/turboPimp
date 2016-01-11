@@ -16,7 +16,7 @@ module Components
 
       def get_initial_state  
         if x = self.class.props_from_server.current_user
-          CurrentUser.user_instance = Model.parse(Hash.new(x.to_n))
+          CurrentUser.user_instance = Model.parse(x)
           CurrentUser.logged_in = true
         end
         {}
@@ -44,7 +44,7 @@ module Components
       #
       #modal example
       #def modal_handler 
-      #  ref(:modal).__opalInstance.open(t(:p, {}, "THE HEADER"))
+      #  ref(:modal).rb.open(t(:p, {}, "THE HEADER"))
       #end
     end
     

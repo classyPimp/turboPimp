@@ -59,7 +59,7 @@ module Components
                   t(:button, {}, link_to("edit", "/blogs/#{blog.id}/edit"))
                 ) 
               end,
-              t(:div, {dangerouslySetInnerHTML: {__html: blog.body}}),
+              t(:div, {dangerouslySetInnerHTML: {__html: blog.body}.to_n}),
               link_to("show this blog", "/blogs/show/#{blog.slug}")
             )
           end,

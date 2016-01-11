@@ -89,16 +89,16 @@ require "opal"
 require "promise"
 class Model
 
-  @attributes_list
+  #@attributes_list REVISE AND DELETE
   #WARNING EXPERIMENTAL
-  @association_list
+  #@association_list #REVISE AND DELETE
 
   #@associations_list not yet implemented; think about it is there a reason to be?
   #they are handled as attribute now and we're not on backend, 
   #TODO: think about
   #UPDATE: decided to go only wth has_many and has_one, and they're only needed for
   #proper serialization for handling accepts_nested_attributes_for
-  @nested_attributes #experimental
+  #@nested_attributes#experimental REVISE AND DELETE
   class << self
     attr_accessor :attributes_list
     
@@ -393,6 +393,7 @@ class Model
     #  a[:id] == 1 || a[:name].matches regex || a[:lenght] < 6 && a[:published] = "true"
     #end
     #and it's not a big deal )
+    #IMPLEMENTED
     s = []
     attributes.each do |k, v|
       if v.is_a? Model
