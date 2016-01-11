@@ -11,7 +11,7 @@ module Shared
     end
 
     def render
-      t(:div, {className: "cssload-container", style: {display: state.on}}, 
+      t(:div, {className: "cssload-container", style: {display: state.on}.to_n}, 
         t(:div, {className: "cssload-speeding-wheel"})
       )
     end

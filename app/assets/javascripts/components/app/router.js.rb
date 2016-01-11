@@ -5,11 +5,12 @@ module Components
 
       expose
 
-      @@history = Native(`window.History.createHistory()`)
-
+      `window.__history__ = window.History.createHistory()`
       def self.history
-        @@history
+      #  @@history
       end
+      #{}`console.log(#{@@history})`
+     # `console.log(#{@@history.to_n})`
 
       def get_initial_state
         Components::App::Main.props_from_server = self.props
@@ -17,7 +18,7 @@ module Components
       end
 
       def render
-        t(`Router`, {history: @@history},
+        t(`Router`, {history: `window.__history__`},
           t(`Route`, {path: "/", component: Components::App::Main.create_class},
             t(`IndexRoute`, {component: Components::App::IndexRoute.create_class}),
 

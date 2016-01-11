@@ -258,10 +258,18 @@ class RW
       _klass = `window[#{_klass.native_name}]` unless _klass.is_a?(Proc)
     end
 
+    `var x = {}`
+    unless _props == nil
+      _props.each do |k,v|
+        `x[#{k}] = #{v}`
+      end
+    end
+    _props = `x`
+
     if args.length == 0
-      params = [_klass, _props.to_n]
+      params = [_klass, _props]
     else
-      params = [_klass, _props.to_n, *args]
+      params = [_klass, _props, *args]
     end
     #params.compact!
     (%x{

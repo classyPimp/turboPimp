@@ -23,7 +23,7 @@ module Components
           spinner,
           if state.page
             t(:div, {},
-              t(:div, {dangerouslySetInnerHTML: {__html: state.page.body}})
+              t(:div, {dangerouslySetInnerHTML: {__html: state.page.body}.to_n})
             )
           else
             t(:p, {}, "loading") 
