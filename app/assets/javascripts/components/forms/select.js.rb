@@ -126,7 +126,7 @@ module Forms
             t(:div, {className: "form-control"},
               t(:p, {},
                 *splat_each(state.selected) do |selected|
-                  t(:span, {className: "label label-default", style: {cursor: "pointer"}, onClick: ->{delete(selected)}},
+                  t(:span, {className: "label label-default", style: {cursor: "pointer"}.to_n, onClick: ->{delete(selected)}},
                     if selected.is_a? Model
                       next if selected.attributes[:_destroy]
                       "#{selected.attributes[@s_value]} X"
@@ -142,7 +142,7 @@ module Forms
           ),
           t(:ul, {className: "dropdown-menu"},
             *splat_each(state.options) do |option|
-              t(:li, {style: {cursor: "pointer"}, onClick: ->{select(option)}}, " ", 
+              t(:li, {style: {cursor: "pointer"}.to_n, onClick: ->{select(option)}}, " ", 
                 if option.is_a? Model
                   option.attributes[@s_value]
                 elsif @s_value != @s_show

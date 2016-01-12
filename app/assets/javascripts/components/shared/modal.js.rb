@@ -14,7 +14,7 @@ module Shared
     end
 
 		def render
-			t(:div, {className: "modal", style: {display: state.display}},
+			t(:div, {className: "modal", style: {display: state.display}.to_n },
 				t(:div, {className: "modal-dialog", role: "document"},
 					t(:div, {className: "modal-content"},
 						t(:div, {className: "modal-header"},

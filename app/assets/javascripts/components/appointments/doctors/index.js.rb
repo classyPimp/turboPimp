@@ -137,19 +137,19 @@ module Components
             spinner,
             t(:button, {onClick: ->{prev_month}}, "<"),
             t(:button, {onClick: ->{next_month}}, ">"),
-            t(:div, {className: "table", style: {display: "table", fontSize:"10px!important"} },
-              t(:div, {className: "row", style: {display: "table-row"}},
+            t(:div, {className: "table", style: {display: "table", fontSize:"10px!important"}.to_n },
+              t(:div, {className: "row", style: {display: "table-row"}.to_n },
                 *splat_each(Calendar.wdays) do |wday_name| 
-                    t(:div, {className: "col-lg-1", style: {display: "table-cell", width: "12%"}}, wday_name)
+                    t(:div, {className: "col-lg-1", style: {display: "table-cell", width: "12%"}.to_n }, wday_name)
                 end,
               ),
               *splat_each(0..5) do |week_num|
                 t_d = (@track_day).clone
-                t(:div, {className: "row", style: {display: "table-row"}},
+                t(:div, {className: "row", style: {display: "table-row"}.to_n },
                   t(:div, {},#onClick: ->{handle(t_d)
                     *splat_each(0..6) do |d|
                       t_d_a = (@track_day.add(1, 'days')).clone()
-                      t(:div, {className: "col-lg-1", style: {"height" => "12em", display: "table-cell", width: "12%", overflow: "scroll"}}, 
+                      t(:div, {className: "col-lg-1", style: {"height" => "12em", display: "table-cell", width: "12%", overflow: "scroll"}.to_n }, 
                         t(:div, {},
                           t(:span, {}, @track_day.date()),
                           t(:button, {onClick: ->{props.index.init_appointments_new(t_d_a)}}, "add appointment")
@@ -238,17 +238,17 @@ module Components
             spinner,
             t(:button, {onClick: ->{prev_week}}, "<"),
             t(:button, {onClick: ->{next_week}}, ">"),
-            t(:div, {className: "table", style: {display: "table", fontSize:"10px!important"} },
-              t(:div, {className: "row", style: {display: "table-row"}},
+            t(:div, {className: "table", style: {display: "table", fontSize:"10px!important"}.to_n },
+              t(:div, {className: "row", style: {display: "table-row"}}.to_n,
                 *splat_each(Calendar.wdays) do |wday_name| 
-                    t(:div, {className: "col-lg-1", style: {display: "table-cell", width: "12%"}}, wday_name)
+                    t(:div, {className: "col-lg-1", style: {display: "table-cell", width: "12%"}.to_n }, wday_name)
                 end,
               ),
-              t(:div, {className: "row", style: {display: "table-row"}},
+              t(:div, {className: "row", style: {display: "table-row"}.to_n },
                 t(:div, {},
                   *splat_each(0..6) do |d|
                     t_d_a = (@track_day.add(1, 'days')).clone()
-                    t(:div, {className: "col-lg-1", style: {display: "table-cell", width: "12%"}}, 
+                    t(:div, {className: "col-lg-1", style: {display: "table-cell", width: "12%"}.to_n }, 
                       t(:div, {},
                         t(:span, {}, @track_day.date()),
                         t(:button, {onClick: ->{props.index.init_appointments_new(t_d_a)}}, "add appointment")

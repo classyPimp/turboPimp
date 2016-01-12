@@ -22,7 +22,7 @@ module Components
 
         def render
           t(:div, {},
-            input(Forms::Input, state.form_model, :date_part, {type: "hidden", comp_options: {style: {display: "none"}}}),
+            input(Forms::Input, state.form_model, :date_part, {type: "hidden", comp_options: {style: {display: "none"}.to_n}}),
             "#{props.date.format('YYYY-MM-DD')}",
             input(Forms::Input, state.form_model, :time_part_from, {input_props: {placeholder: "HH:mm"}, show_name: "from", show_errors_for: "start_date"}),
             input(Forms::Input, state.form_model, :time_part_to, {input_props: {placeholder: "HH:mm"}, show_name: "to", show_errors_for: "end_date"}),

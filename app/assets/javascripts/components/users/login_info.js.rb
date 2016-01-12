@@ -39,7 +39,7 @@ module Components
             [
               link_to("my account", "/users/dashboard"),
               "|",
-              t(:a, {onClick: ->(){logout_user}, style: {cursor: "pointer"}}, "logout")
+              t(:a, {onClick: ->(){logout_user}, style: {cursor: "pointer"}.to_n }, "logout")
             ]
           else
             t(:div, {}, 

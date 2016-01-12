@@ -81,7 +81,7 @@ module Forms
         if props.preview_image && state.image_to_preview != ""
           t(:div, {className: "image_preview"},
             t(:div, {style: {width: "300px", height: "300px"}},
-              t(:img, {src: state.image_to_preview, alt: "image_preview", style: {width: "300px", height: "300px"}})
+              t(:img, {src: state.image_to_preview, alt: "image_preview", style: {width: "300px", height: "300px"}.to_n })
             )
           )
         end,

@@ -38,9 +38,9 @@ module Components
             t(Components::Images::SearchBar, {search_for_image: ->(img){perform_search(img)}})
           ),
 		      *splat_each(state.images) do |image|
-		        t(:div, {key: "#{image}", style: {width: "200px", height: "200px"}},
+		        t(:div, {key: "#{image}", style: {width: "200px", height: "200px"}.to_n },
               t(:p, {}, "alt: #{image.alt}, description: #{image.description}"),
-		          t(:image, {src: image.url, style: {width: "100%", height: "auto"}}),
+		          t(:image, {src: image.url, style: {width: "100%", height: "auto"}.to_n }),
 		          t(:button, {onClick: ->(){destroy(image)}}, "destroy this image"),
               if props.should_expose
                 t(:button, {onClick: ->(){props.should_expose[:proc].call(image)}}, props.should_expose[:button_value])

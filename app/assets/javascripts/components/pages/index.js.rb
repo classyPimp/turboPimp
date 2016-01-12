@@ -54,7 +54,7 @@ module Components
                   t(:button, {}, link_to("edit", "/pages/#{page.id}/edit"))
                 ) 
               end,
-              t(:div, {dangerouslySetInnerHTML: {__html: page.body}.to_n, style: {height: "150px", overflow: "scroll"}}),
+              t(:div, {dangerouslySetInnerHTML: {__html: page.body}.to_n, style: {height: "150px", overflow: "scroll"}.to_n }),
               link_to("show this page", "/pages/show/#{page.slug}")
             )
           end,

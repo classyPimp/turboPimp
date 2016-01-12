@@ -22,7 +22,7 @@ module Components
             *splat_each(state.blogs) do |blog|
               t(:div, {},
                 t(:p, {}, link_to("#{blog.title}", "/blogs/edit/#{blog.id}")),
-                t(:hr, {style: {color: "grey", height: "1px", backgroundColor: "black"}})
+                t(:hr, {style: {color: "grey", height: "1px", backgroundColor: "black"}.to_n})
               )
             end
           )

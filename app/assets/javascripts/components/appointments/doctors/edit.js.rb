@@ -27,7 +27,7 @@ module Components
             spinner,
             if state.form_model
               t(:div, {},
-                input(Forms::Input, state.form_model, :date_part, {type: "hidden", comp_options: {style: {display: "none"}}}),
+                input(Forms::Input, state.form_model, :date_part, {type: "hidden", comp_options: {style: {display: "none"}.to_n }}),
                 input(Forms::Input, state.form_model, :start_date_s),
                 input(Forms::Input, state.form_model, :end_date_s),
                 input(Forms::Select, state.form_model, :patient_id, {

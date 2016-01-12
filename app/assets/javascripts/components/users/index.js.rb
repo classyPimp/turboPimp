@@ -28,7 +28,7 @@ module Components
           *splat_each(state.users) do |user|
             t(:div, {},
               if user.avatar 
-                t(:image, {src: user.avatar.url, style: {width: "60px", height: "60px"}})
+                t(:image, {src: user.avatar.url, style: {width: "60px", height: "60px"}.to_n })
               end,
               t(:p, {},"email: #{user.email}"),
               t(:p, {}, (link_to("name: #{user.profile.name}", "/users/show/#{user.id}" ) if user.profile) ),
@@ -46,7 +46,7 @@ module Components
                     t(:button, {onClick: ->{destroy_selected(user)}}, "delete user")
                   )
                 end,
-              t(:hr, {style: {color: "grey", height: "1px", backgroundColor: "black"}}),      
+              t(:hr, {style: {color: "grey", height: "1px", backgroundColor: "black"}.to_n }),      
             )
           end,
           unless state.users.data.empty?

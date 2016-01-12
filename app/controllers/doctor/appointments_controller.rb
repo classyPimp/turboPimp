@@ -3,7 +3,7 @@ class Doctor::AppointmentsController < ApplicationController
   def create
     @appointment = Appointment.new
     perms_for @appointment
-    auth! @perms
+    auth! @perms.doctor_create
     @appointment.attributes = @perms.permitted_attributes
     if @appointment.save
       @appointment = Appointment.joins(:appointment_detail, patient: [:profile]).select("appointments.*, profiles.name AS sj_patient2user1sj_profile1name, appointment_details.note AS sj_appointment_detail1note").find(@appointment.id)  

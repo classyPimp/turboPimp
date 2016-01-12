@@ -54,12 +54,9 @@ module Forms
     end
 
     def collect
-      props.push_value.allow_to_n if props.push_value.is_a? Hash
       if props.model.attributes[props.attr].is_a? Hash
         if state.checked
           props.model.attributes[props.attr].additive_merge!(props.push_value)
-        else
-          props.model.attributes[props.attr].subtractive_merge!(props.push_value)
         end
       elsif props.model.attributes[props.attr].is_a? Array
         if state.checked

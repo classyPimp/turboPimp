@@ -115,7 +115,7 @@ class  Month < RW
             t(:div, {className: "col-lg-2"}),
             t(:div, {onClick: ->(){handle(t_d)}},
               *splat_each(0..6) do |d|
-                t(:div, {className: "col-lg-1", style: {"height" => "20%"}}, 
+                t(:div, {className: "col-lg-1", style: {"height" => "20%"}.to_n}, 
                   t(:p, {}, (@track_day += 1).day),
                   *splat_each(0..6) do |x|
                     z = "#{@track_day.year}-#{@track_day.month}-#{@track_day.day}"

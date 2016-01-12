@@ -43,7 +43,7 @@ module Forms
             )             
           end
         end,
-				t(:div, {id: "wysi_toolbar", style: {display: "none"}},
+				t(:div, {id: "wysi_toolbar", style: {display: "none"}.to_n},
 					t(:a, {"data-wysihtml5-command" => "bold"}, "BOLD"),
 					t(:a, {"data-wysihtml5-action" => "change_view", "unselectable"=>"on"},
 						"switch to html"
