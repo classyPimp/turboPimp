@@ -35,36 +35,17 @@ class Appointment < ActiveRecord::Base
     end
   end
   
-#============== CALLBACKS
-
-  after_create :on_appointment_created
-  after_destroy :on_appointment_destroyed
-  after_update :on_appointment_updated
+#============== Methods used from outside
   
-  def on_appointment_created
-    self.sub_to(:on_appointment_created, AppointmentAvailability)
-    self.pub_to(:on_appointment_created, self)
-    self.unsub_from(:on_appointment_created, AppointmentAvailability)
+  def start_date_or_end_date_changed?
+    true unless self.changed.include?("start_date") || self.changed.include?("end_date")
   end
 
-  def on_appointment_destroyed
-    self.sub_to(:on_appointment_destroyed, AppointmentAvailability)
-    self.pub_to(:on_appointment_destroyed, self)
-    self.unsub_from(:on_appointment_destroyed, AppointmentAvailability)
-  end
-
-  def on_appointment_updated
-    return true unless self.changed.include?("start_date") || self.changed.include?("end_date")
+  def changes_of_start_date_and_end_date
     _changes = []
     _changes[0] = self.changes[:start_date][0].to_formatted_s(:iso8601) if self.changes[:start_date]
     _changes[1] = self.changes[:end_date][0].to_formatted_s(:iso8601) if self.changes[:end_date]
-
-    self.sub_to(:on_appointment_updated, AppointmentAvailability)
-    self.pub_to(:on_appointment_updated, self, _changes)
-    self.unsub_from(:on_appointment_updated, AppointmentAvailability)
+    _changes
   end
-
-  include Services::PubSubBus
-  allowed_channels instance: [:on_appointment_created, :on_appointment_updated, :on_appointment_destroyed]
 
 end

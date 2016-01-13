@@ -47,7 +47,10 @@ class AppointmentAvailability < ActiveRecord::Base
   #invoked from on_create callback from Appointment
   #finds or creates appointment
   #map contains stringified json which shall be sen to client and serialized there and used as needed
-  def self.on_appointment_updated(appointment, old_values)
+  def self.on_appointment_updated(appointment)
+    
+    old_values = appointment.changes_of_start_date_and_end_date
+
     a_a = self.where(for_date: appointment.start_date.strftime('%Y-%m-%d'), user_id: appointment.doctor_id).first_or_create
     
     return true if a_a.map.blank?
@@ -73,7 +76,7 @@ class AppointmentAvailability < ActiveRecord::Base
   end
 
 
-  include Services::PubSubBus
+  extend Services::PubSubBus::Subscriber
   implemented_channels class: [:on_appointment_created, :on_appointment_destroyed, :on_appointment_updated]
 #=============END PUBSUBBUS
 end

@@ -5,12 +5,21 @@ class Doctor::AppointmentsController < ApplicationController
     perms_for @appointment
     auth! @perms.doctor_create
     @appointment.attributes = @perms.permitted_attributes
-    if @appointment.save
+
+    cmpsr = ComposerFor::Appointment::Create.new(@perms.permitted_attributes)
+    
+    cmpsr.when(:ok) do |appointment|
+      @appointment = appointment
       @appointment = Appointment.joins(:appointment_detail, patient: [:profile]).select("appointments.*, profiles.name AS sj_patient2user1sj_profile1name, appointment_details.note AS sj_appointment_detail1note").find(@appointment.id)  
-      render json: @appointment.as_json(@perms.serialize_on_success)  
-    else
+      render json: @appointment.as_json(@perms.serialize_on_success)
+    end
+    
+    cmpsr.when(:fail) do |appointment|
+      appointment[:appointment]
       render json: @appointment.as_json(@perms.serialize_on_error)
     end    
+    
+    cmpsr.run
   end
 
   def edit
@@ -40,23 +49,40 @@ class Doctor::AppointmentsController < ApplicationController
   end
 
   def update
+
     @appointment = Appointment.find(params[:id])
     perms_for @appointment
-    auth! @perms
-    if @appointment.update(@perms.permitted_attributes) && (@appointment = Appointment.joins(:appointment_detail, patient: [:profile]).select("appointments.*, profiles.user_id AS sj_patient2user1sj_profile1user_id, profiles.name AS sj_patient2user1sj_profile1name, appointment_details.note AS sj_appointment_detail1note, appointment_details.id AS sj_appointment_detail1id").find(params[:id]))
-      render json: @appointment.as_json
-    else
-      render json: @page.as_json(@perm.serialize_on_error)
+    auth! @perms.doctor_update
+
+    cmpsr = ComposerFor::Appointment::Update.new(@appointment, @perms.permitted_attributes)
+    
+    cmpsr.when(:ok) do |appointment|
+      @appointment = Appointment.joins(:appointment_detail, patient: [:profile]).select("appointments.*, profiles.user_id AS sj_patient2user1sj_profile1user_id, profiles.name AS sj_patient2user1sj_profile1name, appointment_details.note AS sj_appointment_detail1note, appointment_details.id AS sj_appointment_detail1id").find(params[:id])
+      render json: @appointment
     end
+
+    cmpsr.when(:fail) do |appointment|
+      render json appointment.as_json(@perms.serialize_on_error)
+    end
+
+    cmpsr.run
+
   end
 
   def destroy
+
     @appointment = Appointment.find(params[:id])
     perms_for @appointment
     auth! @perms
-    if @appointment.destroy
-      render json: @appointment
+
+    cmpsr = ComposerFor::Appointment::Destroy.new(@appointment)
+    
+    cmpsr.when(:ok) do |appointment|
+      render json: appointment
     end
+
+    cmpsr.run
+
   end
 
 end
