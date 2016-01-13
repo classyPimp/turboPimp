@@ -29,7 +29,7 @@ class ComposerFor::Appointment::Create
     handle_transaction_success
 
     rescue Exception => e
-        handle_transaction_fail
+        handle_transaction_fail(e)
     
   end
 
@@ -47,7 +47,7 @@ class ComposerFor::Appointment::Create
       publish(:fail, @appointment)
       raise e 
     else
-      handle_transaction_unexpected_fail             
+      handle_transaction_unexpected_fail(e)             
     end
   end
 

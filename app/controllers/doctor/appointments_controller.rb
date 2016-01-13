@@ -49,7 +49,7 @@ class Doctor::AppointmentsController < ApplicationController
   end
 
   def update
-
+  
     @appointment = Appointment.find(params[:id])
     perms_for @appointment
     auth! @perms.doctor_update

@@ -60,7 +60,7 @@ module Perms
     def doctor_update
       if @current_user && @current_user.has_role?(:doctor)
         @permitted_attributes = params.require(:appointment).
-          permit(:start_date, :end_date, :patient_id, appointment_detail_attributes: [:note])
+          permit(:start_date, :end_date, :patient_id, appointment_detail_attributes: [:note, :id, :appointment_id])
         @serialize_on_error = {methods: [:errors]}
       end
     end

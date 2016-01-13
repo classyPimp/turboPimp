@@ -38,13 +38,13 @@ class Appointment < ActiveRecord::Base
 #============== Methods used from outside
   
   def start_date_or_end_date_changed?
-    true unless self.changed.include?("start_date") || self.changed.include?("end_date")
+    self.previous_changes.include?("start_date") || self.previous_changes.include?("end_date")
   end
 
   def changes_of_start_date_and_end_date
     _changes = []
-    _changes[0] = self.changes[:start_date][0].to_formatted_s(:iso8601) if self.changes[:start_date]
-    _changes[1] = self.changes[:end_date][0].to_formatted_s(:iso8601) if self.changes[:end_date]
+    _changes[0] = self.previous_changes[:start_date][0].to_formatted_s(:iso8601) if self.previous_changes[:start_date]
+    _changes[1] = self.previous_changes[:end_date][0].to_formatted_s(:iso8601) if self.previous_changes[:end_date]
     _changes
   end
 

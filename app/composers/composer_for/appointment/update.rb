@@ -4,29 +4,31 @@ class ComposerFor::Appointment::Update
 
   def initialize(appointment, attributes)
     @appointment = appointment
-    @appointment.attributes = attributes
+    @attributes = attributes
   end
 
   def run
-    run_subscriptions
     compose
     clear   
   end
 
-  def run_subscriptions
+  def subscriptions_after_appointment_updated
     if @appointment.start_date_or_end_date_changed?
       subscribe(:on_appointment_updated, AppointmentAvailability)
     end
   end
 
   def compose
+    
     ActiveRecord::Base.transaction do
       
-      @appointment.save!
+      @appointment.update!(@attributes)
+      
+      subscriptions_after_appointment_updated
 
-      publish(:on_appointment_updated, @appointment)
-     
     end
+
+    publish(:on_appointment_updated, @appointment)
     
     handle_transaction_success
 
