@@ -33,14 +33,7 @@ class UsersController < BaseController
           else  
             Components::App::Router.history.pushState(nil, "/users/show/#{CurrentUser.user_instance.id}")
           end
-          p "login props"
-          `console.log(#{c.props})`
-          p "cur_usr"
-          `console.log(#{CurrentUser.user_instance})`
-          p 'c.props.on_login'
-          p c.props.on_login
           if c.props.on_login
-            p "gon pass cur user: #{CurrentUser.user_instance}"
             c.emit("on_login", CurrentUser.user_instance)
           end
         end

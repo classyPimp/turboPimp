@@ -6,7 +6,10 @@ class AppointmentsController < ApplicationController
   end
 
   def create
-    @appointment = Appointment.new
+    render plain: params 
+    return
+
+    @appointment = Appointment.new  
     perms_for @appointment
     auth! @appointment
 
@@ -20,7 +23,7 @@ class AppointmentsController < ApplicationController
       end
     else
       if User.create_with_proposal(@perms.arbitrary[:unregistered_user_permitted_attributes], @appointment)
-        render json: @appointment.as_json(@perms.)
+        render json: @appointment.as_json(@perms)
       end
     end
   end

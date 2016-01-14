@@ -52,16 +52,16 @@ module Components
         end
 
         def submit(options = {})
-          p "submit"
-          `console.log(#{options})`
+          modal_close unless options.empty?
+
           unless options[:logged_in]
-            user_info = options[:non_register_info] if options[:non_register_info]
+            user = options[:non_register_info] if options[:non_register_info]
           end
 
-          p state.form_model.pure_attributes and return
+          p user.pure_attributes
 
           unless state.form_model.has_errors?
-            state.form_model.create.then do |model|
+            state.form_model.create(extra_params: {"FOOO" => "BAAAAR"}).then do |model|
               if model.has_errors?
                 set_state form_model: model
               else
@@ -80,7 +80,7 @@ module Components
         def post_modal
           modal_open(
             "hey,",
-            t(PostModal, { on_ready: ->(options){self.submit(options)} })
+            t(PostModal, { on_ready: event(->(options){self.submit(options)}) })
           )
         end
 
@@ -93,7 +93,7 @@ module Components
 
         def get_initial_state
           {
-            form_model: props.model,
+            form_model: User.new(profile: Profile.new),
             step: 0
           }
         end
@@ -113,8 +113,8 @@ module Components
               elsif state.step == 1
                 t(:div, {}, 
                   t(:div, {}, 
-                    input(Forms::Input, state.form_model, :non_registered_name),
-                    input(Forms::Input, state.form_model, :non_registerd_phone_number),
+                    input(Forms::Input, state.form_model.profile, :name),
+                    input(Forms::Input, state.form_model.profile, :phone),
                     t(:button, {onClick: ->{submit_non_register_info}}, "submit"),
                     t(:button, {onClick: ->{set_state(step: 0)}}, "back")
                   )
@@ -127,7 +127,7 @@ module Components
         def submit_non_register_info  
           collect_inputs
           unless state.form_model.has_errors?
-            self.props.on_ready({non_register_info: state.form_model})
+            self.emit(:on_ready, {non_register_info: state.form_model})
           else
             set_state form_model: state.form_model
           end
@@ -138,9 +138,7 @@ module Components
         end
 
         def logged_in(user)
-          p "logged_in"
-          p user
-          props.on_ready(foo: "bar")
+          emit('on_ready', {logged_in: true})
           modal_close
         end
 

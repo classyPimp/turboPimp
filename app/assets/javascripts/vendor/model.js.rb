@@ -726,6 +726,16 @@ class RequestHandler
     #passes default for wilds, or attaches one from wilds option
 
     @http_method = method_and_url.keys[0]
+    if @caller.respond_to?("on_before_#{@name.downcase}") && !@skip_before_handler
+      @caller.send "on_before_#{@name.downcase}", self
+      #JUST BEGAN TO IMPLEMENT AND DIDN't plan yet how to do!
+      #the idea is to provide default prepare for ajax data (payload) on
+      # rest actions e.g. save, update, destroy, etc/
+      #so you wont need to user.destroy({}, payload: user.pure_attributes),
+      #and simply user.destroy and that's it!
+      #and be like responses_on_route_name
+      #EDIT: it kinda works now as of nov 17 2015, but needs reviewing
+    end
     @req_options ||= {}
     @extra_params = {}
     #TODO: WATCH the behaviour
@@ -785,16 +795,7 @@ class RequestHandler
     defaults_before_request
     #the super defaults app wide.
     #TODO: need option to override
-    if @caller.respond_to?("on_before_#{@name.downcase}") && !@skip_before_handler
-      @caller.send "on_before_#{@name.downcase}", self
-      #JUST BEGAN TO IMPLEMENT AND DIDN't plan yet how to do!
-      #the idea is to provide default prepare for ajax data (payload) on
-      # rest actions e.g. save, update, destroy, etc/
-      #so you wont need to user.destroy({}, payload: user.pure_attributes),
-      #and simply user.destroy and that's it!
-      #and be like responses_on_route_name
-      #EDIT: it kinda works now as of nov 17 2015, but needs reviewing
-    end
+    
     HTTP.__send__(@http_method, @url, @req_options) do |response|
       @response = response 
       #SUPER DEFAULTS ON RESPONSE
