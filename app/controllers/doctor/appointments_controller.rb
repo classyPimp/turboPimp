@@ -5,8 +5,8 @@ class Doctor::AppointmentsController < ApplicationController
     perms_for @appointment
     auth! @perms.doctor_create
     @appointment.attributes = @perms.permitted_attributes
-
-    cmpsr = ComposerFor::Appointment::Create.new(@perms.permitted_attributes)
+  
+    cmpsr = ComposerFor::Appointment::Doctor::Create.new(@perms.permitted_attributes)
     
     cmpsr.when(:ok) do |appointment|
       @appointment = appointment
@@ -54,7 +54,7 @@ class Doctor::AppointmentsController < ApplicationController
     perms_for @appointment
     auth! @perms.doctor_update
 
-    cmpsr = ComposerFor::Appointment::Update.new(@appointment, @perms.permitted_attributes)
+    cmpsr = ComposerFor::Appointment::Doctor::Update.new(@appointment, @perms.permitted_attributes)
     
     cmpsr.when(:ok) do |appointment|
       @appointment = Appointment.joins(:appointment_detail, patient: [:profile]).select("appointments.*, profiles.user_id AS sj_patient2user1sj_profile1user_id, profiles.name AS sj_patient2user1sj_profile1name, appointment_details.note AS sj_appointment_detail1note, appointment_details.id AS sj_appointment_detail1id").find(params[:id])
@@ -75,7 +75,7 @@ class Doctor::AppointmentsController < ApplicationController
     perms_for @appointment
     auth! @perms
 
-    cmpsr = ComposerFor::Appointment::Destroy.new(@appointment)
+    cmpsr = ComposerFor::Appointment::Doctor::Destroy.new(@appointment)
     
     cmpsr.when(:ok) do |appointment|
       render json: appointment

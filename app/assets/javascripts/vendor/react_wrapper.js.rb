@@ -166,8 +166,8 @@ class RW
   end
 
   def props
-    @native.props
-   #Native(`#{@native.to_n}.props`)
+   @native.props
+  # Native(`#{@native.to_n}.props`)   
   end
 
   def props_as_hash(prop)
@@ -274,6 +274,14 @@ class RW
 
   def force_update
     @native.forceUpdate
+  end
+
+  def event(proc)
+    {event: proc}
+  end
+
+  def emit(prop_name, *args)
+    props[prop_name]['event'].call(*args)
   end
   
 end

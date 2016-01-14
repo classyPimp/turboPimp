@@ -52,6 +52,8 @@ module Components
         end
 
         def submit(options = {})
+          p "submit"
+          `console.log(#{options})`
           unless options[:logged_in]
             user_info = options[:non_register_info] if options[:non_register_info]
           end
@@ -78,7 +80,7 @@ module Components
         def post_modal
           modal_open(
             "hey,",
-            t(PostModal, {model: state.form_model.appointment_detail.proposal_info, on_ready: ->(options){self.submit(options)}})
+            t(PostModal, { on_ready: ->(options){self.submit(options)} })
           )
         end
 
@@ -132,11 +134,13 @@ module Components
         end
 
         def open_login_box
-          modal_open("", t(Components::Users::Login, {on_login: ->(user){self.logged_in(user)}, no_redirect: true}))
+          modal_open("", t(Components::Users::Login, {on_login: event(->(user){logged_in(user)}), no_redirect: true}))
         end
 
-        def logged_in
-          props.on_ready({logged_in: true})
+        def logged_in(user)
+          p "logged_in"
+          p user
+          props.on_ready(foo: "bar")
           modal_close
         end
 

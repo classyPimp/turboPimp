@@ -1,34 +1,40 @@
-class ComposerFor::Appointment::Destroy
+class ComposerFor::Appointment::Doctor::Update
 
   include Services::PubSubBus::Publisher
 
-  def initialize(appointment)
+  def initialize(appointment, attributes)
     @appointment = appointment
+    @attributes = attributes
   end
 
   def run
-    run_subscriptions
     compose
     clear   
   end
 
-  def run_subscriptions
-    subscribe(:on_appointment_destroyed, AppointmentAvailability)
+  def subscriptions_after_appointment_updated
+    if @appointment.start_date_or_end_date_changed?
+      subscribe(:on_appointment_updated, AppointmentAvailability)
+    end
   end
 
   def compose
+    
     ActiveRecord::Base.transaction do
       
-      @appointment.destroy!
+      @appointment.update!(@attributes)
+      
+      subscriptions_after_appointment_updated
 
-      publish(:on_appointment_destroyed, @appointment)
-     
     end
+
+    publish(:on_appointment_updated, @appointment)
     
     handle_transaction_success
 
     rescue Exception => e
         handle_transaction_fail(e)
+    
   end
 
   def handle_transaction_unexpected_fail(e)
