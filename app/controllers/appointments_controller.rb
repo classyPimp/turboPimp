@@ -6,26 +6,38 @@ class AppointmentsController < ApplicationController
   end
 
   def create
-    render plain: params 
-    return
 
-    @appointment = Appointment.new  
+    @appointment = Appointment.new 
+
     perms_for @appointment
-    auth! @appointment
-
-    @appointment.attributes = @perms.permitted_attributes
-
+    auth! @perms
+    
+    byebug
     if @current_user
-      if @appointment.save && current_user.save
-        render json: @appointment.as_json(@perms.serialize_on_success)
-      else
-        render json: @appointment.as_json(@perms.serialize_on_error)
-      end
+
+      @appointment.patient_id = @current_user.id
+      cmpsr = ComposerFor::Appointment::Proposal::CreateByRegisteredUser.new(@appointment)
+
     else
-      if User.create_with_proposal(@perms.arbitrary[:unregistered_user_permitted_attributes], @appointment)
-        render json: @appointment.as_json(@perms)
-      end
+      
+      cmpsr = ComposerFor::Appointment::Proposal::CreateByUnregisteredUser.new(@appointment, @perms.arbitrary[:unregistered_user_permitted_attributes])
+
     end
+
+    cmpsr.when(:ok) do |appointment|
+      render json: @appointment.as_json(@perms.serialize_on_success)
+    end
+
+    cmpsr.when(:fail) do |appointment|
+      render json: @appointment.as_json(@perms.serialize_on_error)
+    end
+
+    cmpsr.when(:fail_unregistered_user_validation) do |user|
+      render json: user.as_json(only: [], methods: [:errors])
+    end
+
+    cmpsr.run
+
   end
 
 end

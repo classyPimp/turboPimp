@@ -58,10 +58,8 @@ module Components
             user = options[:non_register_info] if options[:non_register_info]
           end
 
-          p user.pure_attributes
-
           unless state.form_model.has_errors?
-            state.form_model.create(extra_params: {"FOOO" => "BAAAAR"}).then do |model|
+            state.form_model.create(extra_params: user.pure_attributes).then do |model|
               if model.has_errors?
                 set_state form_model: model
               else

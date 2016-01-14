@@ -1,8 +1,13 @@
 class User < ActiveRecord::Base
 
+  DEFAULT_PASSWORD = '123456'
+
+  @arbitrary = {}
+
   class << self
     attr_accessor :arbitrary
   end
+
   rolify
 
   accepts_nested_attributes_for :roles,
@@ -18,21 +23,38 @@ class User < ActiveRecord::Base
   
   attr_accessor :remember_token
 
+############### => VALIDATIONS
+
   VALID_EMAIL_REGEX = /\A[\w+\-.]+@[a-z\d\-]+(\.[a-z\d\-]+)*\.[a-z]+\z/i
 
   validates :email, presence: true, length: { maximum: 255 },
                     format: { with: VALID_EMAIL_REGEX },
-                    uniqueness: { case_sensitive: false }
+                    uniqueness: { case_sensitive: false },
+                    if: ->{ !User.arbitrary[:register_guest] }
   
-  validates :password, presence: true, length: { minimum: 6 },
-                        confirmation: true,
-                        if: ->{ new_record? || !password.nil? }
+  validates :password, presence: true, 
+                      length: { minimum: 6 },
+                      confirmation: true
+
+  ########### VALIDATION METHODS
+
+  def should_validate_password?
+    if User.arbitrary[:register_guest]
+      return false
+    elsif new_record? || !password.nil? 
+      return true
+    end
+  end
+
+  ############
+                        
+######################################################
 
   before_save :downcase_email
 
   before_create :create_activation_digest #ACTIVATION
 
-  has_secure_password 
+  has_secure_password
 
   def self.digest(string)
     cost = ActiveModel::SecurePassword.min_cost ? BCrypt::Engine::MIN_COST :
@@ -110,6 +132,7 @@ class User < ActiveRecord::Base
   accepts_nested_attributes_for :avatar, allow_destroy: true, reject_if: :all_blank
   accepts_nested_attributes_for :profile, allow_destroy: true
 
+#ROLIFY
   rolify :before_add => :before_role_add
 
   def before_role_add(role)
@@ -121,5 +144,7 @@ class User < ActiveRecord::Base
       raise "assigned role to #{self} not in the allowed role names" unless Services::RoleManager.allowed_global_roles.include? role.name
     end
   end
+###############
+
 
 end
