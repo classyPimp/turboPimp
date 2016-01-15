@@ -1,6 +1,6 @@
 module Perms
   class AppointmentRules < Perms::Base
-
+  
 
     def doctor_create
       if @current_user && @current_user.has_role?(:doctor)
@@ -19,30 +19,24 @@ module Perms
 
     def create
       if @current_user 
-        byebug
-        params.require(:appointment).require(:appointment_proposal_infos_attributes)
-        @permitted_attributes = params.require(:appointment).
-          permit(appointment_proposal_infos_attributes: [:any_time_for_date, :doctor_id, :date_from, :date_to])
-
-        @permitted_attributes[:patient_id] = @current_user.id
-        @permitted_attributes[:proposal] = true
         
-      else
+        arbitrary[:registered_user] = true
 
-        params.require(:appointment).require(:appointment_proposal_infos_attributes)
-        @permitted_attributes = params.require(:appointment).
-          permit(appointment_proposal_infos_attributes: [:any_time_for_date, :doctor_id, :date_from, :date_to])
+        @serialize_on_success = {only: [:id]}
+        @serialize_on_error = {methods: [:errors]}                
+      
+      else
+        
+        arbitrary[:registered_user] = false
 
         @permitted_attributes[:proposal] = true
         @arbitrary[:unregistered_user_permitted_attributes] = params.require(:user).permit(profile_attributes: [:name, :phone])
-        byebug
         @arbitrary[:unregistered_user_permitted_attributes][:password] = User::DEFAULT_PASSWORD
         @arbitrary[:unregistered_user_permitted_attributes][:password_confirmation] = User::DEFAULT_PASSWORD
 
       end
       
-      @serialize_on_success = {only: [:id]}
-      @serialize_on_error = {methods: [:errors]}
+      
     
     end
 

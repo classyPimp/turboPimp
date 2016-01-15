@@ -11,25 +11,31 @@ class AppointmentsController < ApplicationController
 
     perms_for @appointment
     auth! @perms
-    
-    byebug
-    if @current_user
-
-      @appointment.patient_id = @current_user.id
-      cmpsr = ComposerFor::Appointment::Proposal::CreateByRegisteredUser.new(@appointment)
-
-    else
       
-      cmpsr = ComposerFor::Appointment::Proposal::CreateByUnregisteredUser.new(@appointment, @perms.arbitrary[:unregistered_user_permitted_attributes])
+    @appointment_attrs = AttributesPermitter::Appointment::Proposal::Create.new(params)
 
+    if @perms.arbitrary[:registered_user] == true
+
+      cmpsr = ComposerFor::Appointment::Proposal::CreateByRegisteredUser.new(@appointment, @appointment_attrs, @current_user.id)   
+   
+    elsif @perms.arbitrary[:registered_user] == false
+
+      user_permitted_attributes = AttributesPermitter::User::Unregistered::Create.new(params)
+      cmpsr = ComposerFor::Appointment::Proposal::CreateByUnregisteredUser.new(@appointment, @appointment_attrs,
+                                                                               user_permitted_attributes)
+    
+    else
+    
+      raise "#{self} expects: @perms (#{@perms}) to specify in it's arbitrary data if [:registered_user] is true || false"
+   
     end
 
     cmpsr.when(:ok) do |appointment|
-      render json: @appointment.as_json(@perms.serialize_on_success)
+      render json: appointment.as_json(@perms.serialize_on_success)
     end
 
     cmpsr.when(:fail) do |appointment|
-      render json: @appointment.as_json(@perms.serialize_on_error)
+      render json: appointment.as_json(@perms.serialize_on_error)
     end
 
     cmpsr.when(:fail_unregistered_user_validation) do |user|

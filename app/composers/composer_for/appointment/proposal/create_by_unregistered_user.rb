@@ -2,33 +2,42 @@ class ComposerFor::Appointment::Proposal::CreateByUnregisteredUser
 
   include Services::PubSubBus::Publisher
 
-  def initialize(appointment, unregistered_user_permitted_attributes)
+  def initialize(appointment, permitted_attributes, user_permitted_attributes)
     @appointment = appointment
-    @unregistered_user_permitted_attributes = unregistered_user_permitted_attributes
-    byebug
+    @user_permitted_attributes = user_permitted_attributes
   end
 
   def run
+    prepare_attributes
     compose
     clear   
+  end
+
+  def prepare_attributes
+    @appointment.attributes = @user_permitted_attributes
+    @appointment.proposal = true
   end
 
   def compose
     ActiveRecord::Base.transaction do
       
-      user = User.new(@unregistered_user_permitted_attributes)
-      cmpsr = ComposerFor::User::Unregistered::Create.new(user)
+      user = User.new
 
-      cmpsr.when(:ok) do |user|
-        @appointment.patient_id = user
+      user_cmpsr = ComposerFor::User::Unregistered::Create.new(user, @user_permitted_attributes)
+
+      user_cmpsr.when(:ok) do |user|
+        @appointment.patient_id = user.id
         @appointment.save!
       end
 
-      cmpsr.when(:fail) do |user|
-        publish(:fail_unregistered_user_validation, user) and return
+      user_cmpsr.when(:fail) do |user|
+        raise ActiveRecord::Rollback
+        publish(:fail_unregistered_user_validation, user)
       end
 
-      cmpsr.run
+      user_cmpsr.run
+
+      @transaction_success = true
 
     end
     
@@ -44,7 +53,9 @@ class ComposerFor::Appointment::Proposal::CreateByUnregisteredUser
   end
 
   def handle_transaction_success
-    publish(:ok, @appointment)
+    if @transaction_success
+      publish(:ok, @appointment)
+    end 
   end
 
   def handle_transaction_fail(e)
