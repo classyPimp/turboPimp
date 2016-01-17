@@ -200,7 +200,7 @@ class RW
     __set_state__(val)
     x = `{}`
     val.each do |k,v|
-      `#{x}[#{k.to_n}] = #{v}`
+      `#{x}[#{k}] = #{v}`
     end
     @native.setState(x)
     #`#{@native.to_n}.setState(#{x})`

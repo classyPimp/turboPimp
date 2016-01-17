@@ -20,23 +20,22 @@ module Perms
     def create
       if @current_user 
         
-        arbitrary[:registered_user] = true
+        self.arbitrary[:registered_user] = true
 
         @serialize_on_success = {only: [:id]}
-        @serialize_on_error = {methods: [:errors]}                
-      
+        @serialize_on_error = {methods: [:errors]}  
+
+        return true
+
       else
         
-        arbitrary[:registered_user] = false
+        self.arbitrary[:registered_user] = false
 
-        @permitted_attributes[:proposal] = true
-        @arbitrary[:unregistered_user_permitted_attributes] = params.require(:user).permit(profile_attributes: [:name, :phone])
-        @arbitrary[:unregistered_user_permitted_attributes][:password] = User::DEFAULT_PASSWORD
-        @arbitrary[:unregistered_user_permitted_attributes][:password_confirmation] = User::DEFAULT_PASSWORD
-
+        @serialize_on_success = {only: [:id]}
+        @serialize_on_error = {only: [:id], methods: [:errors]} 
+        
+        return true
       end
-      
-      
     
     end
 

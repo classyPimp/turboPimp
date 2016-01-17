@@ -1,3 +1,3 @@
 class AppointmentProposalInfo < Model
-  attributes :foo
+  attributes :anytime_for_date
 end

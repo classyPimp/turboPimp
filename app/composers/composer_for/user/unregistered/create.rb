@@ -14,21 +14,44 @@
   end
 
   def prepare_attributes
+    User.arbitrary[:register_as_guest] = true
     @user.attributes = @permitted_attributes
   end
 
   def compose
-   
-    User.arbitrary = {register_guest: true}
-   
-    if @user.save
-      User.arbitrary.delete :register_guest
+
+    ActiveRecord::Base.transaction do
+      begin
+
+        @user.save!
+
+        @user.add_role :patient
+
+        @transaction_success = true
+
+        byebug
+        
+      rescue Exception => e
+        handle_transaction_fail(e)
+      end
+
+    end
+    byebug
+    if @transaction_success
       publish(:ok, @user)
-    else
-      publish(:fail, @user)
-    end   
+    end 
     
   end
+
+  def handle_transaction_fail(e)
+    case e
+    when ActiveRecord::RecordInvalid
+      publish(:fail, @user)
+    else
+      raise e  
+    end
+  end
+
 
   def clear
     unsubscribe_all

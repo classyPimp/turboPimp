@@ -2,8 +2,10 @@
 
   include Services::PubSubBus::Publisher
 
-  def initialize(apointment, permitted_attributes, user_id)
-    @appointment = appointment  
+  def initialize(appointment, permitted_attributes, user_id)
+    @appointment = appointment
+    @permitted_attributes = permitted_attributes
+    @user_id = user_id  
   end
 
   def run
@@ -13,9 +15,11 @@
   end
 
   def prepare_attributes
-    @appointment.attributes = permitted_attributes
-    @appointment.patient_id = user_id
+    @appointment.attributes = @permitted_attributes
+    @appointment.patient_id = @user_id
     @appointment.proposal = true
+    @appointment.scheduled = false
+    byebug
   end
 
   def compose

@@ -16,8 +16,8 @@ class Appointment < ActiveRecord::Base
   
   validates :patient_id, presence: true, numericality: { only_integer: true }
   validate :validate_patient_id
-  validates :doctor_id, presence: true, numericality: {only_integer: true}
-  validate :validate_doctor_id
+  validates :doctor_id, presence: true, numericality: {only_integer: true}, unless: -> { self.proposal } 
+  validate :validate_doctor_id, unless: -> { self.proposal } 
 
   def validate_patient_id
     if patient_id.present?

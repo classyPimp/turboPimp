@@ -323,9 +323,15 @@ end
       #CHANGED: above is not actual reset_errors are called in Model#validate before validation begins
       #and at the end attr[:errors] are cleared as well
       options[:validate_only] ||= []
-	    state.form_model.validate(only: options[:validate_only]) unless (options[:validate] == false)
+
+      #if you have for example multiple forms for different models, (defaultly the form model is taken from state.form_model)
+      #you can optionally pass the state attr which is holding the model you want to validate as [:form_model]= String your_model
+      #else it would be dafultly assumed as state.form_model 
+      f_m = options[:form_model] ? options[:form_model] : :form_model
+
+	    state[f_m].validate(only: options[:validate_only]) unless (options[:validate] == false)
 	    #Model implements #validate method which does TADA validation!
-	    state.form_model
+	    state[f_m]
 	    #returns the model with inputs
 	    #there you do what you want
 	    #e.g. collect_inputs.has_errors ? form_model.save : set_state form_model: state.form_model 

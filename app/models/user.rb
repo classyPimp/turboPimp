@@ -5,8 +5,11 @@ class User < ActiveRecord::Base
   @arbitrary = {}
 
   class << self
+
     attr_accessor :arbitrary
+
   end
+
 
   rolify
 
@@ -27,10 +30,12 @@ class User < ActiveRecord::Base
 
   VALID_EMAIL_REGEX = /\A[\w+\-.]+@[a-z\d\-]+(\.[a-z\d\-]+)*\.[a-z]+\z/i
 
-  validates :email, presence: true, length: { maximum: 255 },
+
+  with_options unless: ->{ User.arbitrary[:register_as_guest] } do |user|
+    user.validates :email, presence: true, length: { maximum: 255 },
                     format: { with: VALID_EMAIL_REGEX },
-                    uniqueness: { case_sensitive: false },
-                    if: ->{ !User.arbitrary[:register_guest] }
+                    uniqueness: { case_sensitive: false }
+  end
   
   validates :password, presence: true, 
                       length: { minimum: 6 },
@@ -38,19 +43,35 @@ class User < ActiveRecord::Base
 
   ########### VALIDATION METHODS
 
-  def should_validate_password?
-    if User.arbitrary[:register_guest]
-      return false
-    elsif new_record? || !password.nil? 
-      return true
-    end
-  end
+
 
   ############
                         
 ######################################################
 
-  before_save :downcase_email
+############################ CALLBACKS ##################3
+  
+  before_validation :handle_unregistered_user
+
+
+    ####################### CALLBACK METHODS
+
+  def handle_unregistered_user
+    if User.arbitrary[:register_as_guest] == true
+      self.password = self.class::DEFAULT_PASSWORD
+      self.password_confirmation = self.class::DEFAULT_PASSWORD
+      self.registered = false
+      return true
+    else
+      return true
+    end
+  end
+
+    ##################################
+
+########################################################
+
+  before_save :downcase_email, unless: ->{ User.arbitrary[:register_as_guest] }
 
   before_create :create_activation_digest #ACTIVATION
 
