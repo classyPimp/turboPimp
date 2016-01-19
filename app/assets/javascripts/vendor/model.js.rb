@@ -320,6 +320,7 @@ class Model
     #this way it will return the pure hash as -> kind of reverse of Model.parse
     #BUG: CHANGES THE ACTUAL ATTRIBUTES! edit: changed a bit but behaviour needs examination
     x = {}
+    attributes.delete(:errors)
     attributes.each do |k,v| 
       #weird part of v.dup is needed when native objects (in single case I encounterd
       #the native file from input would otherwise niled)

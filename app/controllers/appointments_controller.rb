@@ -11,9 +11,7 @@ class AppointmentsController < ApplicationController
 
     perms_for @appointment
     auth! @perms
-
     byebug
-      
     @appointment_attrs = AttributesPermitter::Appointment::Proposal::Create.new(params).get_permitted
 
     if @perms.arbitrary[:registered_user] == true

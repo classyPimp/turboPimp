@@ -35,8 +35,10 @@ class Appointment < Model
     unless (x = Moment.new(self.start_date)).isValid()
       add_error :start_date, "should provide a valid date"
     end
-    unless x.isValid && (x.isBefore Moment.new(self.end_date))
-      add_error :start_date, "start date should be before end date"
+    unless end_date == nil
+      unless x.isValid && (x.isBefore(Moment.new(self.end_date)))
+        add_error :start_date, "start date should be before end date"
+      end
     end
   end
 

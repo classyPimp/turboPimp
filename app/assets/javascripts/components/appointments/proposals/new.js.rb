@@ -1,15 +1,15 @@
 module Components
-  module Appointments
+  module Appointments  
     module Proposals
       class New < RW
         expose
         include Plugins::Formable
 
-        #PROPS
+        #PROPS  
         #appointment_availabilities: ModelCollection of AppointmentAvailability will be offered to select
         #start_date: Moment, from this moment one week ahead will be offered like mon before noon after noon checkboxes
         def get_initial_state
-          @blank_appointment = ->{Appointment.new(appointment_proposal_infos: [])}
+          @blank_appointment = ->{Appointment.new(start_date: props.date.startOf('day').format(), appointment_proposal_infos: [], appointment_detail: AppointmentDetail.new)}
           {
             form_model: @blank_appointment.call,
             step: 0
@@ -18,8 +18,12 @@ module Components
 
         def render
           t(:div, {},
+            modal,
             if state.step == 0
               t(:div, {},
+                if state.message
+                  t(:p, {}, state.message)
+                end,
                 "any time on this date",
                 input(Forms::PushCheckBox, state.form_model, :appointment_proposal_infos, {push_value: AppointmentProposalInfo.new(anytime_for_date: props.date.format('YYYY-MM-DD'))}),
                 t(:div, {},
@@ -39,6 +43,9 @@ module Components
                       t(:br, {})
                     )
                   end,
+                  t(:p, {}, 'please provide the reason for visit, e.g. general consultation'),
+                  input(Forms::Textarea, state.form_model.appointment_detail, :extra_details),
+                  t(:br, {}),
                   t(:button, {onClick: ->{handle_before_appointment_submit}}, "collect")
                 )
               )
@@ -46,7 +53,7 @@ module Components
               t(:div, {},  
                 t(:p, {}, "it looks like you are not a registered user or you didn't login, as though you don't need to register you're required to leave contact information"),
                 t(:p, {}, "you will become a registered user if you will leave your email and will fill in password, else you will not be registerd"),
-                t(:button, {onClick: ->{open_login_box}}, "i'ma registered user"),
+                t(:button, {onClick: ->{init_login}}, "i'ma registered user"),
                 t(:button, {}, "ok i will register NOT IMPLEMENTED"),
                 t(:button, {onClick: ->{ init_non_registered_user } }, "i won't register i'll just leave my contact info")
               )
@@ -65,7 +72,12 @@ module Components
 
         def handle_before_appointment_submit
           collect_inputs
-          if !CurrentUser.logged_in
+          state.message = false
+          if state.form_model.appointment_proposal_infos.length < 1
+            set_state step: 0, form_model: state.form_model, message: 'please choose at least one option of visit'
+          elsif state.form_model.has_errors?
+            set_state step: 0, form_model: state.form_model
+          elsif !CurrentUser.logged_in
             set_state step: 1, user_form_model: User.new(profile: Profile.new)
           else
             submit_appointment
@@ -89,7 +101,7 @@ module Components
           unless state.form_model.has_errors?
 
             state.form_model.create( {yield_response: true}.merge(extra_params) ).then do |model|
-              
+              begin
               model = Model.parse(model.json)
               model.validate
 
@@ -114,7 +126,9 @@ module Components
                 self.props.on_appointment_proposal_created()
 
               end
-
+              rescue Exception => e
+                p e
+              end
             end
           else
             set_state form_model: state.form_model
@@ -139,13 +153,14 @@ module Components
           
         end
 
-        def open_login_box
-          modal_open("", t(Components::Users::Login, {on_login: event(->(user){logged_in(user)}), no_redirect: true}))
+        def init_login
+          modal_open("", t(Components::Users::Login, {on_login: event(->{logged_in}), no_redirect: true}))
         end
 
         def logged_in(user)
           modal_close
-          submit(logged_in: true)
+          set_state(step: 0)
+          submit_appointment(logged_in: true)
         end
 
       end

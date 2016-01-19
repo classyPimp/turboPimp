@@ -8,7 +8,7 @@ class Appointment < ActiveRecord::Base
 
   has_many :appointment_proposal_infos
 
-  accepts_nested_attributes_for :appointment_detail, allow_destroy: true, reject_if: :all_blank
+  accepts_nested_attributes_for :appointment_detail, allow_destroy: true
   accepts_nested_attributes_for :appointment_proposal_infos, allow_destroy: true, reject_if: :all_blank 
 
 
@@ -17,7 +17,8 @@ class Appointment < ActiveRecord::Base
   validates :patient_id, presence: true, numericality: { only_integer: true }
   validate :validate_patient_id
   validates :doctor_id, presence: true, numericality: {only_integer: true}, unless: -> { self.proposal } 
-  validate :validate_doctor_id, unless: -> { self.proposal } 
+  validate :validate_doctor_id, unless: -> { self.proposal }
+  validate :validate_start_date_to_be_valid_date, on: :create 
 
   def validate_patient_id
     if patient_id.present?
@@ -32,6 +33,12 @@ class Appointment < ActiveRecord::Base
       errors.add(:doctor_id_id, "is invalid") unless (
         x = User.select(:id).find(doctor_id) and x.has_role?(:doctor)
       )
+    end
+  end
+
+  def validate_start_date_to_be_valid_date 
+    unless start_date.is_a?(ActiveSupport::TimeWithZone) || start_date.is_a?(Date) 
+      errors.add(:start_date, "is invalid")
     end
   end
   

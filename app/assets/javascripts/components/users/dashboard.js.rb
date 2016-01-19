@@ -50,6 +50,11 @@ module Components
                 t(:br, {}),
                 t(:button, {onClick: ->{init_doctor_appointments_index}}, "appointments")
               )
+            end,
+            if state.current_user.has_role? [:appointment_scheduler]
+              t(:div, {},
+                "actions for appointment scheduler"
+              ) 
             end
           ),
           t(:div, {className: "col-lg-10"},
@@ -112,6 +117,11 @@ module Components
       end
 
 #*******************************    END ROLE DOCTOR
+#*******************************    ROLE APPOINTMENT_SCHEDULER
+
+      
+
+#*******************************    END ROLE APPOINTMENT_SCHEDULER
     end
   end
 end

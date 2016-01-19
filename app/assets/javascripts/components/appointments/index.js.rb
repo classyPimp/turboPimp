@@ -370,7 +370,7 @@ module Components
             t(:button, {onClick: ->{prev_day}}, "<"),
             t(:button, {onClick: ->{next_day}}, ">"),
             t(:p, {}, "Today is #{props.date.format('YYYY-MM-DD HH:mm')}"),
-            t(:button, {onClick: ->{init_appointments_proposals_new}}, "book an appointment for this day"),
+            t(:button, {onClick: ->{init_appointments_proposals_new(props.date)}}, "book an appointment for this day"),
             t(:div, {},
               *splat_each(props.index.fetch_appointments(self, props.date.clone.format("YYYY-MM-DD"))) do |k, v|
                 t(:span, {},
@@ -389,10 +389,10 @@ module Components
         )
       end  
 
-      def init_appointments_proposals_new
+      def init_appointments_proposals_new(date)
         modal_open(
           "book an appointment",
-          t(Components::Appointments::Proposals::New, {date: props.date, appointment_availabilities: props.index.fetch_appointments(self, props.date.clone.format("YYYY-MM-DD"))})
+          t(Components::Appointments::Proposals::New, {date: date, appointment_availabilities: props.index.fetch_appointments(self, props.date.clone.format("YYYY-MM-DD"))})
         )
       end
 

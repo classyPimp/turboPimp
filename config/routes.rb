@@ -41,7 +41,12 @@ Rails.application.routes.draw do
 
     resources :appointments
     resources :appointment_availabilities
+
     namespace :doctor do
+      resources :appointments
+    end
+
+    namespace :appointment_scheduler do
       resources :appointments
     end
 

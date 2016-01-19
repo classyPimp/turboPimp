@@ -23,7 +23,7 @@ module Perms
         self.arbitrary[:registered_user] = true
 
         @serialize_on_success = {only: [:id]}
-        @serialize_on_error = {methods: [:errors]}  
+        @serialize_on_error = {only: [], methods: [:errors], include: [{appointment_detail: { root: true ,only: [], methods: [:errors]}}]}  
 
         return true
 
@@ -32,7 +32,7 @@ module Perms
         self.arbitrary[:registered_user] = false
 
         @serialize_on_success = {only: [:id]}
-        @serialize_on_error = {only: [:id], methods: [:errors]} 
+        @serialize_on_error = {only: [], methods: [:errors], include: [{appointment_detail: { root: true, only: [], methods: [:errors]}}]} 
         
         return true
       end
@@ -68,6 +68,12 @@ module Perms
     def destroy
       if @current_user && @current_user.has_role?(:doctor)
         true
+      end
+    end
+
+    def appointment_scheduler_index
+      if @current_user && @current_user.has_role?(:appointment_scheduler)
+
       end
     end
       
