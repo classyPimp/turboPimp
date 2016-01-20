@@ -122,7 +122,7 @@ module Components
 #*******************************    ROLE APPOINTMENT_SCHEDULER
 
       def init_appointment_schedulers_appointments_index
-        set_state current_control_component: Native(t(Components::Appointments::AppointmentSchedulers::Index))
+        set_state current_control_component: Native(t(Components::Appointments::AppointmentSchedulers::ProposalIndex))
       end
 
 #*******************************    END ROLE APPOINTMENT_SCHEDULER

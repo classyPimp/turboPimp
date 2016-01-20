@@ -46,9 +46,11 @@ Rails.application.routes.draw do
       resources :appointments
     end
 
+    get 'appointment_scheduler/appointments/proposal_index' => 'appointment_scheduler/appointments#proposal_index'
     namespace :appointment_scheduler do
       resources :appointments
     end
+
 
     post "patients/patients_feed" => "patients#patients_feed"
 

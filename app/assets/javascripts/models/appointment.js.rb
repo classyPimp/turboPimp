@@ -13,7 +13,13 @@ class Appointment < Model
   route "create", post: "appointments"
 
   route "Index", get: "appointments"
+
+  route "Proposal_index", get: "appointments/proposal_index"
   
+  def self.responses_on_proposal_index(r)
+     self.responses_on_index(r)
+  end
+
   route "destroy", {delete: "appointments/:id"}, {defaults: [:id]} 
 
   route "Edit", {get: "appointments/:id/edit"}

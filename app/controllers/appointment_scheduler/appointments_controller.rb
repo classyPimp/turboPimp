@@ -1,8 +1,8 @@
 class AppointmentScheduler::AppointmentsController < ApplicationController
 
-  def index
+  def proposal_index
     perms_for Appointment
-    auth! @perms.appointment_scheduler_index
+    auth! @perms.appointment_scheduler_proposal_index
 
     @appointments = Appointment.unscheduled_with_doctors_and_proposal_infos
     

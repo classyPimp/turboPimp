@@ -276,12 +276,28 @@ class RW
     @native.forceUpdate
   end
 
+
+#props as procs
+#for some reason in some cases if prop is assigned with proc it's being lost
+#for this reason ProcEvent class will as container for pros (for props event)
+#as extra plus it gives more explicity for events as well can be enriched with features
+#also it can be changed anyway needed cause only event emit accessed so it's basically adapterable of some sort. 
   def event(proc)
-    {event: proc}
+    ProcEvent.new(proc)
   end
 
   def emit(prop_name, *args)
-    props[prop_name]['event'].call(*args)
+    props[prop_name].call(*args)
   end
-  
+
+  class ProcEvent
+    def initialize(proc)
+      @proc = proc
+    end
+
+    def call(*args)
+      @proc.call(*args)
+    end
+  end
+# END props as procs
 end

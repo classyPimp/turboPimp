@@ -71,7 +71,7 @@ module Perms
       end
     end
 
-    def appointment_scheduler_index
+    def appointment_scheduler_proposal_index
       if @current_user && @current_user.has_role?(:appointment_scheduler)
         @serialize_on_success = 
         {

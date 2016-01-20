@@ -49,50 +49,8 @@ module Components
         set_state current_controll_component: ->{Native(t(WeekDay, {ref: "day", date: state.date, index: self}))}, current_view: "day"
       end
 
-      def init_appointments_new(date)
-        modal_open(
-          "create appointment",
-          t(Components::Appointments::Doctors::New, {date: date, on_appointment_created: ->(appo){self.on_appointment_created(appo)}})
-        )
-      end
-
-      def init_appointments_show(appointment)
-        modal_open(
-          "appointment",
-          t(Components::Appointments::Doctors::Show, {appointment: appointment})
-        )
-      end
-
-      def init_appointments_edit(appointment)
-        modal_open(
-          "edit",
-          t(Components::Appointments::Doctors::Edit, {id: appointment.id, passed_appointment: appointment, 
-                                                      on_appointment_updated: ->(a){on_appointment_updated(a)}})
-        )
-      end
-
       def current_view
         self.ref(state.current_view).rb
-      end
-
-      def delete_appointment(appointment)
-        appointment.destroy(namespace: 'doctor').then do |_appointment|
-          current_view.state.appointments.remove(appointment)
-          current_view.set_state appointments: current_view.state.appointments
-          current_view.prepare_availability if state.current_view == "day" 
-        end
-      end
-
-      def on_appointment_updated(appointment)
-        current_view.set_state appointments: current_view.state.appointments
-        current_view.prepare_availability if state.current_view == "day" 
-      end
-
-      def on_appointment_created(appo)
-        current_view.state.appointments << appo
-        current_view.set_state appointments: current_view.state.appointments
-        current_view.prepare_availability if state.current_view == "day" 
-        modal_close
       end
 
       #method is used and coupled to Week Month WeekDay
@@ -122,6 +80,23 @@ module Components
           end
         end 
         x
+      end
+
+      def prepare_availability_tree(obj, users)
+        tree_block = lambda{|h,k| 
+          if k[0] == "2"
+            h[k] = Hash.new(&tree_block)
+          else
+            h[k] = []
+          end 
+        }
+        opts = Hash.new(&tree_block)
+        users.each do |user|
+          user.appointment_availabilities.each do |av|
+            opts[av.for_date][user.profile.name] << av 
+          end
+        end
+        obj.set_state appointment_availabilities: opts
       end
 
     end
@@ -156,24 +131,7 @@ module Components
 
       def component_did_mount
         AppointmentAvailability.index(component: self, payload: queries(props.date)).then do |users|
-          begin
-          tree_block = lambda{|h,k| 
-            if k[0] == "2"
-              h[k] = Hash.new(&tree_block)
-            else
-              h[k] = []
-            end 
-          }
-          opts = Hash.new(&tree_block)
-          users.each do |user|
-            user.appointment_availabilities.each do |av|
-              opts[av.for_date][user.profile.name] << av 
-            end
-          end
-          set_state appointment_availabilities: opts
-          rescue Exception => e
-            p e
-          end
+          props.index.prepare_availability_tree(self, users)
         end
       end
       
@@ -197,8 +155,7 @@ module Components
                     t_d_a = (@track_day.add(1, 'days')).clone()
                     t(:div, {className: "col-lg-1", style: {"height" => "12em", display: "table-cell", width: "12%", overflow: "scroll"}.to_n}, 
                       t(:div, {},
-                        t(:span, {}, @track_day.date())#,
-                        # t(:button, {onClick: ->{props.index.init_appointments_new(t_d_a)}}, "add appointment")
+                        t(:span, {}, @track_day.date())
                       ),
                       t(:div, {},
                         *splat_each(props.index.fetch_appointments(self, @track_day.format("YYYY-MM-DD"))) do |k, v|
@@ -254,24 +211,7 @@ module Components
 
       def component_did_mount
         AppointmentAvailability.index(component: self, payload: queries(props.date)).then do |users|
-          begin
-          tree_block = lambda{|h,k| 
-            if k[0] == "2"
-              h[k] = Hash.new(&tree_block)
-            else
-              h[k] = []
-            end 
-          }
-          opts = Hash.new(&tree_block)
-          users.each do |user|
-            user.appointment_availabilities.each do |av|
-              opts[av.for_date][user.profile.name] << av 
-            end
-          end
-          set_state appointment_availabilities: opts
-          rescue Exception => e
-            p e
-          end
+          props.index.prepare_availability_tree(self, users)
         end
       end
 
@@ -341,24 +281,7 @@ module Components
 
       def component_did_mount
         AppointmentAvailability.index(component: self, payload: {from: props.date.format('YYYY-MM-DD'), to: props.date.format('YYYY-MM-DD')}).then do |users|
-          begin
-          tree_block = lambda{|h,k| 
-            if k[0] == "2"
-              h[k] = Hash.new(&tree_block)
-            else
-              h[k] = []
-            end 
-          }
-          opts = Hash.new(&tree_block)
-          users.each do |user|
-            user.appointment_availabilities.each do |av|
-              opts[av.for_date][user.profile.name] << av 
-            end
-          end
-          set_state appointment_availabilities: opts
-          rescue Exception => e
-            p e
-          end
+          props.index.prepare_availability_tree(self, users)
         end
       end
 
