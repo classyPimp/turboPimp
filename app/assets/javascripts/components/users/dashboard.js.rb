@@ -53,7 +53,9 @@ module Components
             end,
             if state.current_user.has_role? [:appointment_scheduler]
               t(:div, {},
-                "actions for appointment scheduler"
+                "actions for appointment scheduler",
+                t(:br, {}),
+                t(:button, { onClick: ->{init_appointment_schedulers_appointments_index} }, "browse uncheduled")
               ) 
             end
           ),
@@ -119,7 +121,9 @@ module Components
 #*******************************    END ROLE DOCTOR
 #*******************************    ROLE APPOINTMENT_SCHEDULER
 
-      
+      def init_appointment_schedulers_appointments_index
+        set_state current_control_component: Native(t(Components::Appointments::AppointmentSchedulers::Index))
+      end
 
 #*******************************    END ROLE APPOINTMENT_SCHEDULER
     end

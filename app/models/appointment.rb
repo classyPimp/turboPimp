@@ -2,16 +2,39 @@ class Appointment < ActiveRecord::Base
 
   #_--------------ASSOCIATIONS
   belongs_to :user
+
   belongs_to :doctor, class_name: "User"
+
   belongs_to :patient, ->{select(:id)}, class_name: "User"
+
   has_one :appointment_detail, dependent: :destroy
 
-  has_many :appointment_proposal_infos
+  has_many :appointment_proposal_infos, dependent: :destroy
+  has_many :si_appointment_proposal_infos1all, class_name: "AppointmentProposalInfo"
+
 
   accepts_nested_attributes_for :appointment_detail, allow_destroy: true
+  
   accepts_nested_attributes_for :appointment_proposal_infos, allow_destroy: true, reject_if: :all_blank 
 
-
+#=====================SCOPES
+  scope :unscheduled_with_doctors_and_proposal_infos, ->{ 
+    where(scheduled: false).includes(
+      {
+        si_appointment_proposal_infos1all: 
+        [
+          {
+            si_doctor1id: [:si_profile1id_name]
+          }
+        ]
+      },
+      {
+        patient: [:si_profile1name_phone_number]
+      }                                  
+    ) 
+  }
+  
+#================================
 #===================VALIDATIONS
   
   validates :patient_id, presence: true, numericality: { only_integer: true }

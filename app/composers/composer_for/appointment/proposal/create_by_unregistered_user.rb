@@ -29,7 +29,6 @@ class ComposerFor::Appointment::Proposal::CreateByUnregisteredUser
         user_cmpsr = ComposerFor::User::Unregistered::Create.new(user, @user_permitted_attributes)
 
         user_cmpsr.when(:ok) do |user|
-          byebug
           @appointment.patient_id = user.id
           @appointment.scheduled = false
           @appointment.save!
@@ -74,7 +73,6 @@ class ComposerFor::Appointment::Proposal::CreateByUnregisteredUser
   end
 
   def handle_transaction_fail(e)
-    byebug
     case e
     when ActiveRecord::RecordInvalid
       publish(:fail, @appointment)

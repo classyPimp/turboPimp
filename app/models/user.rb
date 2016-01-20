@@ -140,6 +140,7 @@ class User < ActiveRecord::Base
   has_one :profile, dependent: :destroy
   has_one :profile_id_name, ->{ select(:id, :user_id, :name) }, class_name: :Profile
   has_one :si_profile1id_name, ->{select(:id, :name, :user_id)}, class_name: "Profile"
+  has_one :si_profile1name_phone_number, ->{select(:id, :name, :user_id, :phone_number)}, class_name: 'Profile'
 
   has_one :avatar, dependent: :destroy
 

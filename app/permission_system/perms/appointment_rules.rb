@@ -1,5 +1,5 @@
 module Perms
-  class AppointmentRules < Perms::Base
+  class AppointmentRules < Perms::Base 
   
 
     def doctor_create
@@ -73,7 +73,39 @@ module Perms
 
     def appointment_scheduler_index
       if @current_user && @current_user.has_role?(:appointment_scheduler)
-
+        @serialize_on_success = 
+        {
+          include: 
+          [ 
+            {
+              si_appointment_proposal_infos1all: 
+              {
+                root: true, include: 
+                [
+                  {
+                    si_doctor1id: 
+                    {
+                      root: true, only: [:id], include: 
+                      [
+                        si_profile1id_name: { root: true, only: [:id, :user_id, :name] }
+                      ]
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              patient:
+              {
+                root: true, include: 
+                [
+                  si_profile1name_phone_number: { root: true, only: [:id, :user_id, :name, :phone_number] }
+                ]
+              }
+            }
+          ]
+        }
+        return true
       end
     end
       

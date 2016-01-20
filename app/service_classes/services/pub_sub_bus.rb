@@ -9,7 +9,7 @@ module Services
       
       def subscribe(channel, obj)
         @pub_sub_list = Hash.new { |h, k| h[k] = [] }
-        @pub_sub_list[channel] << obj 
+        @pub_sub_list[channel] << obj unless @pub_sub_list[channel].include?(obj)
       end
 
       def publish(channel, *args)
@@ -38,7 +38,7 @@ module Services
         if channel
           @pub_sub_list[channel] = []
         else
-          @pub_sub_list = Hash.new { |h, k| h[k] = []} unless channel
+          @pub_sub_list = Hash.new { |h, k| h[k] = []}
           @block_channels = Hash.new { |k, v| k[v] = [] }
         end
       end 
