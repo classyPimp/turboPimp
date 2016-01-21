@@ -149,7 +149,12 @@ class User < ActiveRecord::Base
 
   has_many :appointment_availabilities
   #need to set self.class.artbitrary to {from: Date.iso8601, to: Date.iso8601}
-  has_many :si_appointment_availabilities1apsindex, ->{select(:id, :user_id, :for_date, :map).where("for_date >= ? AND for_date <= ?", User.arbitrary[:from], User.arbitrary[:to])}, class_name: "AppointmentAvailability"
+  has_many :si_appointment_availabilities1apsindex, ->{select(:id, :user_id, :for_date, :map).
+    where("for_date >= ? AND for_date <= ?", User.arbitrary[:from], User.arbitrary[:to])}, class_name: "AppointmentAvailability"
+
+  has_many :si_appointments1as_doctor_all, ->{ where("start_date >= ? AND end_date <= ?", User.arbitrary[:from], User.arbitrary[:to]) },
+    class_name: 'Appointment', foreign_key: 'doctor_id'
+  has_many :appointments_as_doctor, class_name: 'Appointment', foreign_key: 'doctor_id'
 
   accepts_nested_attributes_for :avatar, allow_destroy: true, reject_if: :all_blank
   accepts_nested_attributes_for :profile, allow_destroy: true

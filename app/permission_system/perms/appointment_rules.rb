@@ -108,6 +108,30 @@ module Perms
         return true
       end
     end
+
+    def appointment_scheduler_index
+      if @current_user && @current_user.has_role?(:appointment_scheduler)
+        @serialize_on_success =
+        {
+          include:
+          [
+            {
+              si_appointments1as_doctor_all: 
+              {
+                root: true
+              }
+            },
+            {
+              si_profile1id_name:
+              {
+                root: true
+              }
+            }
+          ]
+        }
+        return true
+      end
+    end
       
   end
 end

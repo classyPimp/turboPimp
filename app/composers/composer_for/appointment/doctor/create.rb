@@ -20,6 +20,7 @@ class ComposerFor::Appointment::Doctor::Create
   def compose
     ActiveRecord::Base.transaction do
       
+      @appointment.scheduled = true
       @appointment.save!
 
       publish(:on_appointment_created, @appointment)

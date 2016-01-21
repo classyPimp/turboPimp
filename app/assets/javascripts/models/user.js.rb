@@ -4,6 +4,7 @@ class User < Model
 
   attributes :id, :email, :password, :password_confirmation
   has_many :appointment_availabilities
+  has_many :appointments
 
   route "sign_up", post: "users"
 

@@ -22,6 +22,8 @@ module Components
         end
 
         def render
+          @dates_and_doctors_ids = Hash.new { |hash, key| hash[key] = [] }
+
           t(:div, {},
             modal,
             t(:table, {className: 'table-bordered table-striped table-responsive'},
@@ -39,6 +41,8 @@ module Components
               ),
               t(:tbody, {},
                 *splat_each(state.appointments) do |appointment|
+                  p appointment.pure_attributes
+                  next unless appointment.patient && appointment.patient.profile
                   t(:tr, {},
                     t(:td, {},
                       appointment.id
@@ -47,7 +51,7 @@ module Components
                       Moment.new(appointment.start_date).format('YYYY-MM-DD')
                     ),
                     t(:td, {},
-                      if appointment.patient.attributes[:registered]
+                      if x = appointment.patient
                         t(:p, {}, appointment.patient.profile.try('name'))
                       else
                         t(:div, {},
@@ -57,10 +61,13 @@ module Components
                       end
                     ),
                     t(:td, {},
-                      t(:p, {}, appointment.patient.profile.attributes['phone_number'])
+                      t(:p, {}, appointment.patient.profile.try(:phone_number))
                     ),
                     t(:td, {},
                       *splat_each(appointment.appointment_proposal_infos) do |appointment_proposal_info|
+
+                        @dates_and_doctors_ids[appointment.start_date] << appointment_proposal_info.attributes[:doctor_id]
+
                         t(:div, {},
                           if appointment_proposal_info.anytime_for_date
                             t(:p, {}, "any time for #{Moment.new(appointment_proposal_info.anytime_for_date).format('YYYY-MM-DD')}")
@@ -71,7 +78,7 @@ module Components
                       end
                     ),
                     t(:td, {}, 
-                      t(:button, {onClick: ->{open_appointment_schedulers_index}}, 'browse availability')
+                      t(:button, { onClick: ->{ open_appointment_schedulers_index(appointment) } }, 'browse availability')
                     ),
                     t(:td, {}, 
                       t(:button, {}, 'schedule')
@@ -86,10 +93,13 @@ module Components
           ) 
         end
 
-        def open_appointment_schedulers_index
+        def open_appointment_schedulers_index(appointment)
+          start_date = appointment.start_date
+          doctor_ids = @dates_and_doctors_ids[start_date].uniq.delete_if {|val| val == ""}
+
           modal_open(
             "browse",
-            t(Components::Appointments::AppointmentSchedulers::Index, {} )
+            t(Components::Appointments::AppointmentSchedulers::Index, {date: start_date, doctor_ids: doctor_ids} )
           )
         end
 

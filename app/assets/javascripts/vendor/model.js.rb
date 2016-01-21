@@ -281,6 +281,7 @@ class Model
     else   
       form_data.append track, val
     end
+    `console.log(#{form_data})`
     form_data
   end
 
@@ -757,6 +758,7 @@ class RequestHandler
       @skip_before_handler = true
       @caller.update_attributes @extra_params
       @req_options[:data] = @caller.serialize_attributes_as_form_data
+      @req_options.delete(:payload) if @req_options[:payload]
       @req_options[:processData] = false
       @req_options[:contentType] = false
       #For info on this method refer to validation part of model

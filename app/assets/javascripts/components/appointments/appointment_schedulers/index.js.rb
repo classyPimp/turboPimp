@@ -1,5 +1,5 @@
 module Components
-  module Appointments
+  module Appointments 
     module AppointmentSchedulers
       class Index < RW
 
@@ -10,15 +10,18 @@ module Components
         end
 
         def get_initial_state
+          doctor_ids = props.doctor_ids
+          date = Moment.new(props.date).startOf('day')
           {
-            date: Moment.new.startOf('day'),
+            date: date,
             current_controll_component: Native(:div, {}).to_n,
-            current_view: "month"
+            current_view: "day",
+            doctor_ids: doctor_ids
           }
         end
 
         def component_did_mount
-          init_month_view
+          init_day_view
         end
 
         def render
@@ -58,33 +61,12 @@ module Components
         #method is used and coupled to Week Month WeekDay
         #called from there by accessing through props.index, so self should be passed as index prop
         def fetch_appointments(obj, t_d)
-          x = (z = obj.state.appointment_availabilities[t_d]) ? z : {}
-          begining = Moment.new(t_d).set(hour: 9).format()
-          ending = Moment.new(t_d).set(hour: 19).format()
-          x.each do |k, v|
-            v.each do |av|
-              break if av.map.is_a? Array
-              p_av = JSON.parse(av.map).each_slice(2).to_a.sort {|x, y| x[1] <=> y[1]} unless av.map.length == 1
-              p_av.unshift([begining, begining])
-              p_av.push([ending, ending])
-              _map = []
-              i = 0
-              while i < (p_av.length - 1)
-                first = Moment.new p_av[i][1]
-                second = Moment.new p_av[i + 1][0]
-                d = second.diff(first, "minutes")
-                if d > 20
-                  _map << [first, second]
-                end
-                i += 1
-              end
-              av.map = _map
-            end
-          end 
-          x
+          users = (z = obj.state.appointments_for_dates[t_d]) ? z : {}
+           p "#{t_d} appointments_for_dates[#{t_d}] = #{obj.state.appointments_for_dates[t_d]}"
+          users
         end
 
-        def prepare_availability_tree(obj, users)
+        def prepare_appointments_tree(obj, users)
           tree_block = lambda{ |h, k| 
             if k[0] == "2"
               h[k] = Hash.new(&tree_block)
@@ -94,11 +76,12 @@ module Components
           }
           opts = Hash.new(&tree_block)
           users.each do |user|
-            user.appointment_availabilities.each do |av|
-              opts[av.for_date][user.profile.name] << av 
+            user.appointments.each do |appointment|
+              opts[Moment.new(appointment.start_date).format('YYYY-MM-DD')][user.profile.name] << appointment 
             end
           end
-          obj.set_state appointment_availabilities: opts
+          p users
+          obj.set_state appointments_for_dates: opts
         end
 
       end
@@ -127,13 +110,13 @@ module Components
         def get_initial_state
           @date = props.date
           {
-            appointment_availabilities: {}
+            appointments_for_dates: {}
           }
         end
 
         def component_did_mount
-          AppointmentAvailability.index(component: self, payload: queries(props.date)).then do |users|
-            props.index.prepare_availability_tree(self, users)
+          Appointment.index(component: self, payload: queries(props.date).merge(doctor_ids: props.index.state.doctor_ids), namespace: 'appointment_scheduler').then do |users|
+            props.index.prepare_appointments_tree(self, users) 
           end
         end
         
@@ -160,17 +143,15 @@ module Components
                           t(:span, {}, @track_day.date())
                         ),
                         t(:div, {},
-                          *splat_each(props.index.fetch_appointments(self, @track_day.format("YYYY-MM-DD"))) do |k, v|
-                            t(:span, {},
-                              "#{k}",
-                              t(:br, {}),
-                              *splat_each(v[0].map) do |av|
-                                t(:span, {}, "#{av[0].format('HH:mm')} - #{av[1].format('HH:mm')}", t(:br, {}))
-                              end,
-                              "------------",
-                              t(:br, {})
-
-                            )
+                          *splat_each(props.index.fetch_appointments(self, @track_day.format("YYYY-MM-DD"))) do |user_name, appointments|
+                            t(:div, {},
+                              t(:p, {}, user_name),
+                              *splat_each(appointments) do |appointment|
+                                t(:div, {},
+                                  t(:p, {}, "#{Moment.new(appointment.start_date).format('HH:mm')} : #{Moment.new(appointment.end_date).format('HH:mm')}")
+                                )
+                              end
+                            )                  
                           end
                         )             
                       )
@@ -207,17 +188,18 @@ module Components
 
         def get_initial_state
           {
-            appointment_availabilities: {}
+            appointments_for_dates: {}
           }
         end
 
         def component_did_mount
-          AppointmentAvailability.index(component: self, payload: queries(props.date)).then do |users|
-            props.index.prepare_availability_tree(self, users)
+          Appointment.index(component: self, payload: queries(props.date).merge(doctor_ids: props.index.state.doctor_ids), namespace: 'appointment_scheduler').then do |users|
+            props.index.prepare_appointments_tree(self, users) 
           end
         end
 
         def render
+          p state.appointments_for_dates
           t_d = @track_day = props.date.clone().startOf('week').subtract(1, 'days')
           t(:div, {},
             spinner,
@@ -238,17 +220,15 @@ module Components
                         t(:span, {}, @track_day.date()),
                       ),
                       t(:div, {},
-                        *splat_each(props.index.fetch_appointments(self, @track_day.format("YYYY-MM-DD"))) do |k, v|
-                          t(:span, {},
-                            "#{k}",
-                            t(:br, {}),
-                            *splat_each(v[0].map) do |av|
-                              t(:span, {}, "#{av[0].format('HH:mm')} - #{av[1].format('HH:mm')}", t(:br, {}))
-                            end,
-                            "------------",
-                            t(:br, {})
-
-                          )
+                        *splat_each(props.index.fetch_appointments(self, @track_day.format("YYYY-MM-DD"))) do |user_name, appointments|
+                          t(:div, {},
+                            t(:p, {}, user_name),
+                            *splat_each(appointments) do |appointment|
+                              t(:div, {},
+                                t(:p, {}, "#{Moment.new(appointment.start_date).format('HH:mm')} : #{Moment.new(appointment.end_date).format('HH:mm')}")
+                              )
+                            end
+                          )                  
                         end
                       )              
                     )
@@ -277,13 +257,13 @@ module Components
 
         def get_initial_state
           {
-            appointment_availabilities: {}
+            appointments_for_dates: {}
           }
         end
 
         def component_did_mount
-          AppointmentAvailability.index(component: self, payload: {from: props.date.format('YYYY-MM-DD'), to: props.date.format('YYYY-MM-DD')}).then do |users|
-            props.index.prepare_availability_tree(self, users)
+          Appointment.index(component: self, payload: {doctor_ids: props.index.state.doctor_ids, from: props.date.clone.startOf('day').format(), to: props.date.clone.endOf('day').format()}, namespace: 'appointment_scheduler').then do |users|
+            props.index.prepare_appointments_tree(self, users) 
           end
         end
 
@@ -295,31 +275,21 @@ module Components
               t(:button, {onClick: ->{prev_day}}, "<"),
               t(:button, {onClick: ->{next_day}}, ">"),
               t(:p, {}, "Today is #{props.date.format('YYYY-MM-DD HH:mm')}"),
-              t(:button, {onClick: ->{init_appointments_proposals_new(props.date)}}, "book an appointment for this day"),
               t(:div, {},
-                *splat_each(props.index.fetch_appointments(self, props.date.clone.format("YYYY-MM-DD"))) do |k, v|
-                  t(:span, {},
-                    "#{k}",
-                    t(:br, {}),
-                    *splat_each(v[0].map) do |av|
-                      t(:span, {}, "#{av[0].format('HH:mm')} - #{av[1].format('HH:mm')}", t(:br, {}))
-                    end,
-                    "------------",
-                    t(:br, {})
-
-                  )
+                *splat_each(props.index.fetch_appointments(self, props.date.clone.format("YYYY-MM-DD"))) do |user_name, appointments|
+                  t(:div, {},
+                    t(:p, {}, user_name),
+                    *splat_each(appointments) do |appointment|
+                      t(:div, {},
+                        t(:p, {}, "#{Moment.new(appointment.start_date).format('HH:mm')} : #{Moment.new(appointment.end_date).format('HH:mm')}")
+                      )
+                    end
+                  )                  
                 end
               )              
             )
           )
         end  
-
-        def init_appointments_proposals_new(date)
-          modal_open(
-            "book an appointment",
-            t(Components::Appointments::Proposals::New, {date: date, appointment_availabilities: props.index.fetch_appointments(self, props.date.clone.format("YYYY-MM-DD"))})
-          )
-        end
 
         def prev_day
           props.index.set_state date: (props.index.state.date.subtract(1, 'day'))
