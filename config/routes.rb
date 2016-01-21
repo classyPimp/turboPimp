@@ -42,6 +42,8 @@ Rails.application.routes.draw do
     resources :appointments
     resources :appointment_availabilities
 
+    post "doctor/users/doctors_feed" => "doctor/users#doctors_feed"
+    
     namespace :doctor do
       resources :appointments
     end

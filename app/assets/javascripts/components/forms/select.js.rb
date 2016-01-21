@@ -2,10 +2,8 @@ module Forms
   class Select < RW
     expose
 
-    # input(Forms::MultipleSelect, user, :roles, {options: [], serialize_value: {model_name: :role, value_attr: :name, 
-    #                                               mark_for_destruction: true, allow_blank: true}})
     # PROPS
-    # optional serialize_value: {model_name: String model to serialize to, value_attr: atr on model_name holding value to be selected}
+    # 
     # optional multiple: bool => as expected
     # required options: array of strings || required server_feed: {url: String url to feed from (post req be made), extra_params: hash for payload}
     
@@ -18,7 +16,7 @@ module Forms
       @loaded = true
       server_feed?
       @multiple = props.multiple ? true : false
-      props.model.attributes[props.attr] = props.model.attributes[props.attr]
+      #props.model.attributes[props.attr] = props.model.attributes[props.attr]
       #@attr_as_model = (x = props.attr_as_model) ? x : false
       @option_as_model = (x = props.option_as_model) ? x : false
       @s_value = (x = props.s_value) ? x : false
@@ -160,7 +158,7 @@ module Forms
     end
 
     def delete(selected)
-      if @option_as_model
+      if @option_as_model && props.destroy == false
         if selected.arbitrary[:initially_selected]
           selected.attributes[:_destroy] = "1"
           state.options << selected

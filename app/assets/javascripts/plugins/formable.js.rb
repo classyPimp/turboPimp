@@ -287,8 +287,12 @@ end
 			#for further accessing it 
 			options[:model] = model
 			options[:attr] = attr
-			options[:ref] = "_input_#{model}_#{attr}_#{@inputs_counter}"
-			#the given ref will go not to the input dom element but the RW element
+      if options[:namespace]
+			  options[:ref] = "_input_#{options[:namespace]}_#{model}_#{attr}_#{@inputs_counter}"
+			else
+        options[:ref] = "_input_#{model}_#{attr}_#{@inputs_counter}"
+      end
+      #the given ref will go not to the input dom element but the RW element
 			#that has to implement collect method (which gets the concrete input)
 			#the ref is needed to get taht RW class object (as ref(_input_1).__opalInstance.collect)
 	    options[:keyed] = @inputs_counter
@@ -307,15 +311,27 @@ end
 			#now with this method you collect all the values from all the inputs
 			#at once. The input class should implement #collect method for getting the actual 
 			#values from user interactions
-			refs.each do |k,v|
-	      if k.include? "_input"
-	      #in #input the ref of "_input#{@input_counter}"
-	      #so any ref starting _input is input that's how you roll now)
-	        v.rb.collect
-	        #as it was mentioned RW class responsible for single attr input handling
-	        #should implement #collect method which will get the actual value from user interaction
-	      end
-	    end
+      if options[:namespace]
+        refs.each do |k,v|
+          if k.include? "_input_#{options[:namespace]}"
+          #in #input the ref of "_input#{@input_counter}"
+          #so any ref starting _input is input that's how you roll now)
+            v.rb.collect
+            #as it was mentioned RW class responsible for single attr input handling
+            #should implement #collect method which will get the actual value from user interaction
+          end
+        end
+      else  
+  			refs.each do |k,v|
+  	      if k.include? "_input"
+  	      #in #input the ref of "_input#{@input_counter}"
+  	      #so any ref starting _input is input that's how you roll now)
+  	        v.rb.collect
+  	        #as it was mentioned RW class responsible for single attr input handling
+  	        #should implement #collect method which will get the actual value from user interaction
+  	      end
+  	    end
+      end
 	    #state.form_model.reset_errors 
 	    #your input handlers may rely on errors for showing them to user
 	    #so it basically resets all errors

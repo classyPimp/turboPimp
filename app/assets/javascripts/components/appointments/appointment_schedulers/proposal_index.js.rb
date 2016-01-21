@@ -41,7 +41,6 @@ module Components
               ),
               t(:tbody, {},
                 *splat_each(state.appointments) do |appointment|
-                  p appointment.pure_attributes
                   next unless appointment.patient && appointment.patient.profile
                   t(:tr, {},
                     t(:td, {},
@@ -65,13 +64,11 @@ module Components
                     ),
                     t(:td, {},
                       *splat_each(appointment.appointment_proposal_infos) do |appointment_proposal_info|
-
-                        @dates_and_doctors_ids[appointment.start_date] << appointment_proposal_info.attributes[:doctor_id]
-
                         t(:div, {},
                           if appointment_proposal_info.anytime_for_date
                             t(:p, {}, "any time for #{Moment.new(appointment_proposal_info.anytime_for_date).format('YYYY-MM-DD')}")
                           else
+                            @dates_and_doctors_ids[appointment.start_date] << appointment_proposal_info.doctor.profile
                             t(:p, {}, "#{appointment_proposal_info.doctor.profile.name}: #{Moment.new(appointment_proposal_info.date_from).format('HH:mm')} - #{Moment.new(appointment_proposal_info.date_to).format('HH:mm')}")
                           end
                         )
@@ -94,12 +91,15 @@ module Components
         end
 
         def open_appointment_schedulers_index(appointment)
+          p @dates_and_doctors_ids
           start_date = appointment.start_date
-          doctor_ids = @dates_and_doctors_ids[start_date].uniq.delete_if {|val| val == ""}
-
+          uniq_profiles = {}
+          @dates_and_doctors_ids[start_date].each do |profile|
+            uniq_profiles[profile.user_id] = profile unless uniq_profiles[profile.id]
+          end
           modal_open(
             "browse",
-            t(Components::Appointments::AppointmentSchedulers::Index, {date: start_date, doctor_ids: doctor_ids} )
+            t(Components::Appointments::AppointmentSchedulers::Index, {date: start_date, uniq_profiles: uniq_profiles} )
           )
         end
 

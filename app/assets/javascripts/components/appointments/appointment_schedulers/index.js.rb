@@ -5,18 +5,21 @@ module Components
 
         expose
 
+        include Plugins::Formable
+
         def self.wdays
           ["sun", "mon", "tue", "wed", "thur", "fri", "sat" ]
         end
 
         def get_initial_state
-          doctor_ids = props.doctor_ids
+          doctor_ids = props.uniq_profiles.keys
           date = Moment.new(props.date).startOf('day')
           {
             date: date,
             current_controll_component: Native(:div, {}).to_n,
             current_view: "day",
-            doctor_ids: doctor_ids
+            doctor_ids: doctor_ids,
+            doctor_ids_holder: Model.new(doctors: props.uniq_profiles.values)
           }
         end
 
@@ -33,10 +36,23 @@ module Components
             t(:button, {onClick: ->{init_day_view}}, "day"),
             t(:button, {onClick: ->{set_state date: Moment.new}}, "go to today"),
             t(:br, {}),
+            input(Forms::Select, state.doctor_ids_holder, :doctors, {multiple: true, s_value: 'name',  
+              option_as_model: true, server_feed: {url: "/api/doctor/users/doctors_feed"}, namespace: 'doctors_select'}, destroy: false),
+            t(:button, { onClick: ->{refine_doctor_ids} }, 'update with choesen doctors'),
             t(:div, {},
               state.current_controll_component.to_n
             )
           )
+        end
+
+        def refine_doctor_ids
+          collect_inputs(namespace: 'doctors_select', validate: false)
+          ids = [] 
+          state.doctor_ids_holder.attributes[:doctors].each do |profile|
+            ids << profile.user_id
+          end
+          state.doctor_ids = ids
+          ref(state.current_view).rb.component_did_mount
         end
 
         def init_week_view(track_day)
@@ -62,7 +78,6 @@ module Components
         #called from there by accessing through props.index, so self should be passed as index prop
         def fetch_appointments(obj, t_d)
           users = (z = obj.state.appointments_for_dates[t_d]) ? z : {}
-           p "#{t_d} appointments_for_dates[#{t_d}] = #{obj.state.appointments_for_dates[t_d]}"
           users
         end
 
@@ -80,7 +95,6 @@ module Components
               opts[Moment.new(appointment.start_date).format('YYYY-MM-DD')][user.profile.name] << appointment 
             end
           end
-          p users
           obj.set_state appointments_for_dates: opts
         end
 
@@ -199,7 +213,6 @@ module Components
         end
 
         def render
-          p state.appointments_for_dates
           t_d = @track_day = props.date.clone().startOf('week').subtract(1, 'days')
           t(:div, {},
             spinner,

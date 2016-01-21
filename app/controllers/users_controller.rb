@@ -136,4 +136,5 @@ class UsersController < ApplicationController
     end
     render json: map
   end
+
 end

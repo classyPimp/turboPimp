@@ -153,6 +153,16 @@ module Perms
       end
     end
 
+    def doctors_feed
+
+      if @current_user && @current_user.has_role?(:appointment_scheduler)
+
+        @serialize_on_succes = {only: [:user_id, :name]}
+        return true
+
+      end        
+
+    end
 
   end
 end
