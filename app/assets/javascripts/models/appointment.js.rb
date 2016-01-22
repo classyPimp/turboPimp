@@ -24,6 +24,15 @@ class Appointment < Model
 
   route "Edit", {get: "appointments/:id/edit"}
 
+  route 'schedule_appointment', {post: 'appointments/schedule_from_proposal'}
+
+  def on_before_schedule_appointment(r)
+    on_before_update(r)
+  end
+
+  def responses_on_schedule_appointment(r)
+    responses_on_update(r)
+  end
 
   def validate_time_part_from
     unless x = Moment.new("#{self.attributes[:time_part_from]}", "HHmm").isValid()

@@ -12,4 +12,5 @@ class AppointmentAvailability < Model
   route "destroy", {delete: "appointment_availabilities/:id"}, {defaults: [:id]} 
 
   route "Edit", {get: "appointment_availabilities/:id/edit"}
+
 end

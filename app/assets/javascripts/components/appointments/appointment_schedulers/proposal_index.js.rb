@@ -78,7 +78,7 @@ module Components
                       t(:button, { onClick: ->{ open_appointment_schedulers_index(appointment) } }, 'browse availability')
                     ),
                     t(:td, {}, 
-                      t(:button, {}, 'schedule')
+                      t(:button, { onClick: ->{ init_new_from_proposal(appointment, Moment.new(appointment.start_date).startOf('day')) } }, 'schedule')
                     ),
                     t(:td, {}, 
                       t(:button, {}, 'delete')
@@ -90,6 +90,13 @@ module Components
           ) 
         end
 
+        def init_new_from_proposal(appointment, date)
+          modal_open(
+            'schedule',
+            t(Components::Appointments::AppointmentSchedulers::NewFromProposal, {date: date, appointment: appointment} )
+          )
+        end
+
         def open_appointment_schedulers_index(appointment)
           p @dates_and_doctors_ids
           start_date = appointment.start_date
@@ -99,7 +106,8 @@ module Components
           end
           modal_open(
             "browse",
-            t(Components::Appointments::AppointmentSchedulers::Index, {date: start_date, uniq_profiles: uniq_profiles} )
+            t(Components::Appointments::AppointmentSchedulers::Index, {date: start_date, uniq_profiles: uniq_profiles, 
+                                                                      appointment: appointment} )
           )
         end
 

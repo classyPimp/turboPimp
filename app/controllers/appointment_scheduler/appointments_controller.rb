@@ -30,4 +30,13 @@ class AppointmentScheduler::AppointmentsController < ApplicationController
 
   end
 
+  def schedule_from_proposal
+    
+    perms_for Appointment
+    auth! @perms.appointment_scheduler_schedule_from_proposal
+
+    render plain: params and return    
+
+  end
+
 end

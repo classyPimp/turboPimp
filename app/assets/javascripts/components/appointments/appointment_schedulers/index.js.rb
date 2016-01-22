@@ -30,15 +30,22 @@ module Components
         def render
           t(:div, {},
             modal,
-            t(:p, {}, "the month is #{state.date.month() + 1}, of year #{state.date.year()}"),
-            t(:button, {onClick: ->{init_month_view}}, "month"),
-            t(:button, {onClick: ->{init_week_view(state.date.clone())}}, "week"),
-            t(:button, {onClick: ->{init_day_view}}, "day"),
-            t(:button, {onClick: ->{set_state date: Moment.new}}, "go to today"),
-            t(:br, {}),
-            input(Forms::Select, state.doctor_ids_holder, :doctors, {multiple: true, s_value: 'name',  
-              option_as_model: true, server_feed: {url: "/api/doctor/users/doctors_feed"}, namespace: 'doctors_select'}, destroy: false),
-            t(:button, { onClick: ->{refine_doctor_ids} }, 'update with choesen doctors'),
+            t(:div, {className: 'row'},
+              t(:div, {className: 'col-lg-6'},
+                t(:p, {}, "the month is #{state.date.month() + 1}, of year #{state.date.year()}"),
+                t(:button, {onClick: ->{init_month_view}}, "month"),
+                t(:button, {onClick: ->{init_week_view(state.date.clone())}}, "week"),
+                t(:button, {onClick: ->{init_day_view}}, "day"),
+                t(:button, {onClick: ->{set_state date: Moment.new}}, "go to today"),
+                t(:br, {}),
+                input(Forms::Select, state.doctor_ids_holder, :doctors, {multiple: true, s_value: 'name',  
+                  option_as_model: true, server_feed: {url: "/api/doctor/users/doctors_feed"}, namespace: 'doctors_select'}, destroy: false),
+                t(:button, { onClick: ->{refine_doctor_ids} }, 'update with choesen doctors')
+              ),
+              t(:div, {className: 'col-lg-6'},
+                t(Components::Appointments::AppointmentSchedulers::Partials::DesiredAppointments, {appointment_proposal_infos: props.appointment.appointment_proposal_infos})
+              ) 
+            ),
             t(:div, {},
               state.current_controll_component.to_n
             )
@@ -288,6 +295,7 @@ module Components
               t(:button, {onClick: ->{prev_day}}, "<"),
               t(:button, {onClick: ->{next_day}}, ">"),
               t(:p, {}, "Today is #{props.date.format('YYYY-MM-DD HH:mm')}"),
+              t(:button, { onClick: ->{ init_appointments_appointment_schedulers_new_from_proposal } }, 'schedule for this date'),
               t(:div, {},
                 *splat_each(props.index.fetch_appointments(self, props.date.clone.format("YYYY-MM-DD"))) do |user_name, appointments|
                   t(:div, {},
@@ -301,6 +309,13 @@ module Components
                 end
               )              
             )
+          )
+        end
+
+        def init_appointments_appointment_schedulers_new_from_proposal
+          modal_open(
+            'schedule',
+            t(Components::Appointments::AppointmentSchedulers::NewFromProposal, {date: props.date.clone, appointment: props.index.props.appointment} )
           )
         end  
 

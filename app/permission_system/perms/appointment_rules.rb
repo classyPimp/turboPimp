@@ -132,6 +132,14 @@ module Perms
         return true
       end
     end
+
+    def appointment_scheduler_schedule_from_proposal
+      
+      if @current_user && @current_user.has_role?(:appointment_scheduler)
+        return true
+      end
+
+    end
       
   end
 end
