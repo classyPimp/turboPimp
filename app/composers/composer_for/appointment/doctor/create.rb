@@ -1,4 +1,4 @@
-class ComposerFor::Appointment::Doctor::Create
+class ComposerFor::Appointment::Doctor::Create 
 
   include Services::PubSubBus::Publisher
 

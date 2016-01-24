@@ -102,6 +102,12 @@ module Perms
                   si_profile1name_phone_number: { root: true, only: [:id, :user_id, :name, :phone_number] }
                 ]
               }
+            },
+            {
+              si_appointment_detail1extra_details:
+              {
+                root: true
+              }
             }
           ]
         }
@@ -136,6 +142,14 @@ module Perms
     def appointment_scheduler_schedule_from_proposal
       
       if @current_user && @current_user.has_role?(:appointment_scheduler)
+        @serialize_on_success = 
+        {
+
+        }
+        @serialize_on_error =
+        {
+          methods: [:errors]
+        }
         return true
       end
 

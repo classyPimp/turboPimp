@@ -1,4 +1,4 @@
-class AppointmentAvailability < ActiveRecord::Base
+class AppointmentAvailability < ActiveRecord::Base  
   
   belongs_to :user
   

@@ -8,6 +8,7 @@ class Appointment < ActiveRecord::Base
   belongs_to :patient, ->{select(:id)}, class_name: "User"
 
   has_one :appointment_detail, dependent: :destroy
+  has_one :si_appointment_detail1extra_details, ->{select(:id, :extra_details, :appointment_id)},class_name: 'AppointmentDetail'
 
   has_many :appointment_proposal_infos, dependent: :destroy
   has_many :si_appointment_proposal_infos1all, class_name: "AppointmentProposalInfo"
@@ -30,7 +31,8 @@ class Appointment < ActiveRecord::Base
       },
       {
         patient: [:si_profile1name_phone_number]
-      }                                  
+      },
+      :si_appointment_detail1extra_details                                  
     ) 
   }
   

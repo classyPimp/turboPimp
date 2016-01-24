@@ -33,6 +33,7 @@ module Components
                   t(:th, {}, "for date"), 
                   t(:th, {}, "name"), 
                   t(:th, {}, "contacts"),
+                  t(:th, {}, 'note from patient'),
                   t(:th, {}, "chosen dates and doctors"),
                   t(:th, {}, ""),
                   t(:th, {}, ""),
@@ -61,6 +62,11 @@ module Components
                     ),
                     t(:td, {},
                       t(:p, {}, appointment.patient.profile.try(:phone_number))
+                    ),
+                    t(:td, {}, 
+                      t(:p, {},
+                        appointment.appointment_detail.extra_details
+                      )
                     ),
                     t(:td, {},
                       *splat_each(appointment.appointment_proposal_infos) do |appointment_proposal_info|
