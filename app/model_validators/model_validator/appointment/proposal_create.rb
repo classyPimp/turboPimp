@@ -13,7 +13,7 @@ class ModelValidator::Appointment::ProposalCreate
   end
 
   def validate_start_date
-    unless @a.start_date.is_a?(ActiveSupport::TimeWithZone) || start_date.is_a?(Date) 
+    unless @a.start_date.is_a?(ActiveSupport::TimeWithZone) || @a.start_date.is_a?(Date) 
       @a.custom_errors[:start_date] = "is invalid" and return
     end
 

@@ -121,16 +121,6 @@ module Perms
         {
           include:
           [
-            {
-              patient:
-              {
-                root: true,
-                only:
-                [
-                  :id, :registered
-                ]
-              }
-            },
             { 
               si_appointments1as_doctor_all: 
               {

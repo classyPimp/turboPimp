@@ -1,8 +1,6 @@
 class ComposerFor::User::Unregistered::DestroyWithProposals
 
-
-  #STOPPED ON INCLUDING PUBSUBBUS
-  include Pu
+  include Services::PubSubBus::Publisher 
 
   def initialize(user)
     @user = user
@@ -17,21 +15,21 @@ class ComposerFor::User::Unregistered::DestroyWithProposals
     appointments = Appointment.where(id: @user.si_appointments_as_patient1id.map(&:id))
 
     ActiveRecord::Base.transaction do
-             
-        appointments.each do |appointment|
-          appointment_destroy_cmpsr = ComposerFor::Appointment::Doctor::Destroy(appointment)
-        end
+        
+      appointments.each do |appointment|
+        @appointment_destroy_cmpsr = ComposerFor::Appointment::Doctor::Destroy.new(appointment)
+      end
 
-        appointment_destroy_cmpsr.when(:ok) do |appointment|
-          @user.destroy!
-          @transaction_success = true
-        end
+      @appointment_destroy_cmpsr.when(:ok) do |appointment|
+        @user.destroy!
+        @transaction_success = true
+      end
 
-        appointment_destroy_cmpsr.when(:fail) do |appointment|
-          raise "unexpected"
-        end
-
-        cmpsr.run
+      @appointment_destroy_cmpsr.when(:fail) do |appointment|
+        raise "unexpected"
+      end
+      
+      @appointment_destroy_cmpsr.run
 
     end
 
@@ -42,12 +40,16 @@ class ComposerFor::User::Unregistered::DestroyWithProposals
 
   end
 
+  def clear
+    unsubscribe_all
+  end
+
   def handle_transaction_success
     publish(:ok, @user) if @transaction_success
   end
 
   def handle_transaction_fail(e)
-    publish(:fail)
+    publish(:fail, @user)
   end
 
 end

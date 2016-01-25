@@ -14,7 +14,7 @@ class Appointment < ActiveRecord::Base
 
   belongs_to :doctor, class_name: "User"
 
-  belongs_to :patient, ->{select(:id, :registered)}, class_name: "User"
+  belongs_to :patient, ->{select(:id, :registered)}, class_name: "User", foreign_key: 'patient_id'
 
   has_one :appointment_detail, dependent: :destroy
   has_one :si_appointment_detail1extra_details, ->{select(:id, :extra_details, :appointment_id)},class_name: 'AppointmentDetail'
