@@ -13,7 +13,9 @@ class ComposerFor::Appointment::Doctor::Destroy
   end
 
   def run_subscriptions
-    subscribe(:on_appointment_destroyed, AppointmentAvailability)
+    unless @appointment.proposal
+      subscribe(:on_appointment_destroyed, AppointmentAvailability)
+    end
   end
 
   def compose

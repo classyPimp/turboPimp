@@ -31,7 +31,7 @@ class ComposerFor::Appointment::AppointmentScheduler::ScheduleFromProposal
   end
 
   def compose
-    ActiveRecord::Base.transaction do
+    ActiveRecord::Base.transaction do  
       
       @appointment.scheduled = true
 

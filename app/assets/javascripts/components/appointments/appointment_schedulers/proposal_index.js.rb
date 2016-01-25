@@ -43,7 +43,7 @@ module Components
               t(:tbody, {},
                 *splat_each(state.appointments) do |appointment|
                   next unless appointment.patient && appointment.patient.profile
-                  t(:tr, {},
+                  t(:tr, {key: appointment.id},
                     t(:td, {},
                       appointment.id
                     ),
@@ -51,12 +51,13 @@ module Components
                       Moment.new(appointment.start_date).format('YYYY-MM-DD')
                     ),
                     t(:td, {},
-                      if x = appointment.patient
+                      if appointment.patient.attributes[:registered]
                         t(:p, {}, appointment.patient.profile.try('name'))
                       else
                         t(:div, {},
                           t(:p, {}, "unregistered user"),
-                          t(:p, {}, appointment.patient.profile.try('name'))
+                          t(:p, {}, appointment.patient.profile.try('name')),
+                          t(:p, { onClick: ->{delete_unregistered_users_with_proposals(appointment.patient)} }, 'delete this user and all his proposals')
                         )
                       end
                     ),
@@ -87,7 +88,7 @@ module Components
                       t(:button, { onClick: ->{ init_new_from_proposal(appointment, Moment.new(appointment.start_date).startOf('day')) } }, 'schedule')
                     ),
                     t(:td, {}, 
-                      t(:button, {}, 'delete')
+                      t(:button, { onClick: ->{ delete_an_appointment(appointment) } }, 'delete')
                     )
                   )
                 end
@@ -104,7 +105,6 @@ module Components
         end
 
         def open_appointment_schedulers_index(appointment)
-          p @dates_and_doctors_ids
           start_date = appointment.start_date
           uniq_profiles = {}
           @dates_and_doctors_ids[start_date].each do |profile|
@@ -115,6 +115,28 @@ module Components
             t(Components::Appointments::AppointmentSchedulers::Index, {date: start_date, uniq_profiles: uniq_profiles, 
                                                                       appointment: appointment} )
           )
+        end
+
+        def delete_an_appointment(appointment)
+
+          appointment.destroy(namespace: 'doctor').then do |_appointment|
+            appointment_to_remove = state.appointments.where do |ap|
+              next unless ap
+              ap.id == _appointment.id
+            end
+
+            state.appointments.remove(appointment_to_remove[0])
+
+            set_state appointments: state.appointments
+
+          end
+
+        end
+
+        def delete_unregistered_users_with_proposals(patient)
+          patient.destroy_unregistered_user_with_proposals.then do |patient|
+            component_did_mount
+          end
         end
 
       end

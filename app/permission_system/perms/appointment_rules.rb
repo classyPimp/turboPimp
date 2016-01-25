@@ -66,7 +66,7 @@ module Perms
     end
 
     def destroy
-      if @current_user && @current_user.has_role?(:doctor)
+      if @current_user && @current_user.has_any_role?(:doctor, :appointment_scheduler)
         true
       end
     end
@@ -122,6 +122,16 @@ module Perms
           include:
           [
             {
+              patient:
+              {
+                root: true,
+                only:
+                [
+                  :id, :registered
+                ]
+              }
+            },
+            { 
               si_appointments1as_doctor_all: 
               {
                 root: true

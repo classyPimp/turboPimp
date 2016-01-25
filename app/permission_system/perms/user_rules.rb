@@ -164,5 +164,11 @@ module Perms
 
     end
 
+    def destroy_unregistered_user_with_proposals
+      if @current_user && @current_user.has_any_role?(:admin, :appointment_scheduler)
+        return true
+      end
+    end
+
   end
 end

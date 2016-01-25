@@ -19,7 +19,6 @@
     @appointment.patient_id = @user_id
     @appointment.proposal = true
     @appointment.scheduled = false
-    byebug
   end
 
   def compose

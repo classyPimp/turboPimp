@@ -23,6 +23,7 @@ class AppointmentAvailability < ActiveRecord::Base
     map << end_date
 
     a_a.attributes = {map: "#{map.to_json}", user_id: appointment.doctor_id, for_date: appointment.start_date.strftime('%Y-%m-%d')}
+    byebug
     a_a.save
   end
   #invoked from on_create callback from Appointment

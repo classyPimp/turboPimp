@@ -1,11 +1,20 @@
 class Appointment < ActiveRecord::Base
 
+  
+  # I find some conditional validations can become unmanagable mess
+  # I use PORO validation classes for different scenarios (e.g. save_as_proposal) that adds errors
+  #but the problem is that Rails ignore otside added errors (that's totally reasonable), with this accessor
+  #PORO validation classes do add errors to @custom_errors, and rails has validate :custom_errors (or any other) which would duplicate and 
+  #add error in callback, which would allow to raise RecorInvalid on save! if !custom_errors.empty?
+  include Services::CustomErrorable
+
+  ###################################################
   #_--------------ASSOCIATIONS
   belongs_to :user
 
   belongs_to :doctor, class_name: "User"
 
-  belongs_to :patient, ->{select(:id)}, class_name: "User"
+  belongs_to :patient, ->{select(:id, :registered)}, class_name: "User"
 
   has_one :appointment_detail, dependent: :destroy
   has_one :si_appointment_detail1extra_details, ->{select(:id, :extra_details, :appointment_id)},class_name: 'AppointmentDetail'
@@ -43,7 +52,8 @@ class Appointment < ActiveRecord::Base
   validate :validate_patient_id
   validates :doctor_id, presence: true, numericality: {only_integer: true}, unless: -> { self.proposal } 
   validate :validate_doctor_id, unless: -> { self.proposal }
-  validate :validate_start_date_to_be_valid_date, on: :create 
+  validate :validate_start_date_to_be_valid_date, on: :create
+ 
 
   def validate_patient_id
     if patient_id.present?

@@ -10,6 +10,7 @@ class ComposerFor::Appointment::Proposal::CreateByUnregisteredUser
 
   def run
     prepare_attributes
+    validate
     compose
     clear   
   end
@@ -19,12 +20,16 @@ class ComposerFor::Appointment::Proposal::CreateByUnregisteredUser
     @appointment.proposal = true
   end
 
+  def validate
+    ModelValidator::Appointment::ProposalCreate.validate!(@appointment)
+  end
+
   def compose
     ActiveRecord::Base.transaction do
   
       begin
 
-        user = User.new
+        user = ::User.new
 
         user_cmpsr = ComposerFor::User::Unregistered::Create.new(user, @user_permitted_attributes)
 
@@ -46,6 +51,7 @@ class ComposerFor::Appointment::Proposal::CreateByUnregisteredUser
         transaction_result
 
       rescue Exception => e
+        
         handle_transaction_fail(e)
 
       end

@@ -23,10 +23,16 @@ class User < Model
   route "destroy", {delete: "users/:id"}, {defaults: [:id]} 
 
   route "Edit", {get: "users/:id/edit"}
+
+  route 'destroy_unregistered_user_with_proposals', {delete: 'users/destroy_unregistered_user_with_proposals/:id'}, {defaults: [:id]}
  
   has_one :profile, :avatar
   has_many :roles
   accepts_nested_attributes_for :profile, :avatar, :roles
+
+  def responses_on_destroy_unregistered_user_with_proposals(r)
+    self.responses_on_destroy(r)
+  end
 
   def on_before_test(r)
     r.req_options = {payload: pure_attributes}

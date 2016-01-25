@@ -28,15 +28,13 @@
         @user.add_role :patient
 
         @transaction_success = true
-
-        byebug
         
       rescue Exception => e
         handle_transaction_fail(e)
       end
 
     end
-    byebug
+
     if @transaction_success
       publish(:ok, @user)
     end 

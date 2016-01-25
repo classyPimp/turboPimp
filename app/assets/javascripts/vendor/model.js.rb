@@ -640,6 +640,7 @@ class ModelCollection
   def where(&block)
     s = []
     @data.each do |v|
+      next unless v.is_a?(Model)
       if v.is_a? Model
         s << v if yield(v) #previously was v.attributes; changed beacause sometimes yo'll need to check on their methods not only attributes
         s = s + v.where {block.call}

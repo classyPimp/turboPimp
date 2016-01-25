@@ -137,4 +137,24 @@ class UsersController < ApplicationController
     render json: map
   end
 
+  def destroy_unregistered_user_with_proposals
+    @user = User.find(params[:id])
+
+    perms_for @user
+    auth! @perms.destroy_unregistered_user_with_proposals
+
+    cmpsr = ComposerFor::User::Unregistered::DestroyWithProposals.new(@user)
+
+    cmpsr.when(:ok) do |user|
+      render json: user.as_json(only: [:id])
+    end
+
+    cmpsr.when(:fail) do
+      head 500
+    end
+
+    cmpsr.run
+
+  end
+
 end
