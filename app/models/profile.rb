@@ -1,5 +1,6 @@
 class Profile < ActiveRecord::Base
 
+  include Services::CustomErrorable
   # def self.includes_with_select(*m)
   #   association_arr = []
   #   m.each do |part|

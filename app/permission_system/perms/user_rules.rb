@@ -4,6 +4,36 @@ module Perms
     def create
       @permitted_attributes = @controller.params.require(:user).permit(:email, :password, :password_confirmation, profile_attributes: [:name, :bio], avatar_attributes: [:file])      
     end
+
+    def appointment_scheduler_create
+      if @current_user && @current_user.has_role?(:appointment_scheduler)
+        @serialize_on_success = 
+        {
+          only: [:id, :email],
+          include: 
+          [
+            profile: 
+            {
+              root: true,
+              only: [:id, :user_id, :name, :phone_number]
+            }
+          ]
+        }
+        @serialize_on_error =
+        {
+          methods: [:errors],
+          include:
+          {
+            profile:
+            {
+              root: true,
+              methods: [:errors]
+            }
+          }
+        }
+        return true
+      end
+    end
   #********************
 
     def admin_create

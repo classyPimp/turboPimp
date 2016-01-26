@@ -48,14 +48,18 @@ module Components
               t(:div, {},
                 "actions for doctor",
                 t(:br, {}),
-                t(:button, {onClick: ->{init_doctor_appointments_index}}, "appointments")
+                t(:button, {onClick: ->{init_doctor_appointments_index}}, "my appointments")
               )
             end,
             if state.current_user.has_role? [:appointment_scheduler]
               t(:div, {},
                 "actions for appointment scheduler",
                 t(:br, {}),
-                t(:button, { onClick: ->{init_appointment_schedulers_appointments_index} }, "browse uncheduled")
+                t(:button, { onClick: ->{init_appointment_schedulers_appointments_proposal_index} }, "appointments requests"),
+                t(:br, {}),
+                t(:button, { onClick: ->{ init_appointment_schedulers_appointments_index } }, "browse schedule"),
+                t(:br, {}),
+                t(:button, { onClick: ->{ init_user_appointment_schedulers_new } }, 'register patient')
               ) 
             end
           ),
@@ -121,8 +125,16 @@ module Components
 #*******************************    END ROLE DOCTOR
 #*******************************    ROLE APPOINTMENT_SCHEDULER
 
-      def init_appointment_schedulers_appointments_index
+      def init_appointment_schedulers_appointments_proposal_index
         set_state current_control_component: Native(t(Components::Appointments::AppointmentSchedulers::ProposalIndex))
+      end
+
+      def init_appointment_schedulers_appointments_index
+        set_state current_control_component: Native(t(Components::Appointments::AppointmentSchedulers::Index, {uniq_profiles: {}, date: Moment.new.startOf('day'), from_proposal: false}))
+      end
+
+      def init_user_appointment_schedulers_new
+        set_state current_control_component: Native(t(Components::AppointmentSchedulers::Users::New))
       end
 
 #*******************************    END ROLE APPOINTMENT_SCHEDULER

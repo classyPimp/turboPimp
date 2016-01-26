@@ -55,6 +55,7 @@ Rails.application.routes.draw do
     get 'appointment_scheduler/appointments/proposal_index' => 'appointment_scheduler/appointments#proposal_index'
     namespace :appointment_scheduler do
       resources :appointments
+      resources :users
     end
 
 

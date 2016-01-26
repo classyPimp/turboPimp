@@ -35,7 +35,7 @@ module Components
                 t(:div, {},
                   t(:a, {onClick: ->(){logout_user}, style: {cursor: "pointer"}.to_n }, "click here to logout"),
                   t(:br, {}),
-                  link_to("edit my account data", "/users/edit/#{state.user.id}")
+                  link_to("edit my account data", "/users/#{state.user.id}/edit")
                 )
               end
             )

@@ -113,7 +113,7 @@ module Components
           modal_open(
             "browse",
             t(Components::Appointments::AppointmentSchedulers::Index, {date: start_date, uniq_profiles: uniq_profiles, 
-                                                                      appointment: appointment} )
+                                                                      appointment: appointment, from_proposal: true} )
           )
         end
 

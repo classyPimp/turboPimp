@@ -1,5 +1,7 @@
 class User < ActiveRecord::Base
 
+  include Services::CustomErrorable
+
   DEFAULT_PASSWORD = '123456'
 
   @arbitrary = {}

@@ -15,7 +15,8 @@ module Components
           {
             form_model: Appointment.new(date_part: props.date.format("YYYY-MM-DD"),
               appointment_detail: {appointment_detail: {}}
-            )
+            ),
+            doctor_id_holder: Model.new()
           }
         end
 
@@ -26,6 +27,8 @@ module Components
             "#{props.date.format('YYYY-MM-DD')}",
             input(Forms::Input, state.form_model, :time_part_from, {input_props: {placeholder: "HH:mm"}, show_name: "from", show_errors_for: "start_date"}),
             input(Forms::Input, state.form_model, :time_part_to, {input_props: {placeholder: "HH:mm"}, show_name: "to", show_errors_for: "end_date"}),
+            input(Forms::Select, state.doctor_id_holder, :doctor, {multiple: false, s_value: 'name',  
+                  option_as_model: true, server_feed: {url: "/api/doctor/users/doctors_feed"}, namespace: 'doctors_select'}, destroy: false),
             input(Forms::Select, state.form_model, :patient_id, {
                       server_feed: {url: "/api/patients/patients_feed"}, 
                       s_value: "user_id",
@@ -36,6 +39,7 @@ module Components
           )
         end
 
+
         def handle_inputs
           collect_inputs(validate: false)
           m_a = state.form_model.attributes
@@ -43,6 +47,7 @@ module Components
           end_str = "#{m_a.delete(:date_part)}T#{m_a.delete(:time_part_to)}"
           state.form_model.start_date = Moment.new(start_str, 'YYYYMMDDHHmm').format()
           state.form_model.end_date = Moment.new(end_str, 'YYYYMMDDHHmm').format()
+          state.form_model.doctor_id = state.doctor_id_holder.attributes[:doctor].user_id
           state.form_model.validate
           unless state.form_model.has_errors?
             state.form_model.create(namespace: "doctor").then do |model|

@@ -11,13 +11,13 @@ module Components
         def get_initial_state
           {
             date: Moment.new,
-            current_controll_component: "div",
-            current_view: "month"
+            current_controll_component: 'div',
+            current_view: "week"
           }
         end
 
         def component_did_mount
-          init_month_view
+          init_week_view
         end
 
         def render
@@ -126,7 +126,7 @@ module Components
         end
   
         def component_did_mount
-          Appointment.index(component: self, namespace: "doctor", payload: {from: queries(props.date)[:from], to: queries(props.date)[:to]}).then do |appointments|
+          Appointment.index(component: self, namespace: "doctor", payload: {from: queries(props.date)[:from], to: queries(props.date)[:to], doctor_ids: [CurrentUser.user_instance.id]}).then do |appointments|
             set_state appointments: appointments
           end
         end
@@ -146,13 +146,13 @@ module Components
               *splat_each(0..5) do |week_num|
                 t_d = (@track_day).clone
                 t(:div, {className: "row", style: {display: "table-row"}.to_n },
-                  t(:div, {},#onClick: ->{handle(t_d)
+                  t(:div, {},
                     *splat_each(0..6) do |d|
                       t_d_a = (@track_day.add(1, 'days')).clone()
                       t(:div, {className: "col-lg-1", style: {"height" => "12em", display: "table-cell", width: "12%", overflow: "scroll"}.to_n }, 
                         t(:div, {},
-                          t(:span, {}, @track_day.date()),
-                          t(:button, {onClick: ->{props.index.init_appointments_new(t_d_a)}}, "add appointment")
+                          t(:span, {}, @track_day.date())#,
+                          #t(:button, {onClick: ->{props.index.init_appointments_new(t_d_a)}}, "add appointment")
                         ),
                         t(:div, {},
                           *splat_each(fetch_appointments(@track_day.format("YYYY-MM-DD"))) do |appointment|
@@ -220,7 +220,7 @@ module Components
         end
 
         def component_did_mount
-          Appointment.index(component: self, namespace: "doctor", payload: {from: queries(props.date)[:from], to: queries(props.date)[:to]}).then do |appointments|
+          Appointment.index(component: self, namespace: "doctor", payload: {from: queries(props.date)[:from], to: queries(props.date)[:to], doctor_ids: [CurrentUser.user_instance.id]}).then do |appointments|
             set_state appointments: appointments
           end
         end
@@ -239,7 +239,7 @@ module Components
             t(:button, {onClick: ->{prev_week}}, "<"),
             t(:button, {onClick: ->{next_week}}, ">"),
             t(:div, {className: "table", style: {display: "table", fontSize:"10px!important"}.to_n },
-              t(:div, {className: "row", style: {display: "table-row"}}.to_n,
+              t(:div, {className: "row", style: {display: "table-row"}.to_n },
                 *splat_each(Calendar.wdays) do |wday_name| 
                     t(:div, {className: "col-lg-1", style: {display: "table-cell", width: "12%"}.to_n }, wday_name)
                 end,
@@ -250,8 +250,8 @@ module Components
                     t_d_a = (@track_day.add(1, 'days')).clone()
                     t(:div, {className: "col-lg-1", style: {display: "table-cell", width: "12%"}.to_n }, 
                       t(:div, {},
-                        t(:span, {}, @track_day.date()),
-                        t(:button, {onClick: ->{props.index.init_appointments_new(t_d_a)}}, "add appointment")
+                        t(:span, {}, @track_day.date())#,
+                        #t(:button, {onClick: ->{props.index.init_appointments_new(t_d_a)}}, "add appointment")
                       ),
                       t(:div, {},
                         *splat_each(fetch_appointments(@track_day.format("YYYY-MM-DD"))) do |appointment|
@@ -302,7 +302,7 @@ module Components
         end
 
         def component_did_mount
-          Appointment.index(component: self, namespace: "doctor", payload: {from: "#{props.date.format('YYYY-MM-DD')}", to: "#{props.date.clone().add(1, 'days').format('YYYY-MM-DD')}"}).then do |appointments|
+          Appointment.index(component: self, namespace: "doctor", payload: {from: "#{props.date.format('YYYY-MM-DD')}", to: "#{props.date.clone().add(1, 'days').format('YYYY-MM-DD')}", doctor_ids: [CurrentUser.user_instance.id]}).then do |appointments|
             set_state appointments: appointments
             begin
             prepare_availability

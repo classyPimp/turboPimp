@@ -42,13 +42,30 @@ module Components
                   option_as_model: true, server_feed: {url: "/api/doctor/users/doctors_feed"}, namespace: 'doctors_select'}, destroy: false),
                 t(:button, { onClick: ->{refine_doctor_ids} }, 'update with choesen doctors')
               ),
-              t(:div, {className: 'col-lg-6'},
-                t(Components::Appointments::AppointmentSchedulers::Partials::DesiredAppointments, {appointment_proposal_infos: props.appointment.appointment_proposal_infos})
-              ) 
+              if props.from_proposal
+                t(:div, {className: 'col-lg-6'},
+                  t(Components::Appointments::AppointmentSchedulers::Partials::DesiredAppointments, {appointment_proposal_infos: props.appointment.appointment_proposal_infos})
+                )
+              end 
             ),
             t(:div, {},
               state.current_controll_component.to_n
             )
+          )
+        end
+
+        def init_appointments_new(date)
+          date = date.clone
+          modal_open(
+            "create appointment",
+            t(Components::Appointments::Doctors::New, {date: date, on_appointment_created: ->(appo){ref(state.current_view).rb.component_did_mount}})
+          )
+        end
+
+        def init_appointments_appointment_schedulers_new_from_proposal(date)
+          modal_open(
+            'schedule',
+            t(Components::Appointments::AppointmentSchedulers::NewFromProposal, {date: date.clone, appointment: props.appointment} )
           )
         end
 
@@ -62,19 +79,29 @@ module Components
           ref(state.current_view).rb.component_did_mount
         end
 
+        def events_to_attach
+          to_attach = {}
+          if props.from_proposal
+            to_attach[:init_appointments_new_from_proposal] = event(->(date){init_appointments_appointment_schedulers_new_from_proposal(date)})
+          else
+            to_attach[:init_appointments_new] = event(->(date){init_appointments_new(date)})
+          end
+          to_attach
+        end
+
         def init_week_view(track_day)
           state.current_view = "week"
-          set_state current_controll_component: ->{Native(t(Week, {ref: "week", index: self, date: state.date}))}
+          set_state current_controll_component: ->{Native(t(Week, {ref: "week", index: self, date: state.date}.merge(events_to_attach)))}
         end
 
         def init_month_view
           state.current_view = "month"
-          set_state current_controll_component: ->{Native(t(Month, {ref: "month", index: self, date: state.date}))}
+          set_state current_controll_component: ->{Native(t(Month, {ref: "month", index: self, date: state.date}.merge(events_to_attach)))}
         end
 
         def init_day_view
           state.current_view = "day"
-          set_state current_controll_component: ->{Native(t(WeekDay, {ref: "day", date: state.date, index: self}))}, current_view: "day"
+          set_state current_controll_component: ->{Native(t(WeekDay, {ref: "day", date: state.date, index: self}.merge(events_to_attach)))}, current_view: "day"
         end
 
         def current_view
@@ -163,6 +190,11 @@ module Components
                         t(:div, {},
                           t(:span, {}, @track_day.date())
                         ),
+                        if props.index.props.from_proposal
+                          t(:button, { onClick: ->{ emit(:init_appointments_new_from_proposal, t_d_a) } }, 'create appointment')
+                        else
+                          t(:button, { onClick: ->{emit(:init_appointments_new, t_d_a)} }, 'create new appointment')
+                        end,
                         t(:div, {},
                           *splat_each(props.index.fetch_appointments(self, @track_day.format("YYYY-MM-DD"))) do |user_name, appointments|
                             t(:div, {},
@@ -239,6 +271,11 @@ module Components
                       t(:div, {},
                         t(:span, {}, @track_day.date()),
                       ),
+                      if props.index.props.from_proposal
+                        t(:button, { onClick: ->{ emit(:init_appointments_new_from_proposal, t_d_a) } }, 'create appointment')
+                      else
+                        t(:button, { onClick: ->{emit(:init_appointments_new, t_d_a)} }, 'create new appointment')
+                      end,
                       t(:div, {},
                         *splat_each(props.index.fetch_appointments(self, @track_day.format("YYYY-MM-DD"))) do |user_name, appointments|
                           t(:div, {},
@@ -295,7 +332,11 @@ module Components
               t(:button, {onClick: ->{prev_day}}, "<"),
               t(:button, {onClick: ->{next_day}}, ">"),
               t(:p, {}, "Today is #{props.date.format('YYYY-MM-DD HH:mm')}"),
-              t(:button, { onClick: ->{ init_appointments_appointment_schedulers_new_from_proposal } }, 'schedule for this date'),
+              if props.index.props.from_proposal
+                t(:button, { onClick: ->{ emit(:init_appointments_new_from_proposal, props.date) } })
+              else
+                t(:button, { onClick: ->{emit(:init_appointments_new, props.date)} }, 'create new appointment')
+              end,
               t(:div, {},
                 *splat_each(props.index.fetch_appointments(self, props.date.clone.format("YYYY-MM-DD"))) do |user_name, appointments|
                   t(:div, {},
@@ -309,13 +350,6 @@ module Components
                 end
               )              
             )
-          )
-        end
-
-        def init_appointments_appointment_schedulers_new_from_proposal
-          modal_open(
-            'schedule',
-            t(Components::Appointments::AppointmentSchedulers::NewFromProposal, {date: props.date.clone, appointment: props.index.props.appointment} )
           )
         end  
 
