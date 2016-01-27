@@ -31,7 +31,7 @@ module Components
         end
 
         def init_users_index
-          set_state current_control_component: Native(t(Components::Users::Index, {as_admin: true}))
+          set_state current_control_component: Native(t(Components::Users::Index, {namespace: 'admin'}))
         end
 
         def on_user_added(user)

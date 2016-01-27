@@ -1,7 +1,8 @@
 class ModelValidator::Profile::CreatePatient
 
+
   def self.validate!(profile)
-    self.new(profile).validate!    
+    self.new(profile).validate! 
   end
 
   def initialize(profile)
@@ -20,12 +21,9 @@ class ModelValidator::Profile::CreatePatient
   end
 
   def validate_phone_number
-
     if @a.phone_number.blank?
       @a.custom_errors[:phone_number] = 'should be provided' and return
     end
-
   end
-    
 
 end

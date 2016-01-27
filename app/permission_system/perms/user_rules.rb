@@ -44,7 +44,7 @@ module Perms
         
       end
     end
-
+  
 
   #***********************
     def index
@@ -62,6 +62,20 @@ module Perms
         ) << @controller.extract_pagination_hash(@model)
       
     end    
+
+    def appointment_scheduler_index
+      if @current_user && @current_user.has_role?(:appointment_scheduler)
+        @serialize_on_success = 
+        {
+          only: [:id, :email, :registered],
+          include:
+          [
+            si_profile1name_phone_number: {root: true, only: [:id, :name, :user_id, :email, :phone_number]}
+          ]
+        }
+        true
+      end
+    end
   #********************
 
     def admin_index
@@ -181,6 +195,31 @@ module Perms
 
         @model
       end
+    end
+
+
+    def appointment_scheduler_edit
+      
+      if @current_user && @current_user.has_role?(:appointment_scheduler)
+
+        unless @model.has_role?(:patient)
+          return false
+        end
+
+        if @model.has_any_role?(:admin, :blogger, :appointment_scheduler)
+          return false
+        end
+
+        @serialize_on_success = 
+        {
+          only: [:id, :email],
+          include:
+          {
+            si_profile1name_phone_number: {root: true, only: [:id, :name, :bio, :user_id, :phone_number]}
+          }
+        }
+      end
+
     end
 
     def doctors_feed

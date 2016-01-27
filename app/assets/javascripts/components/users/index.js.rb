@@ -56,8 +56,9 @@ module Components
       end
 
       def edit_selected(user)
-        url = props.as_admin ? "/admin/users/#{user.id}/edit" : "/users/edit/#{user.id}"
+        url = @as_admin ? "/admin/users/#{user.id}/edit" : "/users/edit/#{user.id}"
         Components::App::Router.history.pushState({}, url)
+
       end
 
       def destroy_selected(_user)

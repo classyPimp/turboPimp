@@ -10,6 +10,8 @@ module Plugins
             CurrentUser.user_instance = user
             if user.has_role?(self.class.roles_to_fetch) || self.class.roles_to_fetch.empty? 
               set_state current_user: user
+            else
+              props.history.replaceState({}, "/forbidden")
             end
           else
             user = nil
