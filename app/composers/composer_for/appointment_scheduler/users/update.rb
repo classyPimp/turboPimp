@@ -6,6 +6,12 @@ class ComposerFor::AppointmentScheduler::Users::Update
 
     @user = user
 
+    if user_attributes[:profile_attributes] && @user.profile
+      if !!user_attributes[:id]
+        raise "no id provided for existing profile #{self.class.name}"
+      end
+    end
+
     @user.attributes = user_attributes
 
   end
@@ -24,8 +30,11 @@ class ComposerFor::AppointmentScheduler::Users::Update
 
       ActiveRecord::Base.transaction do  
         begin 
-          
+          @user.arbitrary[:no_password_update] = true
+
           @user.save!
+
+          @transaction_success = true
 
         rescue Exception => e
           handle_transaction_fail(e)
@@ -44,12 +53,16 @@ class ComposerFor::AppointmentScheduler::Users::Update
   def handle_transaction_success
     if @transaction_success
       publish(:ok, @user)
+    else
+      raise "unexpected fail #{self.class.name}"
     end
   end
 
   def handle_transaction_fail(e)
+    byebug
     case e
     when ActiveRecord::RecordInvalid
+      byebug
       publish(:fail, @user)
     else
       handle_transaction_unexpected_fail(e)             
@@ -57,6 +70,7 @@ class ComposerFor::AppointmentScheduler::Users::Update
   end
 
   def clear
+    @user.arbitrary.delete(:no_password_update)
     unsubscribe_all
   end
 

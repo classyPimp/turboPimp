@@ -32,8 +32,12 @@ module Components
                   t(:image, {src: user.avatar.url, style: {width: "60px", height: "60px"}.to_n })
                 end,
                 t(:p, {},"email: #{user.email}"),
-                t(:p, {}, (link_to("name: #{user.profile.name}", "/users/show/#{user.id}" ) if user.profile) ),
-                t(:p, {}, "phone_number: #{user.profile.phone_number}"),
+                if user.profile
+                  t(:div, {}, 
+                    t(:p, {}, link_to("name: #{user.profile.name}", "/users/show/#{user.id}" ) ),
+                    t(:p, {}, "phone_number: #{user.profile.phone_number}")
+                  )
+                end,
                 unless user.attributes[:registered]
                   t(:p, {}, "*unregistered")
                 end,

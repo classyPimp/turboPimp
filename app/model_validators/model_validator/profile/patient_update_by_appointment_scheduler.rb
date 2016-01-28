@@ -14,7 +14,7 @@ class ModelValidator::Profile::PatientUpdateByAppointmentScheduler
   end
 
   def validate_name
-    if @a.name.changed?  
+    if @a.changed_attributes[:name] 
       if @a.name.blank?
         @a.custom_errors[:name] = 'should be provided' and return
       end
@@ -22,7 +22,7 @@ class ModelValidator::Profile::PatientUpdateByAppointmentScheduler
   end
 
   def validate_phone_number
-    if @a.phone_number.changed?
+    if @a.changed_attributes[:phone_number]
       if @a.phone_number.blank?
         @a.custom_errors[:phone_number] = 'should be provided' and return
       end

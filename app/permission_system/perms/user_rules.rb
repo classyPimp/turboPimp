@@ -222,6 +222,27 @@ module Perms
 
     end
 
+    def appointment_scheduler_update
+      if @current_user && @current_user.has_role?(:appointment_scheduler)
+        unless @model.has_role?(:patient)
+          return false
+        end
+
+        if @model.has_any_role?(:admin, :blogger, :appointment_scheduler)
+          return false
+        end
+
+        @serialize_on_success = 
+        {
+          only: [:id, :email],
+          include: 
+          {
+            profile: {root: true, only: [:id, :name, :bio, :user_id, :phone_number]}
+          }
+        }
+      end
+    end
+
     def doctors_feed
 
       if @current_user && @current_user.has_role?(:appointment_scheduler)

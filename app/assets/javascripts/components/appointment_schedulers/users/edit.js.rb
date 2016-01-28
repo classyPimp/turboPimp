@@ -27,7 +27,11 @@ module Components
 
         def component_did_mount
           User.edit({wilds: {id: props.user.id}, namespace: 'appointment_scheduler'}).then do |form_model|
+            begin
             set_state form_model: form_model
+            rescue Exception => e
+              p e
+            end
           end
         end
 
@@ -36,7 +40,7 @@ module Components
             modal,
             if state.form_model
               t(:div, {},
-                t(:h3, {}, state.form_model.profile),
+                t(:h3, {}, state.form_model.profile.name ),
                 t(:hr, {style: {color: "grey", height: "1px", backgroundColor: "black"}.to_n }),
                 t(:p, {}, "email: #{state.form_model.email}"),
                 input(Forms::Input, state.form_model.profile, :phone_number),
@@ -51,9 +55,9 @@ module Components
         def handle_inputs
           collect_inputs
           unless state.form_model.has_errors?
-            p state.form_model.pure_attributes and return
             state.form_model.update(namespace: 'appointment_scheduler').then do |model|
               unless model.has_errors?
+                alert "user udpated"
                 msg = Shared::Flash::Message.new(t(:div, {}, "updated successfully"))
                 Components::App::Main.instance.ref(:flash).rb.add_message(msg)
                 props.history.pushState({}, "/users/show/#{model.id}")

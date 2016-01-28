@@ -45,15 +45,15 @@ class AppointmentScheduler::UsersController < ApplicationController
   
   end
 
-  def udpate
+  def update
     
     @user = User.find(params[:id])
     perms_for @user
     auth! @perms.appointment_scheduler_update
 
-    user_permitted_attributes = AttributesPermitter::AppointmentScheduler::User::Update.new(params).get_permitted
+    user_permitted_attributes = AttributesPermitter::AppointmentScheduler::Users::Update.new(params).get_permitted
 
-    cmpsr = ComposerFor::AppointmentScheduler::Users::Update.new(@user, )
+    cmpsr = ComposerFor::AppointmentScheduler::Users::Update.new(@user, user_permitted_attributes)
 
     cmpsr.when(:ok) do |user|
       render json: user.as_json(@perms.serialize_on_success)

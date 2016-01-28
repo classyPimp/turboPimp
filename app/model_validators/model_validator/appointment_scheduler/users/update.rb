@@ -1,4 +1,4 @@
-class ModelValidator::AppointmentScheduler::User::Update
+class ModelValidator::AppointmentScheduler::Users::Update
 
   def self.validate!(user)
     self.new(user).validate!    
@@ -14,7 +14,7 @@ class ModelValidator::AppointmentScheduler::User::Update
   end
 
   def validate_email
-    unless @a.email.blank?
+    if @a.changed_attributes[:email]
       unless @a.email.match(/.+@.+\..+/i)
         @a.custom_errors[:email] = 'invalid'
       end
@@ -22,7 +22,7 @@ class ModelValidator::AppointmentScheduler::User::Update
   end
 
   def validate_profile
-    if @a.profile
+    if @a.profile.changed?
       ModelValidator::Profile::PatientUpdateByAppointmentScheduler.validate!(@a.profile)
     end 
   end

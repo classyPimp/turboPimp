@@ -1,10 +1,7 @@
 class AttributesPermitter::AppointmentScheduler::Users::Update
 
   def initialize(params)
-    @params = params.require(:user)
-    if @params[:profile_attributes] 
-      @params.require(:profile_attributes).require(:id)
-    end  
+    @params = params.require(:user)  
   end
 
   def get_permitted

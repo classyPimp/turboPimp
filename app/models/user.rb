@@ -12,6 +12,9 @@ class User < ActiveRecord::Base
 
   end
 
+  def arbitrary
+    @arbitrary ||= {}
+  end
 
   rolify
 
@@ -41,7 +44,7 @@ class User < ActiveRecord::Base
   
   validates :password, presence: true, 
                       length: { minimum: 6 },
-                      confirmation: true
+                      confirmation: true, unless: ->{arbitrary[:no_password_update] || password == nil}
 
   ########### VALIDATION METHODS
 
