@@ -6,7 +6,7 @@ module Components
       
       def render
         t(:div, {},
-          t(Components::Pages::Show, {page_id: "welcome"})
+          t(Components::SpecificPages::Home, {})
         )
       end
 
