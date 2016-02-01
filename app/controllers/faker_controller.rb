@@ -1,8 +1,13 @@
 class FakerController < ApplicationController
 
 	def home
-    @current_user = current_user.as_json(only: [:id, :email])				
-	end
+    if current_user
+      @current_user = current_user.as_json(only: [:id, :email, :registered], roles: current_user.general_roles_as_json)
+    else
+      @current_user = nil
+    end
+  end
+    			
 
   def console
    raise "hello there!"   

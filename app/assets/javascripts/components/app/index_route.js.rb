@@ -6,7 +6,8 @@ module Components
       
       def render
         t(:div, {},
-          t(Components::SpecificPages::Home, {})
+          t(Components::SpecificPages::Home, {}),
+          t(Components::ChatMessages::Index, {})
         )
       end
 

@@ -16,8 +16,13 @@ module Components
 
       def get_initial_state  
         if x = self.class.props_from_server.current_user
-          CurrentUser.user_instance = Model.parse(x)
-          CurrentUser.logged_in = true
+          registered = !!x.user.registered
+          x = `JSON.stringify(#{x.to_n})`
+          x = CurrentUser.user_instance = Model.parse(x)
+          x.attributes[:registered] = "true" if registered
+          if CurrentUser.user_instance.attributes[:registered]
+            CurrentUser.logged_in = true
+          end
         end
         {}
       end

@@ -18,7 +18,7 @@ module Perms
     end
 
     def create
-      if @current_user 
+      if @current_user && @current_user.registered
         
         self.arbitrary[:registered_user] = true
 

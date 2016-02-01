@@ -18,6 +18,12 @@ module SessionsHelper
     end
   end
 
+  def registered_current_user
+    if self.current_user && self.current_user.registered
+      self.current_user
+    end
+  end
+
   def logged_in?
     !current_user.nil?
   end

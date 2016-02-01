@@ -22,6 +22,8 @@ Rails.application.routes.draw do
 
     resources :roles, only: [:index]  
 
+    resources :chat_messages
+
     get "restricted_asset" => "faker#restricted_asset" 
 
     post "users/roles_feed" => "users#roles_feed"
@@ -56,6 +58,7 @@ Rails.application.routes.draw do
     namespace :appointment_scheduler do
       resources :appointments
       resources :users
+      resources :chat_messages
     end
 
 

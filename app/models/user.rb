@@ -152,6 +152,10 @@ class User < ActiveRecord::Base
   has_many :blogs
   has_many :pages
 
+  def general_roles_as_json
+    self.roles.where(resource_type: nil).select(:id, :name).as_json(only: [:id, :name])   
+  end
+
   has_many :appointment_availabilities
   #need to set self.class.artbitrary to {from: Date.iso8601, to: Date.iso8601}
   has_many :si_appointment_availabilities1apsindex, ->{select(:id, :user_id, :for_date, :map).
@@ -162,6 +166,11 @@ class User < ActiveRecord::Base
   has_many :appointments_as_doctor, class_name: 'Appointment', foreign_key: 'doctor_id'
 
   has_many :si_appointments_as_patient1id, ->{select(:id)},class_name: 'Appointment',foreign_key: 'patient_id'
+
+  has_many :chat_messages
+
+  has_many :chat_messages_as_recepient, class_name: 'ChatMessage', foreign_key: 'to_user'
+
 
   accepts_nested_attributes_for :avatar, allow_destroy: true, reject_if: :all_blank
   accepts_nested_attributes_for :profile, allow_destroy: true

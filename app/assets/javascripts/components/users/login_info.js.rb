@@ -7,7 +7,7 @@ module Components
 
       def get_initial_state
         {
-          logged_in: CurrentUser.logged_in,
+          logged_in: CurrentUser.logged_in, 
           current_user: CurrentUser.user_instance
         }
       end
