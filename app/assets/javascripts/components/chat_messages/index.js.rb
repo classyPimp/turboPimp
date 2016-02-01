@@ -4,30 +4,7 @@ module Components
       expose
 
       include Plugins::Formable
-      # STOPPED ON I<PLEMENTING POLLER
-      # class Poller
-
-      #   def set
-      #     @foo = %x{
-      #       setInterval(function(){ #{pri} }, 1000)
-      #     }
-      #   end
-
-      #   def stop
-      #     p 'stopping'
-      #     %x{
-      #       clearInterval(#{@foo})
-      #     }
-      #     p 'should stop'
-      #   end
-
-      #   def pri
-      #     p "polling goinfg"
-      #   end
-
-      # end
-
-
+      
       def get_initial_state
         {
           chat_messages: ModelCollection.new,
@@ -71,6 +48,27 @@ module Components
           alert 'server error occured'
           set_state form_model: state.form_model
         end
+      end
+
+      class MessagesPoller
+
+        def initialize(proc, rate)
+          @proc = proc
+          @rate = rate
+        end
+
+        def start
+          @interval = %x{
+            setInterval(function(){ #{pri} }, #{@rate})
+          }
+        end
+
+        def stop
+          %x{
+            clearInterval(#{@foo})
+          }
+        end
+
       end
 
     end
