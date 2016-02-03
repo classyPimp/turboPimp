@@ -5,6 +5,7 @@ require_tree "./plugins"
 require_tree "./models"
 require "./controllers/base_controller"
 require_tree "./controllers"
+require_tree "./services"
 require_tree "./components/shared"
 require_tree "./components"
 

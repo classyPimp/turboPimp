@@ -61,7 +61,9 @@ module Components
                 t(:br, {}),
                 t(:button, { onClick: ->{ init_user_appointment_schedulers_new } }, 'register patient'),
                 t(:br, {}),
-                t(:button, { onClick: ->{ init_user_appointment_schedulers_index } }, 'manage patients')
+                t(:button, { onClick: ->{ init_user_appointment_schedulers_index } }, 'manage patients'),
+                t(:br, {}),
+                t(:button, { onClick: ->{ init_appointment_schedulers_chat_messages_index } }, 'browse chats')
               ) 
             end
           ),
@@ -141,6 +143,10 @@ module Components
 
       def init_user_appointment_schedulers_index
         set_state current_control_component: Native(t(Components::AppointmentSchedulers::Users::Index))
+      end
+
+      def init_appointment_schedulers_chat_messages_index
+        set_state current_control_component: Native(t(Components::AppointmentSchedulers::ChatMessages::Index))
       end
 
 #*******************************    END ROLE APPOINTMENT_SCHEDULER

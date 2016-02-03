@@ -13,10 +13,34 @@
     end
 
     def index
-      serialize_on_success = 
+      @serialize_on_success = 
       {
         
       }
+    end
+
+    def appointment_scheduler_index
+      if @current_user and @current_user.has_role?(:appointment_scheduler)
+        @serialize_on_success = 
+        {
+          only: [:id, :registered],
+          include: 
+          [
+            {
+              chat_messages:
+              {
+                root: true
+              }
+            },
+            {
+              si_profile1name_phone_number:
+              {
+                root: true
+              }
+            }
+          ]
+        }
+      end
     end
 
   end

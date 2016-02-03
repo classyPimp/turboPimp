@@ -28,6 +28,7 @@ class User < Model
  
   has_one :profile, :avatar
   has_many :roles
+  has_many :chat_messages
   accepts_nested_attributes_for :profile, :avatar, :roles
 
   def responses_on_destroy_unregistered_user_with_proposals(r)

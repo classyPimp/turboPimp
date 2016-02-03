@@ -50,26 +50,7 @@ module Components
         end
       end
 
-      class MessagesPoller
-
-        def initialize(proc, rate)
-          @proc = proc
-          @rate = rate
-        end
-
-        def start
-          @interval = %x{
-            setInterval(function(){ #{pri} }, #{@rate})
-          }
-        end
-
-        def stop
-          %x{
-            clearInterval(#{@foo})
-          }
-        end
-
-      end
+      
 
     end
   end
