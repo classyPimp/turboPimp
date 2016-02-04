@@ -653,6 +653,10 @@ class ModelCollection
       @data << val
   end
 
+  def +(val)
+    @data + val
+  end
+
   def each(&block)
       @data.each(&block)
   end

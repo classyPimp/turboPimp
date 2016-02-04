@@ -23,6 +23,7 @@ Rails.application.routes.draw do
     resources :roles, only: [:index]  
 
     resources :chat_messages
+    post "chat_messages/poll" => "chat_messages#poll"
 
     get "restricted_asset" => "faker#restricted_asset" 
 
@@ -55,6 +56,7 @@ Rails.application.routes.draw do
 
     post 'appointment_scheduler/appointments/schedule_from_proposal' => 'appointment_scheduler/appointments#schedule_from_proposal'
     get 'appointment_scheduler/appointments/proposal_index' => 'appointment_scheduler/appointments#proposal_index'
+    post "appointment_scheduler/chat_messages/poll_index" => "appointment_scheduler/chat_messages#poll_index"
     namespace :appointment_scheduler do
       resources :appointments
       resources :users

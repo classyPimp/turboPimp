@@ -8,5 +8,10 @@ class ChatMessage < Model
   route "update", {put: "chat_messages/:id"}, {defaults: [:id]}
   route "Show", {get: "chat_messages/:id"}
   route "Edit", {get: "chat_messages/:id/edit"}
+  route "Poll_index", {post: "chat_messages/poll_index"}
+
+  def self.responses_on_poll_index(r)
+    self.responses_on_index(r)
+  end
 
 end  

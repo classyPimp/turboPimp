@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160201065212) do
+ActiveRecord::Schema.define(version: 20160204105823) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -103,9 +103,20 @@ ActiveRecord::Schema.define(version: 20160201065212) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.boolean  "read"
+    t.integer  "chat_id"
   end
 
+  add_index "chat_messages", ["chat_id"], name: "index_chat_messages_on_chat_id", using: :btree
   add_index "chat_messages", ["user_id"], name: "index_chat_messages_on_user_id", using: :btree
+
+  create_table "chats", force: :cascade do |t|
+    t.integer  "chat_messages_count"
+    t.datetime "created_at",          null: false
+    t.datetime "updated_at",          null: false
+    t.integer  "user_id"
+  end
+
+  add_index "chats", ["user_id"], name: "index_chats_on_user_id", using: :btree
 
   create_table "friendly_id_slugs", force: :cascade do |t|
     t.string   "slug",                      null: false
@@ -211,7 +222,9 @@ ActiveRecord::Schema.define(version: 20160201065212) do
   add_foreign_key "appointments", "users"
   add_foreign_key "avatars", "users"
   add_foreign_key "blogs", "users"
+  add_foreign_key "chat_messages", "chats"
   add_foreign_key "chat_messages", "users"
+  add_foreign_key "chats", "users"
   add_foreign_key "images", "users"
   add_foreign_key "menu_items", "menu_items"
   add_foreign_key "pages", "users"

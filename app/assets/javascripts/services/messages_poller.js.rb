@@ -14,8 +14,9 @@ module Services
     end
 
     def stop
+      p "stopping #{self.class.name} #{self} "
       %x{
-        clearInterval(#{@foo})
+        clearInterval(#{@interval})
       }
     end
 
