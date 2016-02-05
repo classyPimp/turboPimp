@@ -20,10 +20,23 @@
       cmpsr = ComposerFor::User::Unregistered::CreateVisitor.new(@controller)
       cmpsr.when(:ok) do |user|
         @current_user = user
-        prepare_attributes
+        check_if_chat_exists_or_create
       end
       cmpsr.run
     else
+      check_if_chat_exists_or_create
+    end
+  end
+
+  def check_if_chat_exists_or_create  
+    chat = Chat.find_by(user_id: @current_user.id)
+    if chat
+      @chat = chat
+      prepare_attributes
+    else
+      @chat = Chat.new
+      @chat.user = @current_user
+      @chat.save
       prepare_attributes
     end
   end
@@ -31,6 +44,7 @@
   def prepare_attributes
     @chat_message.attributes = @permitted_attributes
     @chat_message.user = @current_user
+    @chat_message.chat_id = @chat.id
   end
 
   def compose

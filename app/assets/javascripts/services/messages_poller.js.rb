@@ -4,10 +4,11 @@ module Services
     def initialize(rate, &block)
       @proc = block
       @rate = rate
+      @running = false
     end
 
     def start
-      p 'started'
+      @running = true
       @interval = %x{
         setInterval(function(){ #{ @proc.call } }, #{@rate})
       }
@@ -18,6 +19,7 @@ module Services
       %x{
         clearInterval(#{@interval})
       }
+      @running = false
     end
 
   end

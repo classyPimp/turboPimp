@@ -1,5 +1,5 @@
 class User < ActiveRecord::Base
-
+  
   include Services::CustomErrorable
 
   DEFAULT_PASSWORD = '123456'
@@ -166,6 +166,8 @@ class User < ActiveRecord::Base
   has_many :appointments_as_doctor, class_name: 'Appointment', foreign_key: 'doctor_id'
 
   has_many :si_appointments_as_patient1id, ->{select(:id)},class_name: 'Appointment',foreign_key: 'patient_id'
+
+  has_many :chats
 
   has_many :chat_messages
 

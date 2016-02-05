@@ -9,14 +9,15 @@ module Components
 
         def get_initial_state
           {
-            form_model: ChatMessage.new
+            form_model: ChatMessage.new(chat_id: props.chat.id)
           }
         end
 
         def render
+          p state.form_model.pure_attributes
           t(:div, {}, 
-            t(:p, {}, "user: #{props.user.id}"),
-            *splat_each(props.messages) do |message|
+            t(:p, {}, "user: #{props.chat.user.id}"),
+            *splat_each(props.chat.chat_messages) do |message|
               t(:p, {}, message.text)
             end,
             input(Forms::Input, state.form_model, :text),

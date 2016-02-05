@@ -23,7 +23,7 @@ Rails.application.routes.draw do
     resources :roles, only: [:index]  
 
     resources :chat_messages
-    post "chat_messages/poll" => "chat_messages#poll"
+    post "chat_messages/poll_index" => "chat_messages#poll_index"
 
     get "restricted_asset" => "faker#restricted_asset" 
 

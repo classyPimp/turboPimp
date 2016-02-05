@@ -16,7 +16,7 @@ class ComposerFor::AppointmentScheduler::ChatMessages::Create
 
   def prepare_attributes
     @chat_message.attributes = @permitted_attributes
-    @chat_message.user = current_user.id
+    @chat_message.user = @current_user
     @chat_message.read = true
   end
 

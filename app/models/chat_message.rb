@@ -10,6 +10,4 @@ class ChatMessage < ActiveRecord::Base
 
   #============ END ASSOCIATIONS =======
 
-
-
 end

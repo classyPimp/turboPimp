@@ -7,22 +7,28 @@ module Components
       
       def get_initial_state
         {
-          chat_messages: ModelCollection.new,
+          chat: Chat.new,
           form_model: ChatMessage.new
         }
       end
 
       def component_did_mount
         if CurrentUser.user_instance.id
-          ChatMessage.index.then do |chat_messages|
-            set_state chat_messages: chat_messages
+          ChatMessage.index.then do |chat|
+            if chat
+              set_state chat: chat  
+            else
+              p "is empty: #{chat}"
+              return
+            end
+            
           end
         end
       end
 
       def render
         t(:div, {},
-          *splat_each(state.chat_messages) do |message|
+          *splat_each(state.chat.chat_messages) do |message|
             t(:p, {}, "#{message.text} : #{message.attributes[:created_at]}")
           end,
           input(Forms::Input, state.form_model, :text),
@@ -38,15 +44,40 @@ module Components
             if model.has_errors?
               set_state form_model: model
             else
-              CurrentUser.user_instance.id = model.user_id
-              state.chat_messages << model
-              set_state chat_messages: state.chat_messages, form_model: ChatMessage.new
+              set_state form_model: ChatMessage.new
+              @last_message_id = model.id
+              start_polling unless @message_poller
             end
 
           end
         else
           alert 'server error occured'
           set_state form_model: state.form_model
+        end
+      end
+
+      def start_polling
+        @message_poller = Services::MessagesPoller.new(3000) do
+          ChatMessage.poll_index(payload: {last_id: @last_message_id}).then do |messages_and_users|
+            begin
+            self.update_messages(messages_and_users)
+            rescue Exception => e
+              p e
+            end
+          end
+        end
+        @message_poller.start
+      end
+
+      def component_will_unmount
+        @message_poller.stop if @message.poller
+      end
+
+      def update_messages(messages_and_users)
+        if messages_and_users[:messages] && messages_and_users[:messages].length > 0
+          @last_message_id = messages_and_users.messages
+          state.chat.chat_messages = state.chat.chat_messages + messages.data
+          set_state chat: state.chat
         end
       end
 

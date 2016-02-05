@@ -1,6 +1,6 @@
 class ChatMessagesController < ApplicationController
 
-  def create
+  def create  
 
     perms_for ChatMessage
     auth! @perms
@@ -25,10 +25,26 @@ class ChatMessagesController < ApplicationController
     
     perms_for ChatMessage
     auth! @perms
+    if current_user
+      @chat = Chat.where(user_id: current_user.id)
+    else
+      @chat = []
+    end
 
-    @chat_messages = ChatMessage.where(user_id: current_user.id)
+    render json: @chat[0].as_json(@perms.serialize_on_success)
 
-    render json: @chat_messages.as_json(@perms.serialize_on_success)
+  end
+
+  def poll_index
+    perms_for ChatMessage
+    auth! @perms
+
+    @chat_messages = ChatMessage.where('id > ? and user_id = ?', params[:last_id], current_user.id)
+    @user_ids_to_query = @chat_messages.map(&:user_id)
+    @user_ids_to_query = @user_ids_to_query.uniq - [current_user.id]
+    @users = User.where('id in (?)', @user_ids_to_query).select(:id).includes(:si_profile1id_name)
+
+    render json: {users: @users.as_json(include: [si_profile1id_name: {root: true}]), chat_messages: @chat_messages.as_json}
 
   end
 
