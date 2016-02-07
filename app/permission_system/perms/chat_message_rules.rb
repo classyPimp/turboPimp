@@ -1,4 +1,4 @@
- module Perms      
+module Perms      
   class ChatMessageRules < Perms::Base
 
     def create

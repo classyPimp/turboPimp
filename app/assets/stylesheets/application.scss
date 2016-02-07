@@ -15,6 +15,20 @@
  *= require_tree .
  *= require_self
  */
+
+/*client_chat_messsage_box*/
+
+
+
+
+.client_chat_message_box {
+  position: fixed;
+  bottom: 0;
+  right: 0;
+}
+
+
+
 /*jumbotron*/
 
 div.jumbotron {

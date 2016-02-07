@@ -1,7 +1,8 @@
 class Blog < Model
 
-  attributes :id, :body, :title, :user, :user_id,
+  attributes :id, :body, :title, :user_id,
              :m_title, :m_description, :m_keywords, :slug, :published, :published_at
+  has_one :user
 
   route "create", post: "blogs"
   route "Index", get: "blogs"
@@ -12,7 +13,14 @@ class Blog < Model
 
   route "Last_ten", {get: "blogs/last_ten"}
 
+  route "Index_for_group_list", {get: "blogs/index_for_group_list"}
+
   route "toggle_published", {put: "blogs/toggle_published"}
+
+  def self.responses_on_index_for_group_list(r)
+    self.responses_on_index(r)
+  end
+
   def self.responses_on_last_ten(r)
     if r.response.ok?
       collection = Model.parse(r.response.json)

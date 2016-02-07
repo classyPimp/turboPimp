@@ -670,7 +670,7 @@ class ModelCollection
   end
 
   def +(value)
-    @data += value
+    @data + value
     self
   end
 

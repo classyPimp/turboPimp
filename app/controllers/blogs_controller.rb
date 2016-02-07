@@ -22,6 +22,40 @@ class BlogsController < ApplicationController
     auth! @perms
     render json: @perms.model
   end
+
+  def index_for_group_list
+    @blogs = Blog.published.last(5).reverse
+    render json: @blogs.as_json(
+      include: 
+      {
+        si_user1id: 
+        {
+          root: true,
+          include: 
+          [ 
+            {
+              si_profile1id_name:
+              {
+                root: true
+              }
+            },
+            {
+              avatar:
+              {
+                root: true,
+                only: [:id],
+                methods: 
+                [
+                  :url
+                ]
+              }
+            }
+          ]
+        }
+      }
+
+    )
+  end
    
   def edit 
 
@@ -54,5 +88,7 @@ class BlogsController < ApplicationController
       render  json: @blog.as_json
     end
   end
+
+
   
 end

@@ -19,7 +19,7 @@ class AppointmentScheduler::ChatMessagesController < ApplicationController
 
     Chat.arbitrary[:last_id_for_polling] = params[:last_id]
     
-    @chats = Chat.joins(:chat_messages).where('chat_messages.id > ?', params[:last_id]).includes({si_user1id_email_registered: [:si_profile1id_name]}, :si_chat_messages1after_id)
+    @chats = Chat.joins(:chat_messages).where('chat_messages.id > ?', params[:last_id]).includes([{si_user1id_email_registered: [:si_profile1id_name]}, :si_chat_messages1after_id])
 
     render json: @chats.as_json(@perms.serialize_on_success)
 

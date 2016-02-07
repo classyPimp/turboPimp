@@ -39,6 +39,7 @@ module Components
           t(:div, {},
             children
           ),
+          t(Components::ChatMessages::Index, {}),
           modal
         )
       end

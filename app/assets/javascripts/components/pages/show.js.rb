@@ -19,7 +19,7 @@ module Components
       end
 
       def render
-        t(:div, {},
+        t(:div, {className: 'center-block'},
           spinner,
           if state.page
             t(:div, {},

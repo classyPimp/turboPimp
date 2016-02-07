@@ -24,6 +24,7 @@ class Blog < ActiveRecord::Base
 
 #ASSOCIATIONS  
   belongs_to :user
+  belongs_to :si_user1id, ->{select(:id)}, class_name: 'User', foreign_key: 'user_id' 
   has_one :author, ->{select(:user_id, :name)}, through: :user, source: :profile
   scope :published, ->{where(published: true)}
 

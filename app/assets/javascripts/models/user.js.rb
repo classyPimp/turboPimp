@@ -26,10 +26,16 @@ class User < Model
 
   route 'destroy_unregistered_user_with_proposals', {delete: 'users/destroy_unregistered_user_with_proposals/:id'}, {defaults: [:id]}
  
+  route 'Index_doctors_for_group_list', {get: 'users/index_doctors_for_group_list'}
+
   has_one :profile, :avatar
   has_many :roles
   has_many :chat_messages
   accepts_nested_attributes_for :profile, :avatar, :roles
+
+  def self.responses_on_index_doctors_for_group_list(r)
+    self.responses_on_index(r)
+  end
 
   def responses_on_destroy_unregistered_user_with_proposals(r)
     self.responses_on_destroy(r)

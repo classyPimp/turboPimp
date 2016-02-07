@@ -1,6 +1,6 @@
 class Chat < Model
 
-  attributes :id, :user_id
+  attributes :id, :user_id, :user
   has_many :chat_messages
   has_one :user
 

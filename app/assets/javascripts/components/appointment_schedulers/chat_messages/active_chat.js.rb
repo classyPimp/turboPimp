@@ -34,6 +34,7 @@ module Components
                 set_state form_model: model
               else
                 emit(:on_message_sent, model)
+                state.form_model.text = ''
               end
 
             end
