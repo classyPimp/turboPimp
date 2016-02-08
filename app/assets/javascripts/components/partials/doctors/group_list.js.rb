@@ -20,7 +20,8 @@ module Components
         def render
           t(:div, {className: 'list-group'},
             t(:p, {className: 'list-group-item'}, 
-              'our doctors'
+              'our doctors',
+              t(:button, {}, link_to('browse doctors', '/personnel'))
             ), 
             *splat_each(state.users) do |user|
               t(:div, {className: 'list-group-item'}, 
@@ -29,7 +30,8 @@ module Components
 
                   )
                 end,
-                t(:p, {}, user.profile.name)
+                t(:p, {}, user.profile.name),
+                t(:button, {}, link_to('more details', "/personnel/#{user.id}"))
               )
             end
           )

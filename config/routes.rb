@@ -52,7 +52,9 @@ Rails.application.routes.draw do
 
     post "doctor/users/doctors_feed" => "doctor/users#doctors_feed"
     get "doctor/users/index_doctors_for_group_list" => 'doctor/users#index_doctors_for_group_list'
+    get "doctor/users/doctor_index" => 'doctor/users#doctor_index'
     namespace :doctor do
+      resources :users
       resources :appointments
     end
 

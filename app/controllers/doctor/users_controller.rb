@@ -24,4 +24,30 @@ class Doctor::UsersController < ApplicationController
 
   end
 
+  def show
+    @user = User.joins(:roles).where('roles.name = ?', 'doctor').select(:id).find(params[:id])
+
+    render json: @user.as_json(
+      include:
+      [
+        {
+          avatar:
+          {
+            root: true,
+            only: [:id],
+            methods: [:url]
+          }
+        },
+        {
+          si_profile1id_name_bio:
+          {
+            root: true
+          }
+        }
+      ] 
+    )
+
+  end
+
+
 end

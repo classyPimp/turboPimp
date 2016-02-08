@@ -70,9 +70,13 @@ module Components
 
             t(`Route`, {path: "forbidden", component: Components::App::Forbidden.create_class}),
 
-            t(`Route`, {path: "test", component: Components::Users::New.create_class}),
+            t(`Route`, {path: "test", component: Components::Dummy::A.create_class}),
 
             t(`Route`, {path: "calendar", component: Calendar.create_class}),
+
+            t(`Route`, {path: '/personnel', component: Components::Doctors::Index.create_class},
+              t(`Route`, {path: ':id', component: Components::Doctors::Show.create_class})
+            ),
 
             
             t(`Route`, {path: "404", component: Components::App::NotFound.create_class}), 
