@@ -21,6 +21,8 @@ module Components
           t(`Route`, {path: "/", component: Components::App::Main.create_class},
             t(`IndexRoute`, {component: Components::App::IndexRoute.create_class}),
 
+            t(`Route`, {path: 'contacts', component: Components::SpecificPages::Contacts.create_class}),
+
             t(`Route`, {path: "/users", component: Users::Main.create_class}, 
               t(`Route`, {path: "signup", component: Users::SignUp.create_class }),
               t(`Route`, {path: "activations", component: Users::Activations.create_class}),

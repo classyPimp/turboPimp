@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160205053223) do
+ActiveRecord::Schema.define(version: 20160209080452) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -119,6 +119,13 @@ ActiveRecord::Schema.define(version: 20160205053223) do
 
   add_index "chats", ["user_id"], name: "index_chats_on_user_id", using: :btree
 
+  create_table "foo_bars", force: :cascade do |t|
+    t.text     "foo"
+    t.text     "bar"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "friendly_id_slugs", force: :cascade do |t|
     t.string   "slug",                      null: false
     t.integer  "sluggable_id",              null: false
@@ -170,6 +177,23 @@ ActiveRecord::Schema.define(version: 20160205053223) do
 
   add_index "pages", ["slug"], name: "index_pages_on_slug", unique: true, using: :btree
   add_index "pages", ["user_id"], name: "index_pages_on_user_id", using: :btree
+
+  create_table "price_categories", force: :cascade do |t|
+    t.text     "name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "price_items", force: :cascade do |t|
+    t.integer  "price_category_id"
+    t.text     "name"
+    t.decimal  "price",             precision: 6, scale: 2
+    t.text     "details"
+    t.datetime "created_at",                                null: false
+    t.datetime "updated_at",                                null: false
+  end
+
+  add_index "price_items", ["price_category_id"], name: "index_price_items_on_price_category_id", using: :btree
 
   create_table "profiles", force: :cascade do |t|
     t.integer  "user_id"
@@ -229,5 +253,6 @@ ActiveRecord::Schema.define(version: 20160205053223) do
   add_foreign_key "images", "users"
   add_foreign_key "menu_items", "menu_items"
   add_foreign_key "pages", "users"
+  add_foreign_key "price_items", "price_categories"
   add_foreign_key "profiles", "users"
 end

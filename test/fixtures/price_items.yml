@@ -1,0 +1,13 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  price_category_id: 
+  name: MyText
+  price: 
+  details: MyText
+
+two:
+  price_category_id: 
+  name: MyText
+  price: 
+  details: MyText
