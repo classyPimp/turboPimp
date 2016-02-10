@@ -1,11 +1,11 @@
 class ModelValidator::Admin::PriceCategory::Create
 
-  def self.validate!(appointment)
-    self.new(appointment).validate!    
+  def self.validate!(price_category)
+    self.new(price_category).validate!    
   end
 
-  def initialize(appointment)
-    @model = appointment
+  def initialize(price_category)
+    @model = price_category
   end
 
   def validate!

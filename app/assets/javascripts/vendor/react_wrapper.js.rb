@@ -40,7 +40,11 @@ class RW
     assign_controller
     #validate props.
     #decided to user this for props validation, the validate_props should be implemented the way you want.
-    validate_props if self.respond_to?(:validate_props)
+    validate_props
+  end
+
+  def validate_props
+    
   end
 
   def assign_controller

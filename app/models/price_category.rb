@@ -7,5 +7,5 @@ class PriceCategory < ActiveRecord::Base
   has_many :price_items
 
   #====================== END ASSOCITAIONS =============
-
+  
 end

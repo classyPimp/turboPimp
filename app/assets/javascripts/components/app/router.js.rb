@@ -48,9 +48,6 @@ module Components
             ),
 
             t(`Route`, {path: "/admin", component: Components::Admin::Main.create_class, onEnter: ->(n, r, cb){check_role(n, r, cb, [:admin])}},
-              # t(`Route`, {path: "dashboards", component: Components::Admin::Dashboards::Main.create_class},
-              #   t(`Route`, {path: "general", component: Components::Admin::Dashboards::General.create_class})
-              # ),
               t(`Route`, {path: "users/:id/edit", component: Components::Admin::Users::Edit.create_class})
             ),
 

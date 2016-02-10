@@ -30,7 +30,9 @@ module Components
                 t(:br, {}),
                 t(:button, {onClick: ->{init_pages_new}}, "create new page"),
                 t(:br, {}),
-                t(:button, {onClick: ->{init_pages_index}}, "list and search for pages" )
+                t(:button, {onClick: ->{init_pages_index}}, "list and search for pages" ),
+                t(:br, {}),
+                t(:button, {onClick: ->{init_prices_index}}, 'browse and edit price list')
               )
             end,
             if state.current_user.has_role? [:blogger]
@@ -98,6 +100,10 @@ module Components
       def init_pages_index
         set_state current_control_component: Native(t(Components::Pages::Index, {as_admin: true, location: props.location,
                                                                                  history: props.history}))
+      end
+
+      def init_prices_index
+        set_state current_control_component: Native(t(Components::Admin::Prices::Index.create_class))
       end
 
       

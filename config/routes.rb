@@ -36,6 +36,8 @@ Rails.application.routes.draw do
     namespace :admin do
       resources :users
       resources :pages
+      resources :price_categories
+      resources :price_items
     end
 
     namespace :blogger do
