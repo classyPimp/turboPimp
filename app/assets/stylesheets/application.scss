@@ -88,4 +88,21 @@ div.jumbotron {
   width: 80%; 
 }
 
+$color: black;
+
+div {
+  color: $color;
+}
+
+.client_chat_message_box {
+  height: 10rem;
+  
+  p {
+    margin: 0rem;
+  }
+
+  button {
+    margin-top: 1rem;
+  }
+}
 

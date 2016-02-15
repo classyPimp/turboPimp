@@ -4,7 +4,7 @@ class PriceCategory < ActiveRecord::Base
 
   #====================== ASSOCIATIONS =================
 
-  has_many :price_items
+  has_many :price_items, dependent: :destroy
 
   #====================== END ASSOCITAIONS =============
   

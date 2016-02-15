@@ -19,7 +19,7 @@ class ModelValidator::Admin::PriceItem::Create
   end
 
   def validate_name
-    
+
     if @model.name.blank?
       @model.custom_errors[:name] = 'name of category should be provided' and return
     end
@@ -32,12 +32,10 @@ class ModelValidator::Admin::PriceItem::Create
       @model.custom_errors[:price] = 'price must be set' and return
     end
     
-    unless @attributes_that_were_assigned["price"].try(:to_i).is_a?(Integer)
-      @model.custom_errors[:price] = 'price should be a number'
-    end
-
-    if !@model.price.try(:to_i).is_a?(Integer)
-      @model.custom_errors[:price] = 'price should be a number'
+    begin
+      Float(@attributes_that_were_assigned['price']) 
+    rescue ArgumentError
+      @model.custom_errors[:price] = 'price must be a number' and return
     end
 
   end

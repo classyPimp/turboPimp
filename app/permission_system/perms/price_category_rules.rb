@@ -30,6 +30,12 @@ module Perms
         }
       end
     end
-      
+    
+    def admin_destroy
+      if @current_user && @current_user.has_role?(:admin)
+        true
+      end
+    end
+
   end
 end

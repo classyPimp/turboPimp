@@ -21,4 +21,19 @@ class Admin::PriceItemsController < ApplicationController
 
   end
 
+  def destroy
+    
+    perms_for PriceItem
+    auth! @perms.admin_destroy
+
+    @price_item = PriceItem.find(params['id'])
+
+    if @price_item.destroy
+      render json: @price_item.as_json()
+    else
+      head 500
+    end
+
+  end
+
 end

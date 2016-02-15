@@ -32,4 +32,19 @@ class Admin::PriceCategoriesController < ApplicationController
 
   end
 
+  def destroy
+    
+    perms_for PriceCategory
+    auth! @perms.admin_destroy
+
+    @price_category = PriceCategory.find(params[:id])
+
+    if @price_category.destroy
+      render json: @price_category.as_json
+    else
+      head 500
+    end
+
+  end
+
 end
