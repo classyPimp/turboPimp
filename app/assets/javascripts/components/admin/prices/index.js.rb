@@ -1,4 +1,4 @@
-module Components
+module Components 
   module Admin
     module Prices
       class Index < RW

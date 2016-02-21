@@ -13,11 +13,11 @@ module Helpers
     
     
   #### REACT ROUTER HELPERS
-    def link_to(body, link, options = {})
+    def link_to(body, link, options = {}, extra_options = {})
      if block_given?
       body = yield
      end
-      t(`Link`, {to: link, query: options.to_n}, body)    
+      t(`Link`, {to: link, query: options.to_n}.merge(extra_options), body)    
     end
 
     def route(options, *args)

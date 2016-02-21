@@ -96,9 +96,7 @@ module Components
         p e
       end
 
-      end
-
-      
+      end      
 
     end
   end

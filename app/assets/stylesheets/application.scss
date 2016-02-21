@@ -36,7 +36,10 @@ div.jumbotron {
   background: -webkit-linear-gradient(-45deg,  rgba(171,211,238,0.63) 0%,rgba(171,211,238,0.72) 23%,rgba(171,211,238,0.73) 27%,rgba(137,195,235,0.85) 59%,rgba(213,235,251,1) 100%);
   background: linear-gradient(135deg,  rgba(171,211,238,0.63) 0%,rgba(171,211,238,0.72) 23%,rgba(171,211,238,0.73) 27%,rgba(137,195,235,0.85) 59%,rgba(213,235,251,1) 100%);
   filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#a1abd3ee', endColorstr='#d5ebfb',GradientType=1 );
-
+  
+  h1 {
+    color: #b3b3b3;
+  }
 }
 
  /*spinner*/
@@ -105,4 +108,67 @@ div {
     margin-top: 1rem;
   }
 }
+
+/*pages_show*/
+
+.pages_show {
+  margin: 0 2rem;
+
+  .pages_show_content {
+    color: red;
+    border-right-style: solid;
+    border-left-style: solid;
+    border-width: 1px;
+    border-color: #D8EAF0; 
+    padding: 0 2rem;
+    margin: auto;
+    text-align: justify;
+
+    h1 {
+      border: 1px solid #D8EAF0;
+      border-radius: 10px;
+      padding-left: 4rem;
+    }
+
+  }
+
+} 
+
+/*menu_index*/
+
+.menu_index {
+
+  font-size: larger;
+
+  .navbar-brand {
+    padding-left: 4rem;
+  }
+  /*link group that comes after login/logout buttons*/
+  .after_login_info {
+    margin-left: 5rem;
+  }
+  
+  li:hover {
+    color: red;
+    background-color: #b3e6ff;
+  }
+
+  li {
+    border-right-style: solid;
+    border-width: 2px;
+    border-right-color: black;
+  }
+
+  /*login_info (login/logout buton group)*/
+
+  .login_info {
+
+    button {
+      margin-left: 1rem;
+    }
+
+  }
+
+}
+
 

@@ -1,0 +1,123 @@
+/*
+ * This is a manifest file that'll be compiled into application.css, which will include all the files
+ * listed below.
+ *
+ * Any CSS and SCSS file within this directory, lib/assets/stylesheets, vendor/assets/stylesheets,
+ * or any plugin's vendor/assets/stylesheets directory can be referenced here using a relative path.
+ *
+ * You're free to add application-wide styles to this file and they'll appear at the bottom of the
+ * compiled file so the styles you add here take precedence over styles defined in any styles
+ * defined in the other CSS/SCSS files in this directory. It is generally better to create a new
+ * file per style scope.
+ *
+ *= requre bootstrap
+ *= require bootstrap-theme
+ *= require_tree .
+ *= require_self
+ */
+/*client_chat_messsage_box*/
+.client_chat_message_box {
+  position: fixed;
+  bottom: 0;
+  right: 0; }
+
+/*jumbotron*/
+div.jumbotron {
+  background: -moz-linear-gradient(-45deg, rgba(171, 211, 238, 0.63) 0%, rgba(171, 211, 238, 0.72) 23%, rgba(171, 211, 238, 0.73) 27%, rgba(137, 195, 235, 0.85) 59%, #d5ebfb 100%);
+  background: -webkit-linear-gradient(-45deg, rgba(171, 211, 238, 0.63) 0%, rgba(171, 211, 238, 0.72) 23%, rgba(171, 211, 238, 0.73) 27%, rgba(137, 195, 235, 0.85) 59%, #d5ebfb 100%);
+  background: linear-gradient(135deg, rgba(171, 211, 238, 0.63) 0%, rgba(171, 211, 238, 0.72) 23%, rgba(171, 211, 238, 0.73) 27%, rgba(137, 195, 235, 0.85) 59%, #d5ebfb 100%);
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#a1abd3ee', endColorstr='#d5ebfb',GradientType=1 ); }
+  div.jumbotron h1 {
+    color: #b3b3b3; }
+
+/*spinner*/
+.cssload-container {
+  width: 100%;
+  height: 12px;
+  text-align: center; }
+
+.cssload-speeding-wheel {
+  width: 10px;
+  height: 10px;
+  margin: 0 auto;
+  border: 3px solid #1515eb;
+  border-radius: 50%;
+  border-left-color: transparent;
+  border-right-color: transparent;
+  animation: cssload-spin 800ms infinite linear;
+  -o-animation: cssload-spin 800ms infinite linear;
+  -ms-animation: cssload-spin 800ms infinite linear;
+  -webkit-animation: cssload-spin 800ms infinite linear;
+  -moz-animation: cssload-spin 800ms infinite linear; }
+
+@keyframes cssload-spin {
+  100% {
+    transform: rotate(360deg);
+    transform: rotate(360deg); } }
+@-o-keyframes cssload-spin {
+  100% {
+    -o-transform: rotate(360deg);
+    transform: rotate(360deg); } }
+@-ms-keyframes cssload-spin {
+  100% {
+    -ms-transform: rotate(360deg);
+    transform: rotate(360deg); } }
+@-webkit-keyframes cssload-spin {
+  100% {
+    -webkit-transform: rotate(360deg);
+    transform: rotate(360deg); } }
+@-moz-keyframes cssload-spin {
+  100% {
+    -moz-transform: rotate(360deg);
+    transform: rotate(360deg); } }
+/*MODAL*/
+.modal .modal-dialog {
+  width: 80%; }
+
+div {
+  color: black; }
+
+.client_chat_message_box {
+  height: 10rem; }
+  .client_chat_message_box p {
+    margin: 0rem; }
+  .client_chat_message_box button {
+    margin-top: 1rem; }
+
+/*pages_show*/
+.pages_show {
+  margin: 0 2rem; }
+  .pages_show .pages_show_content {
+    color: red;
+    border-right-style: solid;
+    border-left-style: solid;
+    border-width: 1px;
+    border-color: #D8EAF0;
+    padding: 0 2rem;
+    margin: auto;
+    text-align: justify; }
+    .pages_show .pages_show_content h1 {
+      border: 1px solid #D8EAF0;
+      border-radius: 10px;
+      padding-left: 4rem; }
+
+/*menu_index*/
+.menu_index {
+  font-size: larger;
+  /*link group that comes after login/logout buttons*/
+  /*login_info (login/logout buton group)*/ }
+  .menu_index .navbar-brand {
+    padding-left: 4rem; }
+  .menu_index .after_login_info {
+    margin-left: 5rem; }
+  .menu_index li:hover {
+    color: red;
+    background-color: #b3e6ff; }
+  .menu_index li {
+    border-right-style: solid;
+    border-width: 2px;
+    border-right-color: black; }
+  .menu_index .login_info button {
+    margin-left: 1rem; }
+
+/*# sourceMappingURL=application.css.map */

@@ -29,7 +29,7 @@ module Components
       
       def render
         if state.menu
-          t(:nav, {className: "navbar navbar-default"},
+          t(:nav, {className: "navbar navbar-default menu_index"},
             t(:div, {className: "container-fluid"},
               t(:div, {className: "navbar-header"},
                 t(:button, {type: "button", className: "navbar-toggle collapsed",
@@ -39,15 +39,12 @@ module Components
                   t(:span, {className: "icon-bar"}),
                   t(:span, {className: "icon-bar"})
                 ),
-                link_to("home", "/")
+                link_to("HOME", "/", {}, {className: 'navbar-brand'})
               ),
-              t(:form, {className: "navbar-form navbar-left"},
-                t(:ul, {},
-                  t(Components::Users::LoginInfo, {})
-                )
-              ),
+
               t(:div, {className: "collapse navbar-collapse #{state.collapsed ? "in" : ""}"},
-                t(:ul, {className: "nav navbar-nav navbar-right"},
+                t(Components::Users::LoginInfo, {}),
+                t(:ul, {className: "nav navbar-nav after_login_info"},
                   *splat_each(state.menu.menu_items) do |menu_item|
                     if menu_item.menu_items.empty?
                       t(:li, {}, 

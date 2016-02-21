@@ -51,6 +51,8 @@ module Components
               t(`Route`, {path: "users/:id/edit", component: Components::Admin::Users::Edit.create_class})
             ),
 
+            t(`Route`, {path: "price_list", component: Components::PriceList::Index.create_class}),
+
             t(`Route`, {path: "/blogs", component: Components::Blogs::Main.create_class},
               t(`Route`, {path: "index", component: Components::Blogs::Index.create_class}),
               # t(`Route`, {path: "new", component: Components::Blogs::New.create_class}),

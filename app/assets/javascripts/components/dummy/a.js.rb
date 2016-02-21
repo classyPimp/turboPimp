@@ -3,24 +3,46 @@ module Components
     class A < RW
       expose
 
+      def init
+        @top = 0
+        @left = 0
+        @tooltip_counter = 0
+      end
+
       def get_initial_state
         {
-          num: 0
+          tool_tips: {}
         }
       end
 
       def render
-        t(:div, {},
-          t(:div, {ref: "map_embed"}, 
-
+        t(:div, {}, 
+          t(:button, {onClick: ->(e){open_tooltip(e)}}, 
+            'press for tooltip'
           ),
-          t(:p, {onClick: ->{set_state num: state.num}}, "#{state.num}")
-        )
+          t(:p, {}, "hello"),
+          *splat_each(state.tool_tips) do |k , v|
+            v.call
+          end
+        )               
       end
 
-      def component_did_mount
-        el = Element.find(ref(:map_embed).to_n)
-        el.html = '<iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2905.8966068706877!2d76.92578854289161!3d43.25358868524766!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x38836eb72522ceb1%3A0xbdd6c324052ca884!2sTole+Bi+St+96%2C+Almaty!5e0!3m2!1sen!2skz!4v1454927415870" width="600" height="450" frameborder="0" style="border:0" allowfullscreen></iframe>'
+      def open_tooltip(e)
+        rect = Native(e).target.getBoundingClientRect()
+        tp = create_tooltip(rect.bottom, rect.left)
+        state.tool_tips[@tooltip_counter] = create_tooltip(rect.bottom, rect.left)
+        @tooltip_counter += 1
+        set_state tooltip: state.tool_tips
+      end
+
+      def create_tooltip(top, left)
+        count = "#{@tooltip_counter}".to_i
+        ->{t(:p, {onClick: ->{delete_tooltip(count)}, style: {position: 'absolute', top: top, left: left, zIndex: 1}.to_n}, "this is tooltip")}
+      end
+
+      def delete_tooltip(key)
+        state.tool_tips.delete(key)
+        set_state tool_tips: state.tool_tips
       end
 
     end

@@ -32,19 +32,33 @@ module Components
         set_state current_user: user
         set_state logged_in: false
       end
-      
+        
+        # t(:form, {className: "navbar-form navbar-left"},
+        #   t(:ul, {},
+        #     t(Components::Users::LoginInfo, {})
+        #   )
+        # ),
+
+
       def render
-        t(:div, {}, 
+        t(:span, {className: 'login_info'}, 
           *if state.logged_in
-            [
-              link_to("my account", "/users/dashboard"),
-              "|",
-              t(:a, {onClick: ->(){logout_user}, style: {cursor: "pointer"}.to_n }, "logout")
-            ]
+            t(:span, {className: "nav navbar-nav navbar-left"},
+              link_to("", "/users/dashboard") do
+                t(:button, {className: 'btn btn-default navbar-btn'}, 'my account')
+              end,
+              link_to("", "/users/signup") do
+                t(:button, {className: 'btn btn-default navbar-btn', onClick: ->(){logout_user}, style: {cursor: "pointer"}.to_n}, 'logout')
+              end
+            )
           else
-            t(:div, {}, 
-              link_to("Login  |  ", "/users/login"),
-              t(:span, {}, link_to(" signup", "/users/signup"))
+            t(:span, {className: "nav navbar-nav navbar-left"},
+              link_to("", "/users/login") do
+                t(:button, {className: 'btn btn-default navbar-btn'}, 'login')
+              end,
+              link_to("", "/users/signup") do
+                t(:button, {className: 'btn btn-default navbar-btn'}, 'signup')
+              end
             )
           end
         )

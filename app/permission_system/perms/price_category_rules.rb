@@ -30,6 +30,21 @@ module Perms
         }
       end
     end
+
+    def index
+      @serialize_on_success = 
+      {
+        include: 
+        [
+          {
+            price_items:
+            {
+              root: true
+            }
+          }
+        ]
+      }
+    end
     
     def admin_destroy
       if @current_user && @current_user.has_role?(:admin)

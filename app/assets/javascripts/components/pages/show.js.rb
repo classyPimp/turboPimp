@@ -19,10 +19,10 @@ module Components
       end
 
       def render
-        t(:div, {className: 'center-block'},
+        t(:div, {className: 'pages_show'},
           spinner,
           if state.page
-            t(:div, {},
+            t(:div, {className: 'pages_show_content'},
               t(:div, {dangerouslySetInnerHTML: {__html: state.page.body}.to_n})
             )
           else

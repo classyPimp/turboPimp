@@ -73,6 +73,8 @@ Rails.application.routes.draw do
 
     post "patients/patients_feed" => "patients#patients_feed"
 
+    resources :price_categories
+
   end
 
   get "/console" => "faker#console"
