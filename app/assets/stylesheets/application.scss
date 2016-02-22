@@ -16,19 +16,6 @@
  *= require_self
  */
 
-/*client_chat_messsage_box*/
-
-
-
-
-.client_chat_message_box {
-  position: fixed;
-  bottom: 0;
-  right: 0;
-}
-
-
-
 /*jumbotron*/
 
 div.jumbotron {
@@ -91,23 +78,6 @@ div.jumbotron {
   width: 80%; 
 }
 
-$color: black;
-
-div {
-  color: $color;
-}
-
-.client_chat_message_box {
-  height: 10rem;
-  
-  p {
-    margin: 0rem;
-  }
-
-  button {
-    margin-top: 1rem;
-  }
-}
 
 /*pages_show*/
 
@@ -115,7 +85,6 @@ div {
   margin: 0 2rem;
 
   .pages_show_content {
-    color: red;
     border-right-style: solid;
     border-left-style: solid;
     border-width: 1px;
@@ -155,8 +124,8 @@ div {
 
   li {
     border-right-style: solid;
-    border-width: 2px;
-    border-right-color: black;
+    border-width: 1px;
+    border-right-color: #C4CCCF;
   }
 
   /*login_info (login/logout buton group)*/
@@ -171,4 +140,120 @@ div {
 
 }
 
+/*chat_messages_index*/
 
+.chat_expanded {
+  width: 40%;
+}
+
+.chat_messages_index {
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  margin-right: 3rem;
+  margin-bottom: 1rem;
+
+  .message {
+    font-size: small;
+    border: 1px solid white;
+    padding: 0 1rem;
+    margin-bottom: 0.5rem;
+    border-radius: 1rem;
+
+    .message_time {
+      text-align: right;
+      font-size: 8px;
+    }
+  }
+
+  .right {
+    margin-left: 20%;
+    background-color: #CCF0FC;
+  }
+
+  .left {
+    margin-right: 20%;
+    background-color: #D3DEBD;
+  }
+   
+  .chat_button {
+    right: 0;
+  }
+
+  .input_and_submit_button {
+     
+     margin-top: 1.5rem;
+
+     .form_input_label {
+       display: none;
+     }
+
+     .form_input {
+       
+       display: inline-block;
+     }
+    
+     .submit_button {
+       margin-left: 3rem;
+       display: inline-block;
+     }
+ 
+  }
+}
+
+/*SIDEBAR*/
+
+.sidebar {
+  
+  .list_group_title {
+    background-color: #E8E8E8;
+    
+    h3 {
+      margin: 0.1rem;
+    }
+
+    .badge {
+     background-color: white;
+    }
+  }
+
+  .user_avatar_in_group_list {
+    border-radius: 100%;
+    display: inline-block;
+  }
+
+  .list_group_more_info_button {
+    color: white;
+  }
+}
+
+.cssload-container {
+  position: fixed;
+  z-index: 100;
+  margin: auto;
+}
+
+/*APPOINTMENTS CALENDAR*/
+  
+  .appointments_calendar {
+    margin-left: 2rem;
+  }
+
+  /*MONTH VIEW*/
+
+
+
+/*SCROLLBARS*/
+::-webkit-scrollbar {
+    width: 5px;
+}
+ 
+::-webkit-scrollbar-track {
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3); 
+    border-radius: 5px;
+}
+ 
+::-webkit-scrollbar-thumb {
+    border-radius: 5px;
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.5); 
+}

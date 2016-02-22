@@ -64,11 +64,11 @@ module Forms
 
     def render
       comp_options = props.comp_options ? props.comp_options : {}
-      t(:div, comp_options,
-        t(:p, {}, "#{(props.show_name || props.attr)}"),
+      t(:div, comp_options.merge({className: "form_input #{comp_options[:className]}"}),
+        t(:p, {className: 'form_input_label'}, "#{(props.show_name || props.attr)}"),
         *if props.model.errors[props.attr] || props.model.errors[props.show_errors_for] 
           splat_each(combined_errors) do |er|
-            t(:div, {},
+            t(:div, {className: 'form_input_individual_error'},
               t(:p, {},
                 er
               ),
@@ -76,7 +76,7 @@ module Forms
             )             
           end
         end,
-        t(:input, {className: valid_or_not?, ref: "#{self}", 
+        t(:input, {className: "#{valid_or_not?} form_input_input", ref: "#{self}", 
                    type: props.type, key: props.keyed}.merge(optional_props)),
         if props.preview_image && state.image_to_preview != ""
           t(:div, {className: "image_preview"},

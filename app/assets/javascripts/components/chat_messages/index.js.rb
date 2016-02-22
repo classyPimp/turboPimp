@@ -9,7 +9,8 @@ module Components
         @last_message_id = 0
         {
           chat: Chat.new,
-          form_model: ChatMessage.new
+          form_model: ChatMessage.new,
+          expanded: false
         }
       end
 
@@ -20,6 +21,7 @@ module Components
             p chat
             if chat
               @last_message_id = chat.chat_messages[-1].id
+              prepare_message_display_side(chat)
               set_state chat: chat  
             else
               p "is empty: #{chat}"
@@ -32,12 +34,35 @@ module Components
       end
 
       def render
-        t(:div, {className: "client_chat_message_box well"},
-          *splat_each(state.chat.chat_messages) do |message|
-            t(:p, {}, "#{message.text} : #{message.attributes[:created_at]}")
-          end,
-          input(Forms::Input, state.form_model, :text),
-          t(:button, {onClick: ->{submit_message}}, 'submit')
+        t(:span, {className: "chat_messages_index #{state.expanded ? 'chat_expanded' : 'chat_not_expanded'}"},
+          if state.expanded
+            t(:div, {className: "client_chat_message_box well"},
+              *if state.chat.chat_messages.length > 0
+                [
+                  t(:button, {className: 'btn btn-xs btn-primary', onClick: ->{chat_toggle_expand}}, 'X close'),
+                  *splat_each(state.chat.chat_messages) do |message|
+                    t(:div, {className: "message #{message_side(message)}"},
+                      t(:p, {}, "#{message.text}"),
+                      t(:p, {className: "message_time"}, "#{Moment.new(message.attributes[:created_at]).format('YY.MM.DD HH:mm')}")
+                    )
+                  end
+                ]
+              else
+                [
+                  t(:button, {className: 'btn btn-xs btn-primary pull-right', onClick: ->{chat_toggle_expand}}, 'X close'),
+                  t(:p, {}, 'no messages yet. Want to ask something? go ahed, our stuff will reply you')
+                ]
+              end,
+              t(:div, {className: 'input_and_submit_button'},
+                input(Forms::Input, state.form_model, :text),
+                t(:button, {className: 'btn btn-primary submit_button',onClick: ->{submit_message}}, 'submit')
+              )
+            )
+          else
+            t(:button, {className: 'btn btn-primary chat_button', onClick: ->{chat_toggle_expand}},
+              'press here to chat with us realtime'
+            )
+          end
         )
       end
 
@@ -96,7 +121,35 @@ module Components
         p e
       end
 
-      end      
+      end 
+
+      def chat_toggle_expand
+        set_state expanded: !state.expanded             
+      end    
+
+      def prepare_message_display_side(chat)
+        @side = {}
+        left = chat.chat_messages[0].user_id
+        right = false
+        chat.chat_messages.each do |chat_message|
+          if chat_message.user_id == left
+            next
+          else
+            right = chat_message.user_id
+          end
+        end
+        @side[:left] = true
+        @side[:right] = true
+      end 
+
+      def message_side(message)
+        side = 'left'
+        if @side[:left] == message.user_id 
+          side = 'left'
+        else
+          side = 'right'
+        end 
+      end
 
     end
   end

@@ -11,23 +11,24 @@ module Components
         {
           date: Moment.new.startOf('day'),
           current_controll_component: Native(:div, {}).to_n,
-          current_view: "month"
+          current_view: "week"
         }
       end
 
       def component_did_mount
-        init_month_view
+        init_week_view
       end
 
       def render
-        t(:div, {},
+        t(:div, {className: 'appointments_calendar'},
           modal,
-          t(:p, {}, "the month is #{state.date.month() + 1}, of year #{state.date.year()}"),
-          t(:button, {onClick: ->{init_month_view}}, "month"),
-          t(:button, {onClick: ->{init_week_view(state.date.clone())}}, "week"),
-          t(:button, {onClick: ->{init_day_view}}, "day"),
-          t(:button, {onClick: ->{set_state date: Moment.new}}, "go to today"),
-          t(:br, {}),
+          t(:h2, {className: 'view_title_date'}, "#{state.date.month() + 1}.#{state.date.year()}"),
+          t(:div, {className: 'view_controlls'},
+            t(:button, {className: 'btn btn-primary btn-xs', onClick: ->{init_month_view}}, "month"),
+            t(:button, {className: 'btn btn-primary btn-xs', onClick: ->{init_week_view(state.date.clone())}}, "week"),
+            t(:button, {className: 'btn btn-primary btn-xs', onClick: ->{init_day_view}}, "day"),
+            t(:button, {className: 'btn btn-primary btn-xs', onClick: ->{set_state date: Moment.new}}, "go to today"),
+          ),
           t(:div, {},
             state.current_controll_component.to_n
           )

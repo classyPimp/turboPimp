@@ -33,8 +33,10 @@ module Components
               ],
               four: 
               [
-                t(Components::Partials::Doctors::ListGroup, {}),
-                t(Components::Blogs::GroupList, {})
+                t(:div, {className: 'sidebar'},
+                  t(Components::Partials::Doctors::ListGroup, {}),
+                  t(Components::Blogs::GroupList, {})
+                )
               ]
             }
           )

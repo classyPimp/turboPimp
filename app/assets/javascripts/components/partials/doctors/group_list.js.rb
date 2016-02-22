@@ -19,19 +19,28 @@ module Components
 
         def render
           t(:div, {className: 'list-group'},
-            t(:p, {className: 'list-group-item'}, 
-              'our doctors',
-              t(:button, {}, link_to('browse doctors', '/personnel'))
-            ), 
+            t(:div, {className: 'list-group-item list_group_title'},
+              t(:h3, {}, 
+                'our doctors',
+              ), 
+              t(:p, {className: 'list_group_more_info_button'}, link_to('...browse all doctors', '/personnel'))
+            ),
             *splat_each(state.users) do |user|
               t(:div, {className: 'list-group-item'}, 
-                if user.avatar
-                  t(:image, {src: user.avatar.url, className: 'user_avatar_in_group_list', style: {width: "60px", height: "60px"}.to_n},
-
-                  )
-                end,
-                t(:p, {}, user.profile.name),
-                t(:button, {}, link_to('more details', "/personnel/#{user.id}"))
+                t(:div, {className: 'row'},
+                  t(:div, {className: 'col-lg-4'},
+                    if user.avatar
+                      link_to('', "/personnel/#{user.id}") do
+                        t(:image, {src: user.avatar.url, className: 'user_avatar_in_group_list', style: {width: "60px", height: "60px"}.to_n})
+                      end
+                    end
+                  ),
+                  t(:div, {className: 'col-lg-4'},
+                    t(:p, {className: 'user_name_in_group_list'}, user.profile.name),
+                    t(:p, {className: 'list_group_more_info_button'}, link_to('more details', "/personnel/#{user.id}"))
+                  ),
+                  t(:div, {className: 'col-lg-4'})
+                )
               )
             end
           )
