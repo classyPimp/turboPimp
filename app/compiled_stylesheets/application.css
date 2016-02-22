@@ -158,11 +158,6 @@ div.jumbotron {
   z-index: 100;
   margin: auto; }
 
-/*APPOINTMENTS CALENDAR*/
-.appointments_calendar {
-  margin-left: 2rem; }
-
-/*MONTH VIEW*/
 /*SCROLLBARS*/
 ::-webkit-scrollbar {
   width: 5px; }
@@ -174,5 +169,37 @@ div.jumbotron {
 ::-webkit-scrollbar-thumb {
   border-radius: 5px;
   -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.5); }
+
+/*APPOINTMENTS CALENDAR*/
+.appointments_calendar {
+  margin-left: 4rem; }
+  .appointments_calendar .view_controlls {
+    text-align: center; }
+    .appointments_calendar .view_controlls button {
+      margin: 0 0.5rem; }
+  .appointments_calendar .prev_next_controlls {
+    margin-bottom: 1rem; }
+    .appointments_calendar .prev_next_controlls button {
+      margin: 0 0.5rem;
+      width: 6rem; }
+  .appointments_calendar .week_day_panel.lg_device {
+    width: 12%; }
+  .appointments_calendar .week_day_panel {
+    margin-left: 1rem;
+    border: 1px solid;
+    border-radius: 0.5rem; }
+    .appointments_calendar .week_day_panel .day_heading {
+      background-color: #C3DFE8;
+      text-align: center;
+      padding: 0px; }
+    .appointments_calendar .week_day_panel .day_body {
+      font-size: 12px; }
+      .appointments_calendar .week_day_panel .day_body .doctor_name {
+        margin-bottom: 0px;
+        margin-left: 1rem; }
+      .appointments_calendar .week_day_panel .day_body .doctor_appointment {
+        border-bottom: 1px solid; }
+
+/*MONTH VIEW*/
 
 /*# sourceMappingURL=application.css.map */

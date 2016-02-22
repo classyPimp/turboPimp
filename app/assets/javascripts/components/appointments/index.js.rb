@@ -220,40 +220,41 @@ module Components
         t_d = @track_day = props.date.clone().startOf('week').subtract(1, 'days')
         t(:div, {},
           spinner,
-          t(:button, {onClick: ->{prev_week}}, "<"),
-          t(:button, {onClick: ->{next_week}}, ">"),
-          t(:div, {className: "table", style: {display: "table", fontSize:"10px!important"}.to_n },
-            t(:div, {className: "row", style: {display: "table-row"}.to_n },
-              *splat_each(Calendar.wdays) do |wday_name| 
-                  t(:div, {className: "col-lg-1", style: {display: "table-cell", width: "12%"}.to_n }, wday_name)
-              end,
-            ),
-            t(:div, {className: "row", style: {display: "table-row"}.to_n },
-              t(:div, {},
-                *splat_each(0..6) do |d|
-                  t_d_a = (@track_day.add(1, 'days')).clone()
-                  t(:div, {className: "col-lg-1", style: {display: "table-cell", width: "12%"}.to_n }, 
-                    t(:div, {},
-                      t(:span, {}, @track_day.date()),
-                    ),
-                    t(:div, {},
-                      *splat_each(props.index.fetch_appointments(self, @track_day.format("YYYY-MM-DD"))) do |k, v|
-                        t(:span, {},
-                          "#{k}",
-                          t(:br, {}),
-                          *splat_each(v[0].map) do |av|
-                            t(:span, {}, "#{av[0].format('HH:mm')} - #{av[1].format('HH:mm')}", t(:br, {}))
-                          end,
-                          "------------",
-                          t(:br, {})
+          t(:div, {className: 'prev_next_controlls'}, 
+            t(:button, {onClick: ->{prev_week}}, "<"),
+            t(:button, {onClick: ->{next_week}}, ">"),
+          ),
 
-                        )
-                      end
-                    )              
+          t(:div, {className: 'row'}, 
+
+            *splat_each(0..6) do |d|
+              t_d_a = (@track_day.add(1, 'days')).clone()
+              t(:div, {className: "col-lg-1 week_day_panel #{$VIEW_PORT_KIND}"},
+
+                  t(:div, {className: 'day_heading'}, 
+                    t(:h4, {className: 'wday_name'}, 
+                      Calendar.wdays[d]
+                    ),
+                    t(:p, {}, @track_day.date())
+                  ),
+
+                  t(:div, {className: "day_body"}, 
+                    *splat_each(props.index.fetch_appointments(self, @track_day.format("YYYY-MM-DD"))) do |k, v|
+                      t(:div, {className: 'appointments_for_doctor'},
+                        t(:p, {className: 'doctor_name'}, 
+                          "#{k}"
+                        ),
+                        t(:br, {}),
+                        *splat_each(v[0].map) do |av|
+                          t(:p, {className: 'doctor_appointment'}, "#{av[0].format('HH:mm')} - #{av[1].format('HH:mm')}", t(:br, {}))
+                        end,
+                        t(:br, {})
+                      )
+                    end
                   )
-                end
+                
               )
-            ) 
+            end
           )
         )
       end
