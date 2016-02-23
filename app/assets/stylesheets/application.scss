@@ -207,6 +207,7 @@ div.jumbotron {
   
   .list_group_title {
     background-color: #E8E8E8;
+    margin: 1rem 0;
     
     h3 {
       margin: 0.1rem;
@@ -270,16 +271,18 @@ div.jumbotron {
         width: 6rem;
       }
     }
-
+    /*WEEK VIEW*/
     .week_day_panel.lg_device {
-      width: 12%;
+      width: 11%;
     }
 
     .week_day_panel {
       
-      margin-left: 1rem;
+      margin: 0.5rem;
+      padding: 0;
       border: 1px solid;
       border-radius: 0.5rem;
+      border-color: #D8EAF0;
 
       .day_heading {
         background-color: #C3DFE8;
@@ -302,8 +305,40 @@ div.jumbotron {
       
 
     }
-    
+    /*END WEEK VIEW*/
+    /*MONTH BOX*/
+    .month_box {
+      text-align: center;
+      //width: 21rem;
+      height: 14rem;
+      display: table;
 
+      .week_row {
+        display: table-row;
+      }
+
+      .day {
+        display: table-cell;
+        border: 1px solid;
+        width: 3rem;
+        height: 2rem;
+        border-color: #D8EAF0;
+        cursor: pointer;
+      } 
+
+      .current_week {
+        background-color: aliceblue;
+        
+      }
+
+      .week_row:hover {
+        background-color: red;
+      }
+
+      .day:hover {
+        background-color: yellow;
+      }     
+    }
+    /*END MONTH BOX*/
   }
 
-  /*MONTH VIEW*/

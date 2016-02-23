@@ -142,7 +142,8 @@ div.jumbotron {
 
 /*SIDEBAR*/
 .sidebar .list_group_title {
-  background-color: #E8E8E8; }
+  background-color: #E8E8E8;
+  margin: 1rem 0; }
   .sidebar .list_group_title h3 {
     margin: 0.1rem; }
   .sidebar .list_group_title .badge {
@@ -172,7 +173,11 @@ div.jumbotron {
 
 /*APPOINTMENTS CALENDAR*/
 .appointments_calendar {
-  margin-left: 4rem; }
+  margin-left: 4rem;
+  /*WEEK VIEW*/
+  /*END WEEK VIEW*/
+  /*MONTH BOX*/
+  /*END MONTH BOX*/ }
   .appointments_calendar .view_controlls {
     text-align: center; }
     .appointments_calendar .view_controlls button {
@@ -183,11 +188,13 @@ div.jumbotron {
       margin: 0 0.5rem;
       width: 6rem; }
   .appointments_calendar .week_day_panel.lg_device {
-    width: 12%; }
+    width: 11%; }
   .appointments_calendar .week_day_panel {
-    margin-left: 1rem;
+    margin: 0.5rem;
+    padding: 0;
     border: 1px solid;
-    border-radius: 0.5rem; }
+    border-radius: 0.5rem;
+    border-color: #D8EAF0; }
     .appointments_calendar .week_day_panel .day_heading {
       background-color: #C3DFE8;
       text-align: center;
@@ -199,7 +206,24 @@ div.jumbotron {
         margin-left: 1rem; }
       .appointments_calendar .week_day_panel .day_body .doctor_appointment {
         border-bottom: 1px solid; }
-
-/*MONTH VIEW*/
+  .appointments_calendar .month_box {
+    text-align: center;
+    height: 14rem;
+    display: table; }
+    .appointments_calendar .month_box .week_row {
+      display: table-row; }
+    .appointments_calendar .month_box .day {
+      display: table-cell;
+      border: 1px solid;
+      width: 3rem;
+      height: 2rem;
+      border-color: #D8EAF0;
+      cursor: pointer; }
+    .appointments_calendar .month_box .current_week {
+      background-color: aliceblue; }
+    .appointments_calendar .month_box .week_row:hover {
+      background-color: red; }
+    .appointments_calendar .month_box .day:hover {
+      background-color: yellow; }
 
 /*# sourceMappingURL=application.css.map */

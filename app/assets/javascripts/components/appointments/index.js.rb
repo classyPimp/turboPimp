@@ -22,6 +22,7 @@ module Components
       def render
         t(:div, {className: 'appointments_calendar'},
           modal,
+          #t(MonthBox, {date: state.date, ref: 'month_box', index: self}),
           t(:h2, {className: 'view_title_date'}, "#{state.date.month() + 1}.#{state.date.year()}"),
           t(:div, {className: 'view_controlls'},
             t(:button, {className: 'btn btn-primary btn-xs', onClick: ->{init_month_view}}, "month"),
@@ -98,6 +99,64 @@ module Components
           end
         end
         obj.set_state appointment_availabilities: opts
+      end
+
+    end
+
+    class MonthBox < RW
+
+      expose
+
+      def prepare_dates
+        @cur_month = props.date.clone().startOf("month")
+        @first_wday = @cur_month.day()
+        @track_day = @cur_month.clone().subtract((@first_wday + 1), "days")
+        @current_week_num = `Math.ceil(#{props.date.diff(@track_day, 'days')} / 7)`
+      end
+      
+      def render
+        prepare_dates     
+        t(:div, {},
+          t(:div, {className: "month_box"},
+            t(:div, {className: "row week_row"},
+              *splat_each(Calendar.wdays) do |wday_name| 
+                  t(:div, {className: "day"}, wday_name)
+              end,
+            ),
+            *splat_each(0..5) do |week_num|
+              if week_num + 1 == @current_week_num
+                is_current = 'current_week'
+              else
+                is_current = ''
+              end
+              t_d = (@track_day).clone
+              t(:div, {className: "row week_row #{is_current}"},
+                *splat_each(0..6) do |d|
+                  t_d_a = (@track_day.add(1, 'days')).clone()
+                  t(:div, {className: "day", onClick: ->{set_date(t_d_a)}}, 
+                    t(:div, {},
+                      t(:span, {}, @track_day.date())
+                    )
+                  )
+                end
+              )
+            end   
+          )
+        )
+      end
+
+      def set_date(date)
+        props.index.set_state date: date
+      end
+
+      def prev_month 
+        props.index.set_state date: (@date = props.index.state.date.subtract(1, "month"))
+        component_did_mount
+      end
+
+      def next_month
+        props.index.set_state date: (@date = props.index.state.date.add(1, "month"))
+        component_did_mount
       end
 
     end
@@ -196,8 +255,9 @@ module Components
       expose
 
       def queries(date)
+        p date.format
         z = date.clone().startOf("week")
-        z = date.isBefore(x = Moment.new.set(hour: 0, min: 0)) ? x : date 
+        z = date.isBefore(x = Moment.new.set(hour: 0, min: 0)) ? x : z 
         x = {}
         x[:from] = z.format('YYYY-MM-DD')
         x[:to] = z.clone().endOf('week').format('YYYY-MM-DD')
@@ -216,6 +276,12 @@ module Components
         end
       end
 
+      def component_did_update(prev_props, prev_state)
+        if props.date.format != prev_props.date.format
+          component_did_mount
+        end     
+      end
+
       def render
         t_d = @track_day = props.date.clone().startOf('week').subtract(1, 'days')
         t(:div, {},
@@ -226,7 +292,9 @@ module Components
           ),
 
           t(:div, {className: 'row'}, 
-
+            t(:div, {className: "col-lg-1 week_day_panel #{$VIEW_PORT_KIND}"},
+              t(MonthBox, {date: props.date, index: props.index})
+            ),
             *splat_each(0..6) do |d|
               t_d_a = (@track_day.add(1, 'days')).clone()
               t(:div, {className: "col-lg-1 week_day_panel #{$VIEW_PORT_KIND}"},
