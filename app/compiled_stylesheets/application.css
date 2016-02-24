@@ -1,6 +1,6 @@
 /*
  * This is a manifest file that'll be compiled into application.css, which will include all the files
- * listed below.
+ * listed below. 
  *
  * Any CSS and SCSS file within this directory, lib/assets/stylesheets, vendor/assets/stylesheets,
  * or any plugin's vendor/assets/stylesheets directory can be referenced here using a relative path.
@@ -15,6 +15,13 @@
  *= require_tree .
  *= require_self
  */
+/*APP CONTAINER*/
+#im_your_father_luke {
+  padding-left: 0px;
+  padding-right: 0px;
+  overflow-X: hidden; }
+
+/*END APP CONTAINER*/
 /*jumbotron*/
 div.jumbotron {
   background: -moz-linear-gradient(-45deg, rgba(171, 211, 238, 0.63) 0%, rgba(171, 211, 238, 0.72) 23%, rgba(171, 211, 238, 0.73) 27%, rgba(137, 195, 235, 0.85) 59%, #d5ebfb 100%);
@@ -105,7 +112,10 @@ div.jumbotron {
 
 /*chat_messages_index*/
 .chat_expanded {
-  width: 40%; }
+  width: 40%;
+  height: 400px;
+  height: 250px;
+  overflow-Y: scroll; }
 
 .chat_messages_index {
   position: fixed;
@@ -201,6 +211,16 @@ div.jumbotron {
       padding: 0px; }
     .appointments_calendar .week_day_panel .day_body {
       font-size: 12px; }
+      .appointments_calendar .week_day_panel .day_body .init_appointment_btn {
+        width: 80%;
+        white-space: normal;
+        padding: 0rem;
+        font-size: small;
+        margin-bottom: 0.5rem; }
+      .appointments_calendar .week_day_panel .day_body .doctor_avatar {
+        height: 3.5rem;
+        width: 3.5rem;
+        border-radius: 100%; }
       .appointments_calendar .week_day_panel .day_body .doctor_name {
         margin-bottom: 0px;
         margin-left: 1rem; }
@@ -225,5 +245,45 @@ div.jumbotron {
       background-color: red; }
     .appointments_calendar .month_box .day:hover {
       background-color: yellow; }
+
+/*APPOINTMENT_PROPOSAL_NEW*/
+.appointment_proposal_new {
+  width: 75%;
+  margin: auto; }
+  .appointment_proposal_new .checkbox_desc_group {
+    display: table;
+    border-bottom: 1px solid; }
+    .appointment_proposal_new .checkbox_desc_group div {
+      display: table-cell;
+      padding-bottom: 0px; }
+    .appointment_proposal_new .checkbox_desc_group .time_range {
+      display: table-cell;
+      padding-left: 3rem; }
+    .appointment_proposal_new .checkbox_desc_group .checkbox {
+      width: 20px;
+      height: 20px;
+      padding-bottom: 0px; }
+  .appointment_proposal_new .doc_name_and_avatar {
+    margin: auto;
+    width: 50%;
+    padding-top: 2rem;
+    border-bottom-style: solid;
+    border-width: 1px;
+    padding-bottom: 1rem; }
+  .appointment_proposal_new .doctor_avatar {
+    height: 5rem;
+    width: 5rem;
+    border-radius: 100%; }
+  .appointment_proposal_new .doctor_name {
+    margin-left: 3rem;
+    font-size: larger; }
+  .appointment_proposal_new .extra_details {
+    margin-top: 2rem; }
+  .appointment_proposal_new .login_button_group {
+    text-align: center; }
+    .appointment_proposal_new .login_button_group button {
+      margin: 2rem 1rem 0; }
+
+/*END APPOINTMENT PROPOSAL NEW*/
 
 /*# sourceMappingURL=application.css.map */

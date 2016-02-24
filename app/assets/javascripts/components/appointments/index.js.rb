@@ -93,12 +93,14 @@ module Components
           end 
         }
         opts = Hash.new(&tree_block)
+        user_accessor = {}
         users.each do |user|
+          user_accessor[user.id] = user
           user.appointment_availabilities.each do |av|
-            opts[av.for_date][user.profile.name] << av 
+            opts[av.for_date][user.id] << av 
           end
         end
-        obj.set_state appointment_availabilities: opts
+        obj.set_state appointment_availabilities: opts, user_accessor: user_accessor
       end
 
     end
@@ -291,7 +293,8 @@ module Components
             t(:button, {onClick: ->{next_week}}, ">"),
           ),
 
-          t(:div, {className: 'row'}, 
+          t(:div, {className: 'row'},
+            modal, 
             t(:div, {className: "col-lg-1 week_day_panel #{$VIEW_PORT_KIND}"},
               t(MonthBox, {date: props.date, index: props.index})
             ),
@@ -306,11 +309,15 @@ module Components
                     t(:p, {}, @track_day.date())
                   ),
 
-                  t(:div, {className: "day_body"}, 
+                  t(:div, {className: "day_body"},
+                    t(:button, {className: 'init_appointment_btn btn btn-success center-block', onClick: ->{init_appointments_proposals_new(t_d_a)}},
+                      'book appointment for this day'
+                    ), 
                     *splat_each(props.index.fetch_appointments(self, @track_day.format("YYYY-MM-DD"))) do |k, v|
                       t(:div, {className: 'appointments_for_doctor'},
-                        t(:p, {className: 'doctor_name'}, 
-                          "#{k}"
+                        t(:img, {src: "#{state.user_accessor[k].avatar.url}", className: 'doctor_avatar'}),
+                        t(:span, {className: 'doctor_name'}, 
+                          "#{state.user_accessor[k].profile.name}"
                         ),
                         t(:br, {}),
                         *splat_each(v[0].map) do |av|
@@ -324,6 +331,13 @@ module Components
               )
             end
           )
+        )
+      end
+
+      def init_appointments_proposals_new(date)
+        modal_open(
+          "book an appointment",
+          t(Components::Appointments::Proposals::New, {date: date, appointment_availabilities: props.index.fetch_appointments(self, date.clone.format("YYYY-MM-DD")), user_accessor: state.user_accessor, on_appointment_proposal_created: event(->{modal_close})})
         )
       end
 

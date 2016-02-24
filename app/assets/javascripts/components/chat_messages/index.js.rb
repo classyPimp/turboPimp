@@ -18,13 +18,12 @@ module Components
         if CurrentUser.user_instance.id
           ChatMessage.index.then do |chat|
             begin
-            p chat
             if chat
               @last_message_id = chat.chat_messages[-1].id
               prepare_message_display_side(chat)
               set_state chat: chat  
             else
-              p "is empty: #{chat}"
+              nil
             end
             rescue Exception => e
               p e
@@ -34,18 +33,24 @@ module Components
       end
 
       def render
+        if state.chat.chat_messages[0]
+          prepare_message_display_side(state.chat) 
+        end
         t(:span, {className: "chat_messages_index #{state.expanded ? 'chat_expanded' : 'chat_not_expanded'}"},
           if state.expanded
             t(:div, {className: "client_chat_message_box well"},
               *if state.chat.chat_messages.length > 0
                 [
                   t(:button, {className: 'btn btn-xs btn-primary', onClick: ->{chat_toggle_expand}}, 'X close'),
-                  *splat_each(state.chat.chat_messages) do |message|
-                    t(:div, {className: "message #{message_side(message)}"},
-                      t(:p, {}, "#{message.text}"),
-                      t(:p, {className: "message_time"}, "#{Moment.new(message.attributes[:created_at]).format('YY.MM.DD HH:mm')}")
-                    )
-                  end
+                  t(:div, {className: 'chat_messages_stack'},
+                    *splat_each(state.chat.chat_messages) do |message|
+                      p message.pure_attributes
+                      t(:div, {className: "message #{message_side(message)}"},
+                        t(:p, {}, "#{message.text}"),
+                        t(:p, {className: "message_time"}, "#{Moment.new(message.attributes[:created_at]).format('YY.MM.DD HH:mm')}")
+                      )
+                    end
+                  )
                 ]
               else
                 [
@@ -111,11 +116,15 @@ module Components
           p 'gon set last message'
           @last_message_id = messages_and_users[:chat_messages][-1].id
           p "last message set to : #{@last_message_id}"
-          messages_and_users[:users].each do |user|
+          # messages_and_users[:users].each do |user|
 
-          end
+          # end
+          p "gon plus chats"
           state.chat.chat_messages = state.chat.chat_messages + messages_and_users[:chat_messages]
+          p "state cahtmesaages plussed"
+          p 'gon set state'
           set_state chat: state.chat
+          p 'state set'
         end
       rescue Exception => e
         p e

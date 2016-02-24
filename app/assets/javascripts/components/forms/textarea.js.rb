@@ -17,7 +17,11 @@ module Forms
 
     def render
       t(:div, {},
-        t(:p, {}, props.attr),
+        if props.show_name
+          props.show_name
+        else
+          t(:p, {}, props.attr)
+        end,
         *if props.model.errors[props.attr]
           splat_each(props.model.errors[props.attr]) do |er|
             t(:div, {},

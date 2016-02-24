@@ -6,9 +6,9 @@ module Perms
       if @current_user && @current_user.has_role?(:doctor)
 
         @permitted_attributes = params.require(:appointment).
-          permit(:start_date, :end_date, :patient_id, appointment_detail_attributes: [:note])
+          permit(:start_date, :end_date, :doctor_id, :patient_id, appointment_detail_attributes: [:note])
 
-        @permitted_attributes[:doctor_id] = @current_user.id
+        #@permitted_attributes[:doctor_id] = @current_user.id
         @permitted_attributes[:scheduled] = true
         @permitted_attributes[:user_id] = @current_user.id
         @serialize_on_success = {include: [patient: {root: true, include: [profile: {root: true}]}]}

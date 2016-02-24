@@ -59,10 +59,9 @@ class ComposerFor::AppointmentScheduler::Users::Update
   end
 
   def handle_transaction_fail(e)
-    byebug
+    
     case e
     when ActiveRecord::RecordInvalid
-      byebug
       publish(:fail, @user)
     else
       handle_transaction_unexpected_fail(e)             

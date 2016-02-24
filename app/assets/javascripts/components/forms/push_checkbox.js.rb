@@ -32,7 +32,11 @@ module Forms
 
     def render
       t(:div, {},
-        t(:p, {}, props.attr),
+        if props.show_name
+          props.show_name
+        else
+          t(:p, {}, props.attr)
+        end,
         *if props.model.errors[props.attr]
           splat_each(props.model.errors[props.attr]) do |er|
             t(:div, {},
@@ -43,7 +47,7 @@ module Forms
             )             
           end
         end,
-        t(:input, {className: valid_or_not?, type: "checkbox", 
+        t(:input, {className: "#{valid_or_not?} #{props.className}", type: "checkbox", 
                    key: props.keyed, onClick: ->{check}}.merge(options)),
         children      
       )   

@@ -1,6 +1,6 @@
 /*
  * This is a manifest file that'll be compiled into application.css, which will include all the files
- * listed below.
+ * listed below. 
  *
  * Any CSS and SCSS file within this directory, lib/assets/stylesheets, vendor/assets/stylesheets,
  * or any plugin's vendor/assets/stylesheets directory can be referenced here using a relative path.
@@ -15,6 +15,16 @@
  *= require_tree .
  *= require_self
  */
+
+/*APP CONTAINER*/
+#im_your_father_luke {
+  padding-left: 0px;
+  padding-right: 0px;
+  overflow-X: hidden;
+}
+
+/*END APP CONTAINER*/
+
 
 /*jumbotron*/
 
@@ -144,6 +154,13 @@ div.jumbotron {
 
 .chat_expanded {
   width: 40%;
+  height: 400px;
+  height: 250px;
+  overflow-Y: scroll;
+
+  .chat_massage_stack {
+
+  }
 }
 
 .chat_messages_index {
@@ -292,6 +309,21 @@ div.jumbotron {
       
       .day_body {
         font-size: 12px;
+        
+        .init_appointment_btn {
+          width: 80%;
+          white-space: normal;
+          padding: 0rem;
+          font-size: small;
+          margin-bottom: 0.5rem;
+        }
+
+        .doctor_avatar {
+          height: 3.5rem;
+          width: 3.5rem;
+          border-radius: 100%;
+        }
+
         .doctor_name {
           margin-bottom: 0px;
           margin-left: 1rem;
@@ -342,3 +374,69 @@ div.jumbotron {
     /*END MONTH BOX*/
   }
 
+/*APPOINTMENT_PROPOSAL_NEW*/
+
+.appointment_proposal_new {
+  
+  width: 75%;
+  margin: auto;
+
+  .checkbox_desc_group {
+    display: table;
+    
+    border-bottom: 1px solid;
+
+    div {
+      display: table-cell;
+      padding-bottom: 0px;    
+    }
+
+    .time_range {
+      display: table-cell;
+      padding-left: 3rem;  
+    }
+
+    .checkbox {
+      width: 20px;
+      height: 20px;
+      padding-bottom: 0px;
+    }
+  }
+  
+
+  .doc_name_and_avatar {
+    margin: auto;
+    width: 50%;
+    padding-top: 2rem;
+    border-bottom-style: solid;
+    border-width: 1px;
+    padding-bottom: 1rem;
+  }
+
+  .doctor_avatar {
+    height: 5rem;
+    width: 5rem;
+    border-radius: 100%;
+  }
+
+  .doctor_name {
+    margin-left: 3rem; 
+    font-size: larger;
+  }
+
+  .extra_details {
+    margin-top: 2rem;
+  }
+
+  .login_button_group {
+     
+    text-align: center;
+
+    button {
+      margin: 2rem 1rem 0;  
+    }
+     
+  }
+}
+
+/*END APPOINTMENT PROPOSAL NEW*/
