@@ -46,9 +46,10 @@ module Components
         set_state current_controll_component: ->{Native(t(Month, {ref: "month", index: self, date: state.date}))}
       end
 
-      def init_day_view
+      def init_day_view(day)
         state.current_view = "day"
-        set_state current_controll_component: ->{Native(t(WeekDay, {ref: "day", date: state.date, index: self}))}, current_view: "day"
+        state.date = day
+        set_state date: state.date,current_controll_component: ->{Native(t(WeekDay, {ref: "day", date: state.date, index: self}))}, current_view: "day"
       end
 
       def current_view
@@ -285,6 +286,8 @@ module Components
       end
 
       def render
+        passed_day = ''
+        current_day = Moment.new
         t_d = @track_day = props.date.clone().startOf('week').subtract(1, 'days')
         t(:div, {},
           spinner,
@@ -299,16 +302,34 @@ module Components
               t(MonthBox, {date: props.date, index: props.index})
             ),
             *splat_each(0..6) do |d|
+
               t_d_a = (@track_day.add(1, 'days')).clone()
+
+              if @track_day.format('YYYY-MM-DD') < current_day.format('YYYY-MM-DD')
+                passed_day = 'passed'
+              elsif @track_day.format('YYYY-MM-DD') == current_day.format('YYYY-MM-DD')
+                passed_day = 'today'
+              else
+                passed_day = 'not_passed'
+              end
+
+              
+              if passed_day != 'passed'
+                go_to_day_event = {onClick: ->{props.index.init_day_view(t_d_a)}}
+              else
+                go_to_day_event = {}
+              end
+
               t(:div, {className: "col-lg-1 week_day_panel #{$VIEW_PORT_KIND}"},
-
-                  t(:div, {className: 'day_heading'}, 
-                    t(:h4, {className: 'wday_name'}, 
-                      Calendar.wdays[d]
-                    ),
-                    t(:p, {}, @track_day.date())
+                t(:div, {className: "day_heading #{passed_day}"}.merge(go_to_day_event), 
+                  t(:h4, {className: 'wday_name'}, 
+                    Calendar.wdays[d]
                   ),
-
+                  t(:p, {}, @track_day.date())
+                ),
+                if passed_day == 'passed'
+                  t(:div, {})
+                else
                   t(:div, {className: "day_body"},
                     t(:button, {className: 'init_appointment_btn btn btn-success center-block', onClick: ->{init_appointments_proposals_new(t_d_a)}},
                       'book appointment for this day'
@@ -327,7 +348,7 @@ module Components
                       )
                     end
                   )
-                
+                end
               )
             end
           )
@@ -370,27 +391,41 @@ module Components
       end
 
       def render
-        t(:div, {className: "row"},
+        t(:div, {className: "row "},
           spinner,
           modal,
-          t(:div, {className: "col-lg-6"},
+          t(:div, {className: "col-lg-6 day_panel"},
             t(:button, {onClick: ->{prev_day}}, "<"),
             t(:button, {onClick: ->{next_day}}, ">"),
-            t(:p, {}, "Today is #{props.date.format('YYYY-MM-DD HH:mm')}"),
-            t(:button, {onClick: ->{init_appointments_proposals_new(props.date)}}, "book an appointment for this day"),
+            t(:div, {className: "day_heading"}, 
+              t(:h4, {className: 'wday_name'}, 
+                Calendar.wdays[props.date.day()]
+              ),
+              t(:p, {}, props.date.format('DD'))
+            ),
+            #t(:p, {}, "Today is #{props.date.format('YYYY-MM-DD HH:mm')}"),
+            #t(:button, {onClick: ->{init_appointments_proposals_new(props.date)}}, "book an appointment for this day"),
             t(:div, {},
-              *splat_each(props.index.fetch_appointments(self, props.date.clone.format("YYYY-MM-DD"))) do |k, v|
-                t(:span, {},
-                  "#{k}",
-                  t(:br, {}),
-                  *splat_each(v[0].map) do |av|
-                    t(:span, {}, "#{av[0].format('HH:mm')} - #{av[1].format('HH:mm')}", t(:br, {}))
-                  end,
-                  "------------",
-                  t(:br, {})
 
+                t(:div, {className: "day_body"},
+                  t(:button, {className: 'init_appointment_btn btn btn-success center-block', onClick: ->{init_appointments_proposals_new(props.date)}},
+                    'book appointment for this day'
+                  ), 
+                  *splat_each(props.index.fetch_appointments(self, props.date.format("YYYY-MM-DD"))) do |k, v|
+                    t(:div, {className: 'appointments_for_doctor'},
+                      t(:img, {src: "#{state.user_accessor[k].avatar.url}", className: 'doctor_avatar'}),
+                      t(:span, {className: 'doctor_name'}, 
+                        "#{state.user_accessor[k].profile.name}"
+                      ),
+                      t(:br, {}),
+                      *splat_each(v[0].map) do |av|
+                        t(:p, {className: 'doctor_appointment'}, "#{av[0].format('HH:mm')} - #{av[1].format('HH:mm')}", t(:br, {}))
+                      end,
+                      t(:br, {})
+                    )
+                  end
                 )
-              end
+              
             )              
           )
         )

@@ -307,6 +307,14 @@ div.jumbotron {
         padding: 0px;
       }
       
+      .day_heading.passed {
+        background-color: white;
+      }
+
+      .day_heading.today {
+        background-color: #2593B8;
+      }
+
       .day_body {
         font-size: 12px;
         

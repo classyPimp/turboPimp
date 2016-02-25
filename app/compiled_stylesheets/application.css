@@ -209,6 +209,10 @@ div.jumbotron {
       background-color: #C3DFE8;
       text-align: center;
       padding: 0px; }
+    .appointments_calendar .week_day_panel .day_heading.passed {
+      background-color: white; }
+    .appointments_calendar .week_day_panel .day_heading.today {
+      background-color: #2593B8; }
     .appointments_calendar .week_day_panel .day_body {
       font-size: 12px; }
       .appointments_calendar .week_day_panel .day_body .init_appointment_btn {
