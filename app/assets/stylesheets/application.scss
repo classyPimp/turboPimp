@@ -25,18 +25,37 @@
 
 /*END APP CONTAINER*/
 
+.below_menu {
+  width: 100%;
+  position: absolute;
+  top: 5rem;
+  margin: 4rem 0 0 0; 
+}
 
 /*jumbotron*/
 
-div.jumbotron {
+.jumbotron {
   background: -moz-linear-gradient(-45deg,  rgba(171,211,238,0.63) 0%, rgba(171,211,238,0.72) 23%, rgba(171,211,238,0.73) 27%, rgba(137,195,235,0.85) 59%, rgba(213,235,251,1) 100%);
   background: -webkit-linear-gradient(-45deg,  rgba(171,211,238,0.63) 0%,rgba(171,211,238,0.72) 23%,rgba(171,211,238,0.73) 27%,rgba(137,195,235,0.85) 59%,rgba(213,235,251,1) 100%);
   background: linear-gradient(135deg,  rgba(171,211,238,0.63) 0%,rgba(171,211,238,0.72) 23%,rgba(171,211,238,0.73) 27%,rgba(137,195,235,0.85) 59%,rgba(213,235,251,1) 100%);
   filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#a1abd3ee', endColorstr='#d5ebfb',GradientType=1 );
-  
+  z-index: -1;
+  position: fixed;
+  top: 5rem;
+  height: 25rem;
+  width: 100%;
   h1 {
     color: #b3b3b3;
   }
+}
+
+
+.below_jumbo {
+  width: 100%;
+  position: absolute;
+  top: 30rem;
+  margin: 0.3rem 0 0 0;
+  background-color: white; 
 }
 
  /*spinner*/
@@ -116,8 +135,12 @@ div.jumbotron {
 /*menu_index*/
 
 .menu_index {
-
+  margin-bottom: 0;
+  position: fixed;
+  width: 100%;
   font-size: larger;
+  height: 5rem;
+  z-index: 1;
 
   .navbar-brand {
     padding-left: 4rem;
@@ -281,6 +304,11 @@ div.jumbotron {
       }
     }
 
+    .any_time_appointment {
+      margin: 1rem;
+      text-align: justify;
+    }
+
     .prev_next_controlls {
       margin-bottom: 1rem;
       button {
@@ -341,11 +369,57 @@ div.jumbotron {
           border-bottom: 1px solid;
         }
       }
-
-      
-
     }
     /*END WEEK VIEW*/
+
+    /*DAY VIEW*/
+    .day_panel {
+      
+      
+      margin: 0.5rem;
+      padding: 0;
+      border: 1px solid;
+      border-radius: 0.5rem;
+      border-color: #D8EAF0;
+
+
+      .day_heading {
+        background-color: #C3DFE8;
+        text-align: center;
+        padding: 0px; 
+      }
+
+      .day_body {
+        font-size: 12px;
+        padding: 2rem;  
+        .init_appointment_btn {
+          width: 80%;
+          white-space: normal;
+          padding: 0rem;
+          font-size: small;
+          margin-bottom: 0.5rem;
+        }
+
+        .doctor_avatar {
+          height: 3.5rem;
+          width: 3.5rem;
+          border-radius: 100%;
+        }
+
+        .doctor_name {
+          margin-bottom: 0px;
+          margin-left: 1rem;
+        }
+
+        .doctor_appointment {
+          border-bottom: 1px solid;
+        }
+      }
+
+
+    }
+
+    /* END DAY VIEW */
     /*MONTH BOX*/
     .month_box {
       text-align: center;
@@ -364,19 +438,23 @@ div.jumbotron {
         height: 2rem;
         border-color: #D8EAF0;
         cursor: pointer;
+      }
+
+      .today {
+        background-color: #DFB5EB; 
       } 
 
       .current_week {
-        background-color: aliceblue;
+        background-color: #90C3D4;
         
       }
 
       .week_row:hover {
-        background-color: red;
+        background-color: #90C3D4;
       }
 
       .day:hover {
-        background-color: yellow;
+        background-color: #127596;
       }     
     }
     /*END MONTH BOX*/
@@ -448,3 +526,79 @@ div.jumbotron {
 }
 
 /*END APPOINTMENT PROPOSAL NEW*/
+
+
+/*PRICE LIST INDEX*/
+  .pricelist {
+    padding-top: 2rem;
+
+    .disclaimer {
+      text-align: center;
+      font-size: larger;
+    }
+
+    .category_name {
+      text-align: center;
+      font-size: larger;
+      margin: 1rem;
+    }
+
+    tbody > .price_item:nth-child(odd) {
+      background-color: #BFE4F2;
+    }
+
+    .price_item:hover {
+      background-color: #F5D5C9;
+    }
+
+  }
+
+/*END PRICE LIST INDEX*/
+
+/*DOCTOR INDEX*/
+  .doctor_index {
+    .center-block {
+      text-align: center;
+    }
+    
+    margin: auto;
+
+    .thumbnail {
+
+      display: inline-block;
+      background-color: #6FC2DE;
+      margin: auto;
+      max-width: 400px;
+      margin-top: 1rem;
+      margin-left: 1rem;
+
+      
+      .avatar {
+        height: 100px;
+        width: 100px;
+      }
+
+      .profile_info {
+        text-align: center;
+        margin: 0.5rem 0;
+        border-top: 1px solid #BFD2D9; 
+      }
+    }
+  }
+
+/*END DOCTOR INDEX*/
+
+/*menu_index animation*/
+@keyframes example {
+    0%   {opacity: 0;}
+    100% {opacity: 1;}
+}
+
+.menu_index {
+  //height: 5rem;
+  animation-name: example;
+  animation-duration: 1s;
+  animation-timing-function: linear;
+}
+
+/*END menu_index animation*/

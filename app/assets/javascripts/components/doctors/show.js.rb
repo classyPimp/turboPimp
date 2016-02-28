@@ -22,17 +22,15 @@ module Components
       end
 
       def render
-        t(:div, {},
+        t(:div, {className: 'doctor_show'},
           spinner,
           if state.user
-            t(:div, {}, 
-              t(:div, {},
-                t(:div, {},
-                  t(:image, {src: "#{state.user.try(:avatar).try(:url)}", style: {width: "100px", height: "100px"}.to_n }, )
-                ),
-                t(:p, {}, "name: #{state.user.try(:name)}"),
-                t(:p, {}, "bio: #{state.user.try(:profile).try(:bio)}")
-              )
+            t(:div, {},
+              t(:span, {}, 
+                t(:image, {src: "#{state.user.try(:avatar).try(:url)}", style: {width: "100px", height: "100px"}.to_n })
+              ),
+              t(:h4, {className: 'name'}, "#{state.user.profile.try(:name)}"),
+              t(:div, {className: 'bio'},  "#{state.user.try(:profile).try(:bio)}")
             )
           end
         )

@@ -50,11 +50,11 @@ module Components
       end
       
       def render
-        t(:div, {},
+        t(:div, {className: 'container-fluid'},
           t(Components::Menues::Index, {ref: "menu"}),
           t(Shared::Flash::Holder, {ref: "flash"}),
           spinner,
-          t(:div, {},
+          t(:div, {className: 'below_menu'},
             children
           ),
           t(Components::ChatMessages::Index, {}),

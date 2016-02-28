@@ -17,22 +17,41 @@ module Components
       end
 
       def render
-        t(:div, {className: 'row'},
-          t(:div, {className: 'col-lg-8'},
-            children
-          ),
-          t(:div, {className: 'col-lg-4'},  
-            *splat_each(state.users) do |user|
-              t(:div, {},
-                if user.avatar 
-                  t(:image, {src: user.avatar.url, style: {width: "60px", height: "60px"}.to_n })
-                end,
-                t(:p, {}, user.profile.name ),
-                t(:button, {}, link_to("more info", "/personnel/#{user.id}") )    
+        t(:div, {className: 'container doctor_index'},
+          *if props.children
+            [
+              t(:div, {className: 'col-lg-8 doctor_show'},
+                children
+              ),
+              t(:div, {className: 'col-lg-4 doctor_panel'},  
+                *self.doctor_partial.call
               )
-            end
-          )
+            ]
+          else
+            t(:div, {className: 'center-block'},
+              t(:p, {}, 'click on doctor avatar to get information on him'),  
+              *self.doctor_partial.call
+            )
+          end
         )
+      end
+
+      def doctor_partial
+        ->{
+          splat_each(state.users) do |user|
+            t(:div, {className: 'thumbnail'},
+              if user.avatar 
+                t(:image, {src: user.avatar.url, className: 'avatar'})
+              end,
+              t(:div, {className: 'profile_info'}, 
+                t(:h3, {className: 'profile_name'}, user.profile.name ),
+                link_to("", "/personnel/#{user.id}") do |variable|
+                  t(:button, {className: 'btn btn-default'}, 'more info')
+                end     
+              )
+            )
+          end          
+        }
       end
 
     end

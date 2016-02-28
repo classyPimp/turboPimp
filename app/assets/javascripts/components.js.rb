@@ -1,4 +1,5 @@
 require "./vendor/core_monkey_patches"
+require './vendor/zepto'
 require_tree "./vendor"
 require "./vendor/helpers"
 require_tree "./plugins"

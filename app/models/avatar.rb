@@ -11,7 +11,7 @@ class Avatar < ActiveRecord::Base
 
   #used in JSON serializing e/g/ @avatr.as_json(methods: [:url])
   def url 
-    self.file.url
+    self.file.url(:thumb)
   end 
 
 end

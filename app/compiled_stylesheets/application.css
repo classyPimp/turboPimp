@@ -22,14 +22,32 @@
   overflow-X: hidden; }
 
 /*END APP CONTAINER*/
+.below_menu {
+  width: 100%;
+  position: absolute;
+  top: 5rem;
+  margin: 4rem 0 0 0; }
+
 /*jumbotron*/
-div.jumbotron {
+.jumbotron {
   background: -moz-linear-gradient(-45deg, rgba(171, 211, 238, 0.63) 0%, rgba(171, 211, 238, 0.72) 23%, rgba(171, 211, 238, 0.73) 27%, rgba(137, 195, 235, 0.85) 59%, #d5ebfb 100%);
   background: -webkit-linear-gradient(-45deg, rgba(171, 211, 238, 0.63) 0%, rgba(171, 211, 238, 0.72) 23%, rgba(171, 211, 238, 0.73) 27%, rgba(137, 195, 235, 0.85) 59%, #d5ebfb 100%);
   background: linear-gradient(135deg, rgba(171, 211, 238, 0.63) 0%, rgba(171, 211, 238, 0.72) 23%, rgba(171, 211, 238, 0.73) 27%, rgba(137, 195, 235, 0.85) 59%, #d5ebfb 100%);
-  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#a1abd3ee', endColorstr='#d5ebfb',GradientType=1 ); }
-  div.jumbotron h1 {
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#a1abd3ee', endColorstr='#d5ebfb',GradientType=1 );
+  z-index: -1;
+  position: fixed;
+  top: 5rem;
+  height: 25rem;
+  width: 100%; }
+  .jumbotron h1 {
     color: #b3b3b3; }
+
+.below_jumbo {
+  width: 100%;
+  position: absolute;
+  top: 30rem;
+  margin: 0.3rem 0 0 0;
+  background-color: white; }
 
 /*spinner*/
 .cssload-container {
@@ -93,7 +111,12 @@ div.jumbotron {
 
 /*menu_index*/
 .menu_index {
+  margin-bottom: 0;
+  position: fixed;
+  width: 100%;
   font-size: larger;
+  height: 5rem;
+  z-index: 1;
   /*link group that comes after login/logout buttons*/
   /*login_info (login/logout buton group)*/ }
   .menu_index .navbar-brand {
@@ -186,12 +209,17 @@ div.jumbotron {
   margin-left: 4rem;
   /*WEEK VIEW*/
   /*END WEEK VIEW*/
+  /*DAY VIEW*/
+  /* END DAY VIEW */
   /*MONTH BOX*/
   /*END MONTH BOX*/ }
   .appointments_calendar .view_controlls {
     text-align: center; }
     .appointments_calendar .view_controlls button {
       margin: 0 0.5rem; }
+  .appointments_calendar .any_time_appointment {
+    margin: 1rem;
+    text-align: justify; }
   .appointments_calendar .prev_next_controlls {
     margin-bottom: 1rem; }
     .appointments_calendar .prev_next_controlls button {
@@ -230,6 +258,34 @@ div.jumbotron {
         margin-left: 1rem; }
       .appointments_calendar .week_day_panel .day_body .doctor_appointment {
         border-bottom: 1px solid; }
+  .appointments_calendar .day_panel {
+    margin: 0.5rem;
+    padding: 0;
+    border: 1px solid;
+    border-radius: 0.5rem;
+    border-color: #D8EAF0; }
+    .appointments_calendar .day_panel .day_heading {
+      background-color: #C3DFE8;
+      text-align: center;
+      padding: 0px; }
+    .appointments_calendar .day_panel .day_body {
+      font-size: 12px;
+      padding: 2rem; }
+      .appointments_calendar .day_panel .day_body .init_appointment_btn {
+        width: 80%;
+        white-space: normal;
+        padding: 0rem;
+        font-size: small;
+        margin-bottom: 0.5rem; }
+      .appointments_calendar .day_panel .day_body .doctor_avatar {
+        height: 3.5rem;
+        width: 3.5rem;
+        border-radius: 100%; }
+      .appointments_calendar .day_panel .day_body .doctor_name {
+        margin-bottom: 0px;
+        margin-left: 1rem; }
+      .appointments_calendar .day_panel .day_body .doctor_appointment {
+        border-bottom: 1px solid; }
   .appointments_calendar .month_box {
     text-align: center;
     height: 14rem;
@@ -243,12 +299,14 @@ div.jumbotron {
       height: 2rem;
       border-color: #D8EAF0;
       cursor: pointer; }
+    .appointments_calendar .month_box .today {
+      background-color: #DFB5EB; }
     .appointments_calendar .month_box .current_week {
-      background-color: aliceblue; }
+      background-color: #90C3D4; }
     .appointments_calendar .month_box .week_row:hover {
-      background-color: red; }
+      background-color: #90C3D4; }
     .appointments_calendar .month_box .day:hover {
-      background-color: yellow; }
+      background-color: #127596; }
 
 /*APPOINTMENT_PROPOSAL_NEW*/
 .appointment_proposal_new {
@@ -289,5 +347,54 @@ div.jumbotron {
       margin: 2rem 1rem 0; }
 
 /*END APPOINTMENT PROPOSAL NEW*/
+/*PRICE LIST INDEX*/
+.pricelist {
+  padding-top: 2rem; }
+  .pricelist .disclaimer {
+    text-align: center;
+    font-size: larger; }
+  .pricelist .category_name {
+    text-align: center;
+    font-size: larger;
+    margin: 1rem; }
+  .pricelist tbody > .price_item:nth-child(odd) {
+    background-color: #BFE4F2; }
+  .pricelist .price_item:hover {
+    background-color: #F5D5C9; }
+
+/*END PRICE LIST INDEX*/
+/*DOCTOR INDEX*/
+.doctor_index {
+  margin: auto; }
+  .doctor_index .center-block {
+    text-align: center; }
+  .doctor_index .thumbnail {
+    display: inline-block;
+    background-color: #6FC2DE;
+    margin: auto;
+    max-width: 400px;
+    margin-top: 1rem;
+    margin-left: 1rem; }
+    .doctor_index .thumbnail .avatar {
+      height: 100px;
+      width: 100px; }
+    .doctor_index .thumbnail .profile_info {
+      text-align: center;
+      margin: 0.5rem 0;
+      border-top: 1px solid #BFD2D9; }
+
+/*END DOCTOR INDEX*/
+/*menu_index animation*/
+@keyframes example {
+  0% {
+    opacity: 0; }
+  100% {
+    opacity: 1; } }
+.menu_index {
+  animation-name: example;
+  animation-duration: 1s;
+  animation-timing-function: linear; }
+
+/*END menu_index animation*/
 
 /*# sourceMappingURL=application.css.map */
