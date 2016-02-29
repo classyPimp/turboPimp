@@ -16,60 +16,53 @@ module Components
       end
 
       def render
-        t(:div, {className: "row"},
-          t(:div, {className: "col-lg-2"},
+        t(:div, {className: "row dashboard"},
+          t(:div, {className: "col-lg-2 left_panel"},
             if state.current_user.has_role? [:admin] 
-              t(:div, {},
-                "actions for admin:",
-                t(:br, {}),
-                t(:button, {onClick: ->{init_user_creation}}, "add users"),
-                t(:br, {}),
-                t(:button, {onClick: ->{init_users_index} }, "list users"),
-                t(:br, {}),
-                t(:button, {onClick: ->{init_menues_index_edit}}, "edit menu"),
-                t(:br, {}),
-                t(:button, {onClick: ->{init_pages_new}}, "create new page"),
-                t(:br, {}),
-                t(:button, {onClick: ->{init_pages_index}}, "list and search for pages" ),
-                t(:br, {}),
-                t(:button, {onClick: ->{init_prices_index}}, 'browse and edit price list')
+              t(:div, {className: 'roles_block'},
+                t(:p, {className: 'role_category'}, "actions for admin:"),
+                t(:ul, {},
+                  t(:li, {onClick: ->{init_user_creation}}, "add users"),
+                  t(:li, {onClick: ->{init_users_index} }, "list users"),
+                  t(:li, {onClick: ->{init_menues_index_edit}}, "edit menu"),
+                  t(:li, {onClick: ->{init_pages_new}}, "create new page"),
+                  t(:li, {onClick: ->{init_pages_index}}, "list and search for pages" ),
+                  t(:li, {onClick: ->{init_prices_index}}, 'browse and edit price list')
+                )
               )
             end,
             if state.current_user.has_role? [:blogger]
-              t(:div, {},
-                "actions for blogger",
-                t(:br, {}),
-                t(:button, {onClick: ->{init_components_blogs_new}}, "create new blog post"),
-                t(:br, {}),
-                t(:button, {onClick: ->{init_blogger_blogs_last_ten}}, "browse my last ten blog posts"),
-                t(:br, {}),
-                t(:button, {onClick: ->{init_blogs_index}}, "list and search my blogs")
+              t(:div, {className: 'roles_block'},
+                t(:p, {className: 'role_category'}, "actions for blogger"),
+                t(:ul, {},
+                  t(:li, {onClick: ->{init_components_blogs_new}}, "create new blog post"),
+                  t(:li, {onClick: ->{init_blogger_blogs_last_ten}}, "browse my last ten blog posts"),
+                  t(:li, {onClick: ->{init_blogs_index}}, "list and search my blogs")
+                )
               )
             end,
             if state.current_user.has_role? [:doctor]
-              t(:div, {},
-                "actions for doctor",
-                t(:br, {}),
-                t(:button, {onClick: ->{init_doctor_appointments_index}}, "my appointments")
+              t(:div, {className: 'roles_block'},
+                t(:p, {className: 'role_category'}, "actions for doctor"),
+                t(:ul, {},
+                  t(:li, {onClick: ->{init_doctor_appointments_index}}, "my appointments")
+                )
               )
             end,
             if state.current_user.has_role? [:appointment_scheduler]
-              t(:div, {},
-                "actions for appointment scheduler",
-                t(:br, {}),
-                t(:button, { onClick: ->{init_appointment_schedulers_appointments_proposal_index} }, "appointments requests"),
-                t(:br, {}),
-                t(:button, { onClick: ->{ init_appointment_schedulers_appointments_index } }, "browse schedule"),
-                t(:br, {}),
-                t(:button, { onClick: ->{ init_user_appointment_schedulers_new } }, 'register patient'),
-                t(:br, {}),
-                t(:button, { onClick: ->{ init_user_appointment_schedulers_index } }, 'manage patients'),
-                t(:br, {}),
-                t(:button, { onClick: ->{ init_appointment_schedulers_chat_messages_index } }, 'browse chats')
+              t(:div, {className: 'roles_block'},
+                t(:p, {className: 'role_category'}, "actions for appointment scheduler"),
+                t(:ul, {},
+                  t(:li, { onClick: ->{init_appointment_schedulers_appointments_proposal_index} }, "appointments requests"),
+                  t(:li, { onClick: ->{ init_appointment_schedulers_appointments_index } }, "browse schedule"),
+                  t(:li, { onClick: ->{ init_user_appointment_schedulers_new } }, 'register patient'),
+                  t(:li, { onClick: ->{ init_user_appointment_schedulers_index } }, 'manage patients'),
+                  t(:li, { onClick: ->{ init_appointment_schedulers_chat_messages_index } }, 'browse chats')
+                )
               ) 
             end
           ),
-          t(:div, {className: "col-lg-10"},
+          t(:div, {className: "col-lg-10 content"},
             state.current_control_component.to_n
           )
         ) 

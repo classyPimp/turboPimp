@@ -21,6 +21,8 @@
   padding-left: 0px;
   padding-right: 0px;
   overflow-X: hidden;
+  width: 100%;
+  margin: 0;
 }
 
 /*END APP CONTAINER*/
@@ -29,7 +31,7 @@
   width: 100%;
   position: absolute;
   top: 5rem;
-  margin: 4rem 0 0 0; 
+  padding: 1rem 1.5rem; 
 }
 
 /*jumbotron*/
@@ -42,8 +44,9 @@
   z-index: -1;
   position: fixed;
   top: 5rem;
-  height: 25rem;
+  height: 30rem;
   width: 100%;
+  margin-bottom: 0;
   h1 {
     color: #b3b3b3;
   }
@@ -53,9 +56,10 @@
 .below_jumbo {
   width: 100%;
   position: absolute;
-  top: 30rem;
+  top: 25rem;
   margin: 0.3rem 0 0 0;
   background-color: white; 
+  padding-top: 2rem;
 }
 
  /*spinner*/
@@ -141,6 +145,7 @@
   font-size: larger;
   height: 5rem;
   z-index: 1;
+  
 
   .navbar-brand {
     padding-left: 4rem;
@@ -595,10 +600,76 @@
 }
 
 .menu_index {
-  //height: 5rem;
+  height: 5rem;
   animation-name: example;
   animation-duration: 1s;
   animation-timing-function: linear;
 }
 
 /*END menu_index animation*/
+
+
+/* DASHBOARD*/
+.dashboard {
+
+  .left_panel {
+    height: 100vh;
+    font-size: larger;
+    border-right-style: solid;
+    border-right-width: 1px;
+    border-right-color: black;
+    padding: 0;
+     
+    .role_category {
+      text-align: center;
+    }
+
+    ul {
+      
+      padding: 0;
+
+
+      li {
+        list-style-type: none;
+        border: 1px solid #D5EFF7;
+        height: 3rem;
+        background-color: #CAE1E8;
+        padding: 0 1rem;
+        cursor: pointer;
+      }
+
+      li:hover {
+        background-color: #3EC3F0;
+      }
+
+    }
+  }
+
+
+  /*CREATE USER FORM*/
+  .create_user_form {
+    width: 50%;
+    margin: auto;
+    margin-top: 4rem;
+    text-align: center;
+    border: 1px solid;
+    padding: 2rem;
+
+    input {
+      text-align: center;
+    }
+
+    input, textarea {
+      width: 70%;
+      height: 3.5rem;
+    }
+    
+    .form_input {
+      margin-bottom: 2rem;
+    }
+  }
+  /*END CREATE USER FORM*/
+}
+
+
+/* END DASHBOARD */

@@ -168,7 +168,7 @@ class User < ActiveRecord::Base
 
   has_many :si_appointments_as_patient1id, ->{select(:id)},class_name: 'Appointment',foreign_key: 'patient_id'
 
-  has_many :chats
+  has_many :chats, dependent: :destroy
 
   has_many :chat_messages
 

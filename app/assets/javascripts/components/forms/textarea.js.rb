@@ -16,15 +16,11 @@ module Forms
     end
 
     def render
-      t(:div, {},
-        if props.show_name
-          props.show_name
-        else
-          t(:p, {}, props.attr)
-        end,
+      t(:div, {className: 'form_input'},
+        t(:p, {}, props.show_name),
         *if props.model.errors[props.attr]
           splat_each(props.model.errors[props.attr]) do |er|
-            t(:div, {},
+            t(:div, {className: 'form_errors'},
               t(:p, {},
                 er
               ),

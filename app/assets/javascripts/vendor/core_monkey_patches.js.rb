@@ -55,6 +55,18 @@ class Moment
 
 end
 
+class Waypoint
+
+  def initialize(opt)
+    @native = Native(`new Waypoint(#{opt.to_n})`)
+  end
+
+  def destroy
+    @native.destroy
+  end
+
+end
+
 class String
   def to_snake_case
     self.gsub(/::/, '/').

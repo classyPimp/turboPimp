@@ -50,7 +50,7 @@ module Components
       end
       
       def render
-        t(:div, {className: 'container-fluid'},
+        t(:div, {},
           t(Components::Menues::Index, {ref: "menu"}),
           t(Shared::Flash::Holder, {ref: "flash"}),
           spinner,

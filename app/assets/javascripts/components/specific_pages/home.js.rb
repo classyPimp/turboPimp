@@ -41,29 +41,13 @@ module Components
                 ]
               }
             )
-          ),
-          t(:button, {onClick: ->{unlist}}, 'unlisten')
+          )
         )
-      end
-
-      class Waypoint
-
-        def initialize(opt)
-          `console.log(#{opt})`
-          @native = Native(`new Waypoint(#{opt.to_n})`)
-        end
-
-        def destroy
-          @native.destroy
-        end
-
       end
 
 
       def component_did_mount
-        p 'did mount'
-        
-        @wayp = Element.find('.below_jumbo')
+        @wayp = Element.find(ref('row_below').to_n)
         @wy  = Waypoint.new(
           {
             element: @wayp,
@@ -71,22 +55,11 @@ module Components
             offset: '10%'
           }
         )
-        # @wy = %x{
-        #   waypoint = new Waypoint({
-        #     element: #{@wayp.to_n},
-        #     handler: function(direction) {
-        #       console.log('I am still alive')
-        #     },
-        #     offset: '10%'
-        #   })
-        # }
-        p 'foo'
       end
 
-      def unlist
-        p 'foo'
+      def component_will_unmount
         @wy.destroy
-        p 'foo'
+        p 'wayp destroyed'
       end
 
     end
