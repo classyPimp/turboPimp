@@ -98,7 +98,7 @@ class RW
   end
 
   def __component_will_update__(next_props, next_state)
-    component_will_update(Native(next_props), Native(next_state))
+    component_will_update(next_props, next_state)
   end
 
   def component_will_update

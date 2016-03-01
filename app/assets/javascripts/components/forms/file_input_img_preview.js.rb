@@ -7,8 +7,22 @@ module Forms
       super
     end
 
+    def get_initial_state
+      {
+        errors: false
+      }
+    end
+
+    def component_will_receive_props(next_props)
+      if x = next_props.model.errors[props.attr]
+        set_state errors: x, uploaded: false, image_to_preview: false
+      else
+        set_state errors: false
+      end
+    end
+
     def valid_or_not?
-      if props.model.errors[:attr]
+      if props.model.errors[props.attr]
         "invalid"
       else
         "valid"
@@ -22,7 +36,7 @@ module Forms
     def get_initial_state
       {
         image_to_preview: false,
-        toggler: false #this needed because of weird bug of not rendering errors
+        counter: 0 #this needed because of weird bug of not rendering errors
       } 
     end
 
@@ -52,30 +66,18 @@ module Forms
       z      
     end
 
-    def make_errs
-      props.model.add_error(:file, 'bad error')
-      force_update
-    end
 
     def render
-      @a = 0
-      p 'rerendering'
+
       comp_options = props.comp_options ? props.comp_options : {}
 
-      t(:div, comp_options.merge({className: "form_input #{comp_options[:className]}"}),
+      t(:div, comp_options.merge({className: "form_input #{comp_options[:className]} #{valid_or_not?}"}),
 
-        t(:div, {},
-          if props.model.errors[props.attr]
-            t(:p, {}, "#{props.model.errors[props.attr]}")
-          end,
-          if combined_errors.length > 0
-            t(:div, {className: 'errors'},
-              *splat_each(combined_errors) do |er|
-                t(:p, {},
-                  "#{er}"
-                )              
-              end
-            )
+        t(:div, {key: state.counter},
+          *if state.errors
+            splat_each(state.errors) do |er|
+              t(:p, {}, "#{er}")
+            end
           end
         ),
         if state.uploaded
@@ -117,12 +119,13 @@ module Forms
 
     def collect
       props.model.attributes[props.attr] = ref("#{self}").files[0] || ""
-      set_state toggler: !state.toggler
+      set_state counter: (state.counter += 1)
     end
 
     def cancel_upload
       clear_inputs
       props.model.attributes[props.attr] = ''
+      set_state uploaded: false, image_to_preview: false
     end
 
     def clear_inputs

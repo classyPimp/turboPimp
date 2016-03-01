@@ -17,6 +17,9 @@
  */
 /*VARS*/
 /*END VARS*/
+.invalid {
+  color: red;
+}
 /*FLAS HOLDER*/
 .flash_holder {
   position: absolute;

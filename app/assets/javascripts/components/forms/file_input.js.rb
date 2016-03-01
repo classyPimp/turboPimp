@@ -34,6 +34,7 @@ module Forms
       t(:div, comp_options.merge({className: "form_input #{comp_options[:className]}"}),
         t(:p, {className: 'form_input_label x'}, "#{(props.show_name || props.attr)}"),
         *if props.model.errors[props.attr] || props.model.errors[props.show_errors_for] 
+          p "yeah got errors"
           splat_each(combined_errors) do |er|
             t(:div, {className: 'individual_error'},
               t(:p, {},
