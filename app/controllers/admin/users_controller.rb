@@ -29,6 +29,14 @@ class Admin::UsersController < ApplicationController
 
     if @user.save
       render json: @user.as_json(only: [:id, :email])
+    else
+      render json: @user.as_json(
+        only: [],
+        include: [
+        {profile: {root: true, only: [], methods: [:errors]}}, 
+        {roles: {root: true, only: [], methods: [:errors]}}, 
+        {avatar: {root: true, only: [], methods: [:errors]}}
+        ])
     end
 
   end

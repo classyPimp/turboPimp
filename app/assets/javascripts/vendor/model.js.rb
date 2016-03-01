@@ -281,7 +281,6 @@ class Model
     else   
       form_data.append track, val
     end
-    `console.log(#{form_data})`
     form_data
   end
 

@@ -29,7 +29,7 @@ module Components
               input(Forms::Input, state.form_model, :password, {type: "password", show_name: 'password'}),
               input(Forms::Input, state.form_model, :password_confirmation, {type: "password", show_name: 'confirm password'}),
               input(Forms::Textarea, state.form_model.profile, :bio, {show_name: 'biography'}),
-              input(Forms::Input, state.form_model.avatar, :file, {type: "file", has_file: true, preview_image: true, show_name: 'avatar'}),
+              input(Forms::FileInputImgPreview, state.form_model.avatar, :file, {show_name: 'avatar'}),
               if state.current_user.has_role? :admin
                 t(:div, {},
                   t(:p, {}, "choose roles for user"),
