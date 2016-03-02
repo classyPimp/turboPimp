@@ -12,24 +12,60 @@ class Admin::UsersController < ApplicationController
 
   def index
 
-    # per_page = params[:per_page] || 25
-    #   search_query = params[:search_query]
-    #   page = params[:page]
-    #   @model = Page
-    #   if !search_query.blank?
-    #     @model = @model.search_by_title_body(search_query)
-    #   else
-    #     @model = @model.all
-    #   end
-    #   @model = @model.paginate(per_page: per_page, page: page)
-    #   @model = @model.as_json() << @controller.extract_pagination_hash(@model)
 
     @perms = perms_for :User  
 
     auth! @perms.admin_index
 
+    page = params[:page]
+    per_page = params[:per_page] || 25
+    search_query = params[:search_query]
+    roles = params[:roles]
+    registered_only = params[:registered_only]
+    unregistered_only = params[:unregistered_only]
+    chat_only = params[:chat_only]
+
+    if !search_query.blank?
+
+      @users = User.user_search(search_query)
+
+    else
+
+      @users = User.all
     
-    
+    end
+
+    if roles
+
+      @users = @users.joins(:roles).where('roles.name in ?', roles)
+
+    end
+
+    if registered_only
+
+      @users = @users.where(registered: true)
+
+    end
+
+    if unregistered_only
+
+      @users = @users.where(registered: false)
+
+    end
+
+    if chat_only
+
+      other_roles = RoleManager.allowed_global_roles
+      other_roles.delete('from_chat')
+      @users.joins(:roles).where('roles.name = ?', 'from_chat').where('roles.name not in ?', other_roles)
+
+    end
+
+    @users = @users.select('users.id, users.email')
+
+    @users = @users.paginate(per_page: per_page, page: page)
+
+    @users = @users.as_json(@perms.serialize_on_success) << @controller.extract_pagination_hash(@users)
 
     render json: @perms.model
 

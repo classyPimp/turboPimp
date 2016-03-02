@@ -80,20 +80,16 @@ module Perms
 
     def admin_index
 
-      per_page = params[:per_page] || 25
+      if @current_user && @current_user.has_any_role?(:admin)
 
-      if @current_user && @current_user.has_any_role?(:admin, :root)
-
-        @model = ::User.includes(:profile_id_name, :avatar, :roles).all.paginate(page: params[:page], per_page: per_page)
-        
-        @model = @model.as_json(
-          only:    ::User::EXPOSABLE_ATTRIBUTES,
+       @serialize_on_success = {
+          only:    [:id, :email],
           include: {
             avatar:  { root: true, only: [:id], methods: [:url]},
-            profile: { root: true, only: [:id,  :name]},
-            roles: { root: true, only: [:name] }
+            si_profile1name_phone_number: {root: true, only: [:id, :name, :user_id, :email, :phone_number]},
+            roles: { root: true, only: [:name, :id] }
           }
-        ) << @controller.extract_pagination_hash(@model)
+        }
       end
       
     end
