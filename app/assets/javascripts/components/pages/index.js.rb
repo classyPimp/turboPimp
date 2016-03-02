@@ -64,7 +64,7 @@ module Components
       end
 
       def pagination_switch_page(_page, per_page)
-        Blog.index({extra_params: {page: _page, per_page: per_page}}.merge(@namespace)).then do |pages|
+        Page.index({extra_params: {page: _page, per_page: per_page, search_query: props.location.query.search_query}}.merge(@namespace)).then do |pages|
           Components::App::Router.history.replaceState(nil, props.location.pathname, {page: _page, per_page: per_page})
           extract_pagination(pages)
           set_state pages: pages

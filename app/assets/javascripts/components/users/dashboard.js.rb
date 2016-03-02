@@ -73,7 +73,8 @@ module Components
       end
       #role admin
       def init_users_index
-        set_state current_control_component: Native(t(Components::Users::Index, {as_admin: true}))
+        set_state current_control_component: Native(t(Components::Users::Index, {as_admin: true, location: props.location,
+                                                                                 history: props.history}))
       end
 
       def init_menues_index_edit

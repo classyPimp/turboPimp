@@ -2,6 +2,12 @@ class User < ActiveRecord::Base
   
   include Services::CustomErrorable
 
+  include PgSearch
+
+  pg_search_scope :user_search, :associated_against => {
+    :profile => [:name],
+  }, against: [:email]
+
   DEFAULT_PASSWORD = '123456'
 
   @arbitrary = {}

@@ -23,7 +23,15 @@ $main-border-radius: 1.5rem;
 
 /*END VARS*/
 
+body {
+  overflow-X: hidden;
+}
 
+.container-fluid {
+  margin: 0;
+  width: 100%;
+
+}
 /*FLAS HOLDER*/
 .flash_holder {
   position: absolute;
@@ -628,9 +636,9 @@ $main-border-radius: 1.5rem;
 
 /* DASHBOARD*/
 .dashboard {
-
+  display: flex;
   .left_panel {
-    height: 100vh;
+    height: 100%;
     font-size: larger;
     border-right-style: solid;
     border-right-width: 1px;
@@ -649,7 +657,8 @@ $main-border-radius: 1.5rem;
       li {
         list-style-type: none;
         border: 1px solid #D5EFF7;
-        height: 3rem;
+        height: auto;
+        min-height: 3rem;
         background-color: #CAE1E8;
         padding: 0 1rem;
         cursor: pointer;
@@ -719,3 +728,35 @@ $main-border-radius: 1.5rem;
   }
 }
 /*END FILE INPUT*/
+
+/*USERS INDEX*/
+.users_index {
+  margin: auto;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  
+  .user_box {
+    text-align: center;
+    border-radius: $main-border-radius;
+    border: 1px solid $main-border-color;
+    padding: 1rem;
+    margin: 0.5rem;
+    min-width: 40rem;
+
+    img {
+      width: 48px;
+      height: 48px;
+    }
+  }
+  
+}
+
+/*END USERS INDEX*/
+
+/*APP WIDE PAGINATION*/
+.pagination_main {
+  text-align: center;
+}
+
+/*END APP WIDE PAGINATION*/

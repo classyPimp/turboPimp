@@ -17,9 +17,13 @@
  */
 /*VARS*/
 /*END VARS*/
-.invalid {
-  color: red;
-}
+body {
+  overflow-X: hidden; }
+
+.container-fluid {
+  margin: 0;
+  width: 100%; }
+
 /*FLAS HOLDER*/
 .flash_holder {
   position: absolute;
@@ -416,10 +420,11 @@
 /*END menu_index animation*/
 /* DASHBOARD*/
 .dashboard {
+  display: flex;
   /*CREATE USER FORM*/
   /*END CREATE USER FORM*/ }
   .dashboard .left_panel {
-    height: 100vh;
+    height: 100%;
     font-size: larger;
     border-right-style: solid;
     border-right-width: 1px;
@@ -432,7 +437,8 @@
       .dashboard .left_panel ul li {
         list-style-type: none;
         border: 1px solid #D5EFF7;
-        height: 3rem;
+        height: auto;
+        min-height: 3rem;
         background-color: #CAE1E8;
         padding: 0 1rem;
         cursor: pointer; }
@@ -475,5 +481,28 @@
   top: 0; }
 
 /*END FILE INPUT*/
+/*USERS INDEX*/
+.users_index {
+  margin: auto;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center; }
+  .users_index .user_box {
+    text-align: center;
+    border-radius: 1.5rem;
+    border: 1px solid #A7DFF2;
+    padding: 1rem;
+    margin: 0.5rem;
+    min-width: 40rem; }
+    .users_index .user_box img {
+      width: 48px;
+      height: 48px; }
+
+/*END USERS INDEX*/
+/*APP WIDE PAGINATION*/
+.pagination_main {
+  text-align: center; }
+
+/*END APP WIDE PAGINATION*/
 
 /*# sourceMappingURL=application.css.map */

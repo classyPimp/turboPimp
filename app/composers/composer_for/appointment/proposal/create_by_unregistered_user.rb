@@ -31,7 +31,7 @@ class ComposerFor::Appointment::Proposal::CreateByUnregisteredUser
 
         user = ::User.new
 
-        user_cmpsr = ComposerFor::User::Unregistered::Create.new(user, @user_permitted_attributes)
+        user_cmpsr = ComposerFor::User::Unregistered::Create.new(user, @user_permitted_attributes, ['patient', 'from_proposal'])  
 
         user_cmpsr.when(:ok) do |user|
           @appointment.patient_id = user.id

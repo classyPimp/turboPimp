@@ -12,9 +12,24 @@ class Admin::UsersController < ApplicationController
 
   def index
 
-    @perms = perms_for :User
+    # per_page = params[:per_page] || 25
+    #   search_query = params[:search_query]
+    #   page = params[:page]
+    #   @model = Page
+    #   if !search_query.blank?
+    #     @model = @model.search_by_title_body(search_query)
+    #   else
+    #     @model = @model.all
+    #   end
+    #   @model = @model.paginate(per_page: per_page, page: page)
+    #   @model = @model.as_json() << @controller.extract_pagination_hash(@model)
+
+    @perms = perms_for :User  
 
     auth! @perms.admin_index
+
+    
+    
 
     render json: @perms.model
 

@@ -17,7 +17,7 @@
 
   def check_if_user_logged_in_or_create
     unless @current_user
-      cmpsr = ComposerFor::User::Unregistered::CreateVisitor.new(@controller)
+      cmpsr = ComposerFor::User::Unregistered::CreateVisitor.new(@controller, ['from_chat'])
       cmpsr.when(:ok) do |user|
         @current_user = user
         check_if_chat_exists_or_create

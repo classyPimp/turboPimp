@@ -2,9 +2,14 @@
 
   include Services::PubSubBus::Publisher
 
-  def initialize(user, permitted_attributes)
+  def initialize(user, permitted_attributes, roles_to_add)
     @user = user
-    @permitted_attributes = permitted_attributes  
+    @permitted_attributes = permitted_attributes
+    role_names = []
+    roles_to_add.each do |name|
+      role_names << {name: name}
+    end
+    @permitted_attributes[:roles_attributes] = role_names
   end
 
   def run
@@ -15,7 +20,7 @@
 
   def prepare_attributes
     User.arbitrary[:register_as_guest] = true
-    @user.attributes = @permitted_attributes
+    @user.attributes = @permitted_attributes.to_h
   end
 
   def compose
@@ -24,9 +29,6 @@
       begin
 
         @user.save!
-
-        @user.add_role :patient
-
         @transaction_success = true
         
       rescue Exception => e

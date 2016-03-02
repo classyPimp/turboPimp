@@ -19,7 +19,7 @@ class ChatMessagesController < ApplicationController
 
     cmpsr.run
 
-  end
+  end 
 
   def index
     

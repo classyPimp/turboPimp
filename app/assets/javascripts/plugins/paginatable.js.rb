@@ -66,7 +66,7 @@ module Plugins
         next_query[:per_page] = @per_page
         @_next_page_href = props.history.createHref(props.location.pathname, next_query)
       end
-      t(:div, {},    
+      t(:div, {className: 'pagination_main'},    
         *if p_n = state.pagination
           t(:nav, {},
             t(:ul, {className: "pagination", style: {cursor: "pointer"}}, 
@@ -133,7 +133,8 @@ module Plugins
     end
 
     def _pagination_switch_page(page, e)
-      e.preventDefault
+      # `console.log(#{e})`
+      # `#{e}.preventDefault`
       @_per_page ||= 25
       pagination_switch_page(page, @_per_page)
     end
