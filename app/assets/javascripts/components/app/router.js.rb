@@ -23,6 +23,7 @@ module Components
 
             t(`Route`, {path: 'contacts', component: Components::SpecificPages::Contacts.create_class}),
 
+
             t(`Route`, {path: "/users", component: Users::Main.create_class}, 
               t(`Route`, {path: "signup", component: Users::SignUp.create_class }),
               t(`Route`, {path: "activations", component: Users::Activations.create_class}),
@@ -30,7 +31,14 @@ module Components
               t(`Route`, {path: "password_reset", component: Users::PasswordReset.create_class}),
               t(`Route`, {path: "update_new_password/:digest", component: Users::PasswordResetForm.create_class}),
               t(`Route`, {path: "new", component: Users::New.create_class}),
-              t(`Route`, {path: "dashboard", component: Components::Users::Dashboard.create_class}),
+              t(`Route`, {path: "dashboard", component: Components::Users::Dashboard::Main.create_class},
+                t(`Route`, {path: 'new_user', component: Components::Users::New.create_class}),
+                t(`Route`, {path: 'users_index', component: Components::Users::Index.create_class}),
+                t(`Route`, {path: 'edit_menu', component: Components::Menues::IndexEdit.create_class}),
+                t(`Route`, {path: 'create_page', component: Components::Pages::New.create_class}),
+                t(`Route`, {path: 'pages_index', component: Components::Pages::Index.create_class}),
+                t(`Route`, {path: 'edit_price_list', component: Components::Admin::Prices::Index.create_class}),
+              ),
               t(`Route`, {path: "show/:id", component: Users::Show.create_class}),
               t(`Route`, {path: ":id/edit", component: Users::Edit.create_class})
             ),

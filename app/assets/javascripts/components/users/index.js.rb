@@ -16,23 +16,45 @@ module Components
       end
 
       def component_did_mount
-        extra_params = {}
-        (x = props.location.query.page) ? (extra_params[:page] = x) : nil
-        extra_params[:per_page] = (x = props.location.query.per_page) ? x : 25
-        extra_params[:search_query] = (x = props.location.query.search_query) ? x : nil
+
+        extra_params = Hash.new(props.location.query.to_n)
         make_query(extra_params)
+      end
+
+      def component_did_update
+        
+      end
+
+      def current_location_query
+
+        x = {}
+        z = props.location.query
+        #x[:per_page] = z.per_page
+        #x[:page] = z.page
+        x[:search_query] = z.search_query
+        x[:registered_only] = z.registered_only
+        x[:unregistered_only] = z.unregistered_only
+        x[:chat_only] = z.chat_only
+        x 
+
       end
 
       def make_query(extra_params)
         @as_admin = props.as_admin ? {namespace: "admin"} : {}
         User.index({extra_params: extra_params}.merge(@as_admin)).then do |users|
+          begin
           extract_pagination(users)
           set_state users: users
+          rescue Exception => e
+            `console.log(#{e})`
+          end
         end
 
       end
 
       def render
+        p Hash.new(props.location.query.to_n)
+        
         t(:div, {className: 'row'},
           t(:div, {className: 'search'}, 
             t(:input, {ref: "search"}),
@@ -74,20 +96,27 @@ module Components
       end
 
       def pagination_switch_page(_page, per_page)
-        User.index({extra_params: {page: _page, per_page: per_page}}.merge(@as_admin)).then do |users|
-          Components::App::Router.history.replaceState(nil, props.location.pathname, {page: _page, per_page: per_page})
-          extract_pagination(pages)
-          set_state users: users
-        end
+        # x = current_location_query
+        # x[:page] = _page
+        # x[:per_page] = per_page
+        # User.index({extra_params: x.merge(@as_admin)}).then do |users|
+        #   props.history.pushState(nil, props.location.pathname, x)
+        #   extract_pagination(users)
+        #   set_state users: users
+        # end
+      end
+
+      def on_pere_page_select
+        
       end
 
       def search
-        to_search = self.ref("search").value.strip
-        pathname = props.location.pathname
-        query = Hash.new(props.location.query.to_n)
-        query[:search_query] = to_search
-        make_query(query)
-        props.history.pushState(nil, pathname, query)
+        # to_search = self.ref("search").value.strip
+        # pathname = props.location.pathname
+        # query = Hash.new(props.location.query.to_n)
+        # query[:search_query] = to_search
+        # make_query(query)
+        # props.history.pushState(nil, pathname, query)
       end
 
       def destroy_selected(_user)

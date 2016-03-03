@@ -35,19 +35,19 @@ class Admin::UsersController < ApplicationController
     
     end
 
-    if roles
+    unless roles.blank?
 
       @users = @users.joins(:roles).where('roles.name in ?', roles)
 
     end
 
-    if registered_only
+    unless registered_only.blank?
 
       @users = @users.where(registered: true)
 
     end
 
-    if unregistered_only
+    unless unregistered_only.blank?
 
       @users = @users.where(registered: false)
 
@@ -55,7 +55,7 @@ class Admin::UsersController < ApplicationController
 
     if chat_only
 
-      other_roles = RoleManager.allowed_global_roles
+      other_roles = Services::RoleManager.allowed_global_roles
       other_roles.delete('from_chat')
       @users.joins(:roles).where('roles.name = ?', 'from_chat').where('roles.name not in ?', other_roles)
 
@@ -65,9 +65,9 @@ class Admin::UsersController < ApplicationController
 
     @users = @users.paginate(per_page: per_page, page: page)
 
-    @users = @users.as_json(@perms.serialize_on_success) << @controller.extract_pagination_hash(@users)
+    @users = @users.as_json(@perms.serialize_on_success) << self.extract_pagination_hash(@users)
 
-    render json: @perms.model
+    render json: @users
 
   end
 

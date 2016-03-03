@@ -22,6 +22,10 @@ module Components
         }
       end
 
+      def component_will_receive_props(next_props)
+        p Hash.new(props.location.query.to_n)
+      end
+
       def component_did_mount
         extra_params = {}
         (x = props.location.query.page) ? (extra_params[:page] = x) : nil

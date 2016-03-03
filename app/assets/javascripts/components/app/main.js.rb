@@ -9,6 +9,7 @@ module Components
         attr_accessor :props_from_server
         attr_accessor :history
         attr_accessor :view_port_kind
+        attr_accessor :location
       end
 
       def self.set_view_ports_size  
@@ -28,6 +29,7 @@ module Components
       def init
         self.class.set_view_ports_size
         self.class.instance = self
+        self.class.location = props.location
       end
 
       def get_initial_state  

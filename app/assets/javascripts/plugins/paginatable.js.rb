@@ -54,9 +54,33 @@ module Plugins
     #just call it in render as regular #t
     #used after pagination was extracted from response
 
+    def href_for_page(page)
+      href = Hash.new(props.location.query.to_n)
+      href[:page] = page
+      href[:per_page] = @per_page
+      href = props.history.createHref(props.location.pathname, href)
+    end
+
+    # def prev_next(direction)
+    #   @per_page = props.location.query.per_page || 1
+    #   prev_query = Hash.new(props.location.query.to_n)
+    #   prev_query[:page] = state.pagination.current_page - 1
+    #   prev_query[:per_page] = @per_page
+    #   @_previous_page_href = props.history.createHref(props.location.pathname, prev_query)
+    #   next_query = prev_query.clone
+    #   next_query[:page] = prev_query[:page] + 2
+    #   next_query[:per_page] = @per_page
+    #   @_next_page_href = props.history.createHref(props.location.pathname, next_query)
+    # end
+
+    def per_page
+      @per_page = props.location.query.per_page || 1
+    end
+
     def will_paginate(update_location = false)
-      if update_location && state.pagination
-        @per_page = props.location.query.per_page || 25
+
+      if state.pagination # && update_location  
+        #@per_page = props.location.query.per_page || 1
         prev_query = Hash.new(props.location.query.to_n)
         prev_query[:page] = state.pagination.current_page - 1
         prev_query[:per_page] = @per_page
@@ -64,14 +88,16 @@ module Plugins
         next_query = prev_query.clone
         next_query[:page] = prev_query[:page] + 2
         next_query[:per_page] = @per_page
-        @_next_page_href = props.history.createHref(props.location.pathname, next_query)
+        @_next_page_href = props.history.createHref(props.location.pathname, next_query)     
       end
+        
+      
       t(:div, {className: 'pagination_main'},    
         *if p_n = state.pagination
           t(:nav, {},
-            t(:ul, {className: "pagination", style: {cursor: "pointer"}}, 
+            t(:ul, {className: "pagination", style: {cursor: "pointer"}.to_n}, 
               t(:li, {className: x = "#{p_n.current_page == 1 ? "disabled" : ""}", 
-                      style: {cursor: "pointer"}},
+                      style: {cursor: "pointer"}.to_n},
                 unless x == "disabled" 
                   t(:a, {href: @_previous_page_href, onClick: ->(e){_pagination_switch_page(p_n.current_page - 1, Native(e))}}, "<<")
                 end
@@ -85,7 +111,8 @@ module Plugins
                             )
                 else
                   to_add = t(:li, {onClick: ->(){_pagination_switch_page(page)}},
-                    t(:span, {}, "#{page}")
+                    #t(:span, {}, "#{page}")
+                    link_to(page, href_for_page(page))
                   )
                 end
                 to_return << to_add
@@ -101,6 +128,7 @@ module Plugins
                 t(:span, {},
                   "per page", 
                   t(:select, {ref: "pagination_select", onChange: ->{per_page_select} },
+                    t(:option, {value: 1}, '1'),
                     t(:option, {value: 25}, "25"),
                     t(:option, {value: 50}, "50"),
                     t(:option, {value: 100}, "100"),
@@ -135,7 +163,7 @@ module Plugins
     def _pagination_switch_page(page, e)
       # `console.log(#{e})`
       # `#{e}.preventDefault`
-      @_per_page ||= 25
+      @_per_page ||= 1
       pagination_switch_page(page, @_per_page)
     end
 

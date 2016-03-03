@@ -114,7 +114,7 @@ class RW
   end
 
   def __component_will_receive_props__(next_props)
-    component_will_receive_props(Native(next_props))
+    component_will_receive_props(next_props)
   end
 
   def component_will_receive_props(next_props)
