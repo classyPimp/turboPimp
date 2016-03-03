@@ -35,7 +35,7 @@ class RW
   attr_accessor :controller
 
   def initialize(native)
-    @native = Native(native)
+    @native = native
     init
     assign_controller
     #validate props.
@@ -43,7 +43,7 @@ class RW
     validate_props
   end
 
-  def validate_props
+  def validate_props #decided to user this for props validation, the validate_props should be implemented the way you want.
     
   end
 
@@ -173,7 +173,7 @@ class RW
   end
 
   def props
-   @native.props
+   Native(`#{@native}.props`)
   # Native(`#{@native.to_n}.props`)   
   end
 
@@ -182,7 +182,7 @@ class RW
   end
 
   def state
-    @native.state
+    Native(`#{@native}.state`)
     #Native(`#{@native.to_n}.state`)
   end
 
@@ -191,12 +191,12 @@ class RW
   end
 
   def ref(ref)
-    @native.refs[ref]
+    Native(`#{@native}.refs[#{ref}]`)
     #Native(`#{@native.to_n}.refs[#{ref}]`)
   end
 
   def refs
-    Hash.new @native.refs.to_n
+    Hash.new `#{@native}.refs`
   end
 
   def children
@@ -209,7 +209,7 @@ class RW
     val.each do |k,v|
       `#{x}[#{k}] = #{v}`
     end
-    @native.setState(x)
+    `#{@native}.setState(x)`
     #`#{@native.to_n}.setState(#{x})`
   end
 
@@ -280,7 +280,7 @@ class RW
   end
 
   def force_update
-    @native.forceUpdate
+    `#{@native}.forceUpdate()`
   end
 
 

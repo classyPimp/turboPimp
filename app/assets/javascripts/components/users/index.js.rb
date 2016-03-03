@@ -11,37 +11,51 @@ module Components
 
       def get_initial_state
         {
-          users: ModelCollection.new
+          users: ModelCollection.new,
+          per_page: props.location.query.per_page || 1
         }
       end
 
       def component_did_mount
 
-        extra_params = Hash.new(props.location.query.to_n)
-        make_query(extra_params)
-      end
-
-      def component_did_update
-        
-      end
-
-      def current_location_query
-
-        x = {}
-        z = props.location.query
-        #x[:per_page] = z.per_page
-        #x[:page] = z.page
-        x[:search_query] = z.search_query
-        x[:registered_only] = z.registered_only
-        x[:unregistered_only] = z.unregistered_only
-        x[:chat_only] = z.chat_only
-        x 
+        make_query(extra_params({per_page: state.per_page}))
 
       end
 
-      def make_query(extra_params)
-        @as_admin = props.as_admin ? {namespace: "admin"} : {}
-        User.index({extra_params: extra_params}.merge(@as_admin)).then do |users|
+      def extra_params(pagination_options = {})
+
+        x = Hash.new(props.location.query.to_n)
+        x = x.merge(pagination_options)
+        x
+
+      end
+
+      # def component_will_update(next_props, ns)
+      #   nx = Hash.new(`#{next_props}.location.query`)
+      #   pr = Hash.new(props.location.query.to_n)
+      #   if nx != pr
+      #     make_query(nx)
+      #   end
+      # end
+      # def current_location_query
+
+      #   x = {}
+      #   z = props.location.query
+      #   #x[:per_page] = z.per_page
+      #   #x[:page] = z.page
+      #   x[:search_query] = z.search_query
+      #   x[:registered_only] = z.registered_only
+      #   x[:unregistered_only] = z.unregistered_only
+      #   x[:chat_only] = z.chat_only
+      #   x 
+
+      # end
+
+      def make_query(_extra_params)
+
+        @as_admin = state.current_user.has_role?([:admin]) ? {namespace: "admin"} : {}
+        p @as_admin
+        User.index({extra_params: _extra_params}.merge(@as_admin)).then do |users|
           begin
           extract_pagination(users)
           set_state users: users
@@ -53,8 +67,7 @@ module Components
       end
 
       def render
-        p Hash.new(props.location.query.to_n)
-        
+       
         t(:div, {className: 'row'},
           t(:div, {className: 'search'}, 
             t(:input, {ref: "search"}),
@@ -85,7 +98,9 @@ module Components
             end
           ),
           unless state.users.data.empty?
-            will_paginate
+            t(:div, {key: state.per_page}, 
+              will_paginate
+            )
           end
         )
       end
@@ -96,9 +111,11 @@ module Components
       end
 
       def pagination_switch_page(_page, per_page)
-        # x = current_location_query
-        # x[:page] = _page
-        # x[:per_page] = per_page
+        x = Hash.new(props.location.query.to_n)
+        x[:page] = _page
+        x[:per_page] = state.per_page
+        make_query(x)
+        props.history.pushState(nil, props.location.pathname, x)
         # User.index({extra_params: x.merge(@as_admin)}).then do |users|
         #   props.history.pushState(nil, props.location.pathname, x)
         #   extract_pagination(users)
@@ -106,17 +123,19 @@ module Components
         # end
       end
 
-      def on_pere_page_select
-        
+      def per_page_select(value) #from Plugins::Paginatable
+        set_state per_page: value
+        search(value)
       end
 
-      def search
-        # to_search = self.ref("search").value.strip
-        # pathname = props.location.pathname
-        # query = Hash.new(props.location.query.to_n)
-        # query[:search_query] = to_search
-        # make_query(query)
-        # props.history.pushState(nil, pathname, query)
+      def search(per_page = state.per_page)
+        to_search = self.ref("search").value.strip
+        pathname = props.location.pathname
+        query = {}
+        query[:search_query] = to_search
+        query[:per_page] = per_page
+        make_query(query)
+        props.history.pushState(nil, pathname, query)
       end
 
       def destroy_selected(_user)
