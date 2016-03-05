@@ -14,6 +14,7 @@ module Forms
     end
 
     def component_will_receive_props(next_props)
+      next_props = Native(next_props)
       if x = next_props.model.errors[props.attr]
         set_state errors: x, uploaded: false, image_to_preview: false
       else

@@ -23,7 +23,7 @@ class Admin::UsersController < ApplicationController
     roles = params[:roles]
     registered_only = params[:registered_only]
     unregistered_only = params[:unregistered_only]
-    chat_only = params[:chat_only]
+    chat_only = params[:chat_only]  
 
     if !search_query.blank?
 

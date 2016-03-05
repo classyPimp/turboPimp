@@ -4,6 +4,8 @@ module Components
 
       expose
 
+      include Plugins::Formable
+
       include Plugins::DependsOnCurrentUser
       set_roles_to_fetch :admin
 
@@ -12,7 +14,8 @@ module Components
       def get_initial_state
         {
           users: ModelCollection.new,
-          per_page: props.location.query.per_page || 1
+          per_page: props.location.query.per_page || 1,
+          search_model: Model.new(roles: [])
         }
       end
 
@@ -67,10 +70,16 @@ module Components
       end
 
       def render
-       
+       p state.search_model.pure_attributes
+
         t(:div, {className: 'row'},
           t(:div, {className: 'search'}, 
-            t(:input, {ref: "search"}),
+            input(Forms::Input, state.search_model, :search_query),
+            input(Forms::Checkbox, state.search_model, :registered_only),
+            input(Forms::Checkbox, state.search_model, :unregistered_only),
+            input(Forms::Checkbox, state.search_model, :from_chat_only),
+            input(Forms::Select, state.search_model, :roles, {multiple: true, server_feed: {url: "/api/users/roles_feed"},
+                                                                  option_as_model: 'role', s_value: "name", show_name: ''}),
             t(:button, {onClick: ->{search}}, "search!")
           ),
           t(:div, {className: 'users_index row'},
@@ -129,13 +138,15 @@ module Components
       end
 
       def search(per_page = state.per_page)
-        to_search = self.ref("search").value.strip
-        pathname = props.location.pathname
-        query = {}
-        query[:search_query] = to_search
-        query[:per_page] = per_page
-        make_query(query)
-        props.history.pushState(nil, pathname, query)
+        collect_inputs(form_model: :search_model)
+        p state.search_model.pure_attributes
+        # to_search = self.ref("search").value.strip
+        # pathname = props.location.pathname
+        # query = {}
+        # query[:search_query] = to_search
+        # query[:per_page] = per_page
+        # make_query(query)
+        # props.history.pushState(nil, pathname, query)
       end
 
       def destroy_selected(_user)
