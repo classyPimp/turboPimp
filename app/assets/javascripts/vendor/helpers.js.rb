@@ -70,6 +70,16 @@ module Helpers
       modal_instance.close(preserve)
     end
   ######    \MODAL
+
+    # FLASH MESSAGES
+
+    def create_flash(message)
+      msg = Shared::Flash::Message.new(t(:div, {}, message))
+      Components::App::Main.instance.ref(:flash).rb.add_message(msg)
+    end
+
+
+    # END FLASH MESSAGES
   end
 
   class ::RequestHandler

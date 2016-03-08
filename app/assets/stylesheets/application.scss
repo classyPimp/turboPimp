@@ -20,6 +20,7 @@
 
 $main-border-color: #A7DFF2;
 $main-border-radius: 1.5rem;
+$main-input-border-color: #cccccc;
 
 /*END VARS*/
 
@@ -34,9 +35,10 @@ body {
 }
 /*FLAS HOLDER*/
 .flash_holder {
-  position: absolute;
+  position: fixed;
   z-index: 2;
-  width: 50%;
+  right: 0;
+  width: 30%;
   text-align: center;
 }
 
@@ -730,11 +732,52 @@ body {
 /*END FILE INPUT*/
 
 /*USERS INDEX*/
-.users_index {
-  margin: auto;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
+
+.admin_user_index {
+ 
+  padding-top: 3rem;
+  
+  .search {
+    border: 1px solid $main-border-color;
+    border-radius: $main-border-radius;
+    padding: 2rem 2rem;
+    width: 60%;
+    margin: auto;
+
+    .search_bar {
+      input {
+        width: 100%;
+        padding: 0.5rem;
+        border: 1px solid $main-border-color;
+        border-color: $main-input-border-color;
+
+      }
+    }
+    
+    .chekbox_holder {
+       margin-top: 1rem;
+
+      .show_name {
+        display: inline-block;
+        margin-left: 1rem;
+      }
+
+      .checkbox {
+        vertical-align: center;
+        display: inline-block;
+      }
+    }
+    
+  } 
+
+  .search_results {
+    border-top: 1px solid $main-border-color;
+    margin-top: 0rem;
+    margin: 0px;
+    padding-top: 2rem; 
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
   
   .user_box {
     text-align: center;
@@ -752,6 +795,9 @@ body {
   
 }
 
+
+}
+
 /*END USERS INDEX*/
 
 /*APP WIDE PAGINATION*/
@@ -760,3 +806,4 @@ body {
 }
 
 /*END APP WIDE PAGINATION*/
+

@@ -7,6 +7,7 @@ module Components
       include Plugins::Formable
 
       include Plugins::DependsOnCurrentUser
+
       set_roles_to_fetch :admin
 
       include Plugins::Paginatable
@@ -14,51 +15,31 @@ module Components
       def get_initial_state
         {
           users: ModelCollection.new,
-          per_page: props.location.query.per_page || 1,
-          search_model: Model.new(roles: [])
+          search_model: User.new,
+          disabled_inputs: {registered_only: false, unregistered_only: false}
         }
       end
 
       def component_did_mount
-
-        make_query(extra_params({per_page: state.per_page}))
-
-      end
-
-      def extra_params(pagination_options = {})
-
         x = Hash.new(props.location.query.to_n)
-        x = x.merge(pagination_options)
-        x
-
+        unless x.empty?
+          make_query(x)
+        end
       end
 
-      # def component_will_update(next_props, ns)
-      #   nx = Hash.new(`#{next_props}.location.query`)
-      #   pr = Hash.new(props.location.query.to_n)
-      #   if nx != pr
-      #     make_query(nx)
-      #   end
-      # end
-      # def current_location_query
-
-      #   x = {}
-      #   z = props.location.query
-      #   #x[:per_page] = z.per_page
-      #   #x[:page] = z.page
-      #   x[:search_query] = z.search_query
-      #   x[:registered_only] = z.registered_only
-      #   x[:unregistered_only] = z.unregistered_only
-      #   x[:chat_only] = z.chat_only
-      #   x 
-
-      # end
+      def component_will_receive_props(next_props)
+        n_q = Hash.new(Native(next_props).location.query.to_n)
+        c_q = Hash.new(props.location.query.to_n)  
+        if n_q != c_q
+          make_query(n_q)
+        end      
+      end
 
       def make_query(_extra_params)
 
         @as_admin = state.current_user.has_role?([:admin]) ? {namespace: "admin"} : {}
-        p @as_admin
-        User.index({extra_params: _extra_params}.merge(@as_admin)).then do |users|
+        _extra_params[:per_page] = _extra_params[:per_page] || props.location.query.per_page || 1
+        User.index({extra_params: _extra_params, component: self}.merge(@as_admin)).then do |users|
           begin
           extract_pagination(users)
           set_state users: users
@@ -70,19 +51,28 @@ module Components
       end
 
       def render
-       p state.search_model.pure_attributes
 
-        t(:div, {className: 'row'},
-          t(:div, {className: 'search'}, 
-            input(Forms::Input, state.search_model, :search_query),
-            input(Forms::Checkbox, state.search_model, :registered_only),
-            input(Forms::Checkbox, state.search_model, :unregistered_only),
-            input(Forms::Checkbox, state.search_model, :from_chat_only),
+        t(:div, {className: 'row admin_user_index'},
+          spinner,
+          t(:div, {className: 'row search'}, 
+            t(:div, {className: 'search_bar'}, 
+              input(Forms::Input, state.search_model, :search_query, {show_name: 'search', className: 'form-control'})
+            ),
+            unless state.disabled_inputs[:registered_only]
+              input(Forms::Checkbox, state.search_model, :registered_only, {show_name: 'search only registered users' ,to_call_on_change: event(->{disable_inputs([:unregistered_only])})})
+            end,
+            unless state.disabled_inputs[:unregistered_only]
+              input(Forms::Checkbox, state.search_model, :unregistered_only, {show_name: 'search only unregistered users' , to_call_on_change: event(->{disable_inputs([:registered_only])})})
+            end,
+
+            input(Forms::Checkbox, state.search_model, :from_chat_only, {show_name: 'search users coming from chat'}),
+
+            t(:p, {}, 'search users who have this rights'),
             input(Forms::Select, state.search_model, :roles, {multiple: true, server_feed: {url: "/api/users/roles_feed"},
                                                                   option_as_model: 'role', s_value: "name", show_name: ''}),
             t(:button, {onClick: ->{search}}, "search!")
           ),
-          t(:div, {className: 'users_index row'},
+          t(:div, {className: 'search_results row'},
             *splat_each(state.users) do |user|
               t(:div, {className: 'user_box col-lg-5'},
                 if user.avatar 
@@ -107,9 +97,7 @@ module Components
             end
           ),
           unless state.users.data.empty?
-            t(:div, {key: state.per_page}, 
-              will_paginate
-            )
+            will_paginate
           end
         )
       end
@@ -120,26 +108,18 @@ module Components
       end
 
       def pagination_switch_page(_page, per_page)
-        x = Hash.new(props.location.query.to_n)
-        x[:page] = _page
-        x[:per_page] = state.per_page
-        make_query(x)
-        props.history.pushState(nil, props.location.pathname, x)
-        # User.index({extra_params: x.merge(@as_admin)}).then do |users|
-        #   props.history.pushState(nil, props.location.pathname, x)
-        #   extract_pagination(users)
-        #   set_state users: users
-        # end
+        
       end
 
       def per_page_select(value) #from Plugins::Paginatable
-        set_state per_page: value
-        search(value)
+        c_q = Hash.new(props.location.query.to_n)
+        c_q[:per_page] = value
+        c_q[:page] = 1
+        props.history.pushState(nil, props.location.pathname, c_q)
       end
 
       def search(per_page = state.per_page)
-        collect_inputs(form_model: :search_model)
-        p state.search_model.pure_attributes
+        collect_search_hash
         # to_search = self.ref("search").value.strip
         # pathname = props.location.pathname
         # query = {}
@@ -147,6 +127,31 @@ module Components
         # query[:per_page] = per_page
         # make_query(query)
         # props.history.pushState(nil, pathname, query)
+      end
+
+      def collect_search_hash()
+        collect_inputs(form_model: :search_model)
+        roles = []
+        m = state.search_model
+        m.roles.each do |role|
+          roles << role.name
+        end
+
+        ex_p = m.pure_attributes[:user]
+        ex_p.delete(:roles_attributes)
+        ex_p[:roles] = roles
+        ex_p[:per_page] = props.location.query.per_page || 1
+
+        props.history.pushState(nil, props.location.pathname, ex_p)
+        #make_query(ex_p)
+      
+      end
+
+      def disable_inputs(ar)
+        ar.each do |el|
+          state.disabled_inputs[el] = !state.disabled_inputs[el]  
+        end
+        set_state disabled_inputs: state.disabled_inputs
       end
 
       def destroy_selected(_user)

@@ -32,11 +32,10 @@ module Forms
     end
 
     def render
-      t(:div, {},
-        t(:p, {}, props.attr),
+      t(:div, {className: "chekbox_holder #{valid_or_not?}"},
         *if props.model.errors[props.attr]
           splat_each(props.model.errors[props.attr]) do |er|
-            t(:div, {},
+            t(:div, {className: 'errors'},
               t(:p, {},
                 er
               ),
@@ -44,14 +43,18 @@ module Forms
             )             
           end
         end,
-        t(:input, {className: valid_or_not?, type: "checkbox", 
-                   key: props.keyed, onClick: ->{check}}.merge(options)),
+        t(:input, {className: "checkbox", type: "checkbox", 
+                   key: props.keyed, onChange: ->{check}}.merge(options)),
+        t(:p, {className: 'show_name'}, "#{props.show_name}"),
         children      
       )   
     end
 
     def check
       set_state checked: !state.checked
+      if props.to_call_on_change
+        emit(:to_call_on_change)
+      end
     end
 
     def collect

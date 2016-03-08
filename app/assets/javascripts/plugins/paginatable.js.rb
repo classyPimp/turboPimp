@@ -117,7 +117,7 @@ module Plugins
               t(:li, {},
                 t(:span, {},
                   "per page", 
-                  t(:select, {ref: "pagination_select", onChange: ->(e){per_page_select(`#{e}.target.value`)}, value: "#{state.per_page}"},
+                  t(:select, {ref: "pagination_select", onChange: ->(e){per_page_select(`#{e}.target.value`)}, value: "#{props.location.query.per_page}"},
                     t(:option, {value: '1'}, '1'),
                     t(:option, {value: '25'}, "25"),
                     t(:option, {value: '50'}, "50"),

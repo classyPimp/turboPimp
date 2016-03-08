@@ -17,27 +17,27 @@ class Admin::UsersController < ApplicationController
 
     auth! @perms.admin_index
 
-    page = params[:page]
+    page = params[:page] || 1
     per_page = params[:per_page] || 25
     search_query = params[:search_query]
     roles = params[:roles]
     registered_only = params[:registered_only]
     unregistered_only = params[:unregistered_only]
-    chat_only = params[:chat_only]  
+    chat_only = params[:from_chat_only]  
 
     if !search_query.blank?
 
-      @users = User.user_search(search_query)
+      @users = User.user_search(search_query).includes(:avatar, :profile, :si_profile1name_phone_number)
 
     else
 
-      @users = User.all
+      @users = User.all.includes(:avatar, :profile, :si_profile1name_phone_number)
     
     end
 
     unless roles.blank?
 
-      @users = @users.joins(:roles).where('roles.name in ?', roles)
+      @users = @users.joins(:roles).where('roles.name in (?)', roles)
 
     end
 
@@ -53,11 +53,11 @@ class Admin::UsersController < ApplicationController
 
     end
 
-    if chat_only
+    unless chat_only.blank?
 
       other_roles = Services::RoleManager.allowed_global_roles
       other_roles.delete('from_chat')
-      @users.joins(:roles).where('roles.name = ?', 'from_chat').where('roles.name not in ?', other_roles)
+      @users = @users.joins(:roles).where('roles.name = ?', 'from_chat').where('roles.name not in (?)', other_roles)
 
     end
 

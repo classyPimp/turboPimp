@@ -26,9 +26,10 @@ body {
 
 /*FLAS HOLDER*/
 .flash_holder {
-  position: absolute;
+  position: fixed;
   z-index: 2;
-  width: 50%;
+  right: 0;
+  width: 30%;
   text-align: center; }
 
 /*END FLASH HOLDER*/
@@ -482,21 +483,45 @@ body {
 
 /*END FILE INPUT*/
 /*USERS INDEX*/
-.users_index {
-  margin: auto;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center; }
-  .users_index .user_box {
-    text-align: center;
-    border-radius: 1.5rem;
+.admin_user_index {
+  padding-top: 3rem; }
+  .admin_user_index .search {
     border: 1px solid #A7DFF2;
-    padding: 1rem;
-    margin: 0.5rem;
-    min-width: 40rem; }
-    .users_index .user_box img {
-      width: 48px;
-      height: 48px; }
+    border-radius: 1.5rem;
+    padding: 2rem 2rem;
+    width: 60%;
+    margin: auto; }
+    .admin_user_index .search .search_bar input {
+      width: 100%;
+      padding: 0.5rem;
+      border: 1px solid #A7DFF2;
+      border-color: #cccccc; }
+    .admin_user_index .search .chekbox_holder {
+      margin-top: 1rem; }
+      .admin_user_index .search .chekbox_holder .show_name {
+        display: inline-block;
+        margin-left: 1rem; }
+      .admin_user_index .search .chekbox_holder .checkbox {
+        vertical-align: center;
+        display: inline-block; }
+  .admin_user_index .search_results {
+    border-top: 1px solid #A7DFF2;
+    margin-top: 0rem;
+    margin: 0px;
+    padding-top: 2rem;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center; }
+    .admin_user_index .search_results .user_box {
+      text-align: center;
+      border-radius: 1.5rem;
+      border: 1px solid #A7DFF2;
+      padding: 1rem;
+      margin: 0.5rem;
+      min-width: 40rem; }
+      .admin_user_index .search_results .user_box img {
+        width: 48px;
+        height: 48px; }
 
 /*END USERS INDEX*/
 /*APP WIDE PAGINATION*/

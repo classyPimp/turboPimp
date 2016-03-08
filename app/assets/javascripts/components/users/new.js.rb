@@ -36,7 +36,7 @@ module Components
                   input(Forms::Select, state.form_model, :roles, {multiple: true, server_feed: {url: "/api/users/roles_feed"},
                                                                   option_as_model: 'role', s_value: "name", show_name: ''})
                 )
-              end,
+              end, 
               t(:button, {onClick: ->(){handle_inputs}}, "create user")
             )
           end 
@@ -47,11 +47,19 @@ module Components
         collect_inputs
         unless state.form_model.has_errors?
           state.form_model.create(serialize_as_form: true, namespace: "admin").then do |model|
+            begin
             if model.has_errors?
               set_state form_model: model
             else
-              props.on_create(model)
+              if props.on_create
+                props.on_create(model)
+              end
+              create_flash(link_to("new user created", "/users/show/#{model.id}"))
+              props.history.pushState(nil, '/users/dashboard')
             end
+          rescue Exception => e
+            p e
+          end
           end
         else
           set_state form_model: state.form_model
