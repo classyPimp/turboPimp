@@ -17,7 +17,8 @@ class ImagesController < ApplicationController
     else
     	@images = Image.all
     end
-    @images = @images.paginate(page: params[:page], per_page: 2)
+    @images = @images.paginate(page: params[:page], per_page: params[:per_page])
+    
     render json: @images.as_json(only: [:id, :alt, :description], methods: [:url]) << 
                         {pagination: {current_page: @images.current_page, total_entries: @images.total_entries, total_pages: @images.total_pages,
                         offset: @images.offset}}

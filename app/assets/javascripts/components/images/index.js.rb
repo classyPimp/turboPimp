@@ -16,8 +16,11 @@ module Components
 
 			def get_initial_state
 		    {
-		      images: ModelCollection.new,
-          query: ""
+		      images: ModelCollection.new,  
+          query: "",
+          non_url_pagination: true,
+          pagination_per_page: 1,
+          search_query: {}
 		    }
 		  end
 
@@ -33,43 +36,72 @@ module Components
 		  end
 
 		  def render
-		    t(:div,{},
-          t(:div, {},
-            t(Components::Images::SearchBar, {search_for_image: ->(img){perform_search(img)}})
+		    t(:div,{className: 'images_index'},
+          t(Components::Images::SearchBar, {search_for_image: ->(img){perform_search(img)}}),
+          t(:div, {className: 'search_results'}, 
+  		      *splat_each(state.images) do |image|
+  		        t(:div, {key: "#{image}", className: 'image_holder' },
+                t(:p, {}, "alt: #{image.alt}, description: #{image.description}"),
+  		          t(:image, {src: image.url, className: 'image' }),
+                t(:div, {className: 'btn_group'}, 
+                  t(:button, {className: 'btn btn-xs', onClick: ->(){destroy(image)}}, "destroy this image"),
+                  if props.should_expose
+                    t(:button, {className: 'btn btn-xs', onClick: ->(){props.should_expose[:proc].call(image)}}, props.should_expose[:button_value])
+                  end
+                )
+  		        )
+  		      end
           ),
-		      *splat_each(state.images) do |image|
-		        t(:div, {key: "#{image}", style: {width: "200px", height: "200px"}.to_n },
-              t(:p, {}, "alt: #{image.alt}, description: #{image.description}"),
-		          t(:image, {src: image.url, style: {width: "100%", height: "auto"}.to_n }),
-		          t(:button, {onClick: ->(){destroy(image)}}, "destroy this image"),
-              if props.should_expose
-                t(:button, {onClick: ->(){props.should_expose[:proc].call(image)}}, props.should_expose[:button_value])
-              end,
-		          t(:br, {})
-		          #t(:button, {onCLick: ->(){}})
-		        )
-		      end,
 		      will_paginate,
+          spinner,
 		      t(:br, {}),
 		      t(Components::Images::Create, {on_create: ->(image){on_create(image)}})
 		    )
 		  end
 
-      def perform_search(img)
-        Components::App::Router.history.pushState(nil, "#{props.location.pathname}?#{`$.param({search_query: #{img.attributes[:search_query].to_n}})`}") unless props.should_expose
-        Image.index({},{extra_params: img.attributes}).then do |images|
-          extract_pagination(images)
-          set_state images: images
+
+      def make_query(_extra_params)
+        Image.index({extra_params: _extra_params, component: self}).then do |images|
+          begin
+            extract_pagination(images)
+            set_state images: images, search_query: _extra_params, pagination_per_page: _extra_params[:per_page]
+          rescue Exception => e
+            p e
+          end
         end
       end
 
-		  def pagination_switch_page(page)
+      def perform_search(img)
+        #Components::App::Router.history.pushState(nil, "#{props.location.pathname}?#{`$.param({search_query: #{img.attributes[:search_query].to_n}})`}") unless props.should_expose
+        # Image.index({extra_params: (img.attributes).merge(per_page: state.pagination_per_page)}).then do |images|
+        #   begin
+        #     extract_pagination(images)
+        #     set_state images: images, search_query: img.attributes
+        #   rescue Exception => e
+        #     p e
+        #   end
+        # end
+        query = state.search_query
+        query[:per_page] = state.pagination_per_page
+        query[:page] = 1
+        query.merge!(img.attributes)
+        make_query(query)
+      end
+
+		  def pagination_switch_page(page, event)
+        `#{event}.preventDefault()`
 		  	#Components::App::Router.history.pushState(nil, "#{props.location.pathname}?page=#{page}")
-		    Image.index({},{extra_params: {page: page}}).then do |images|
-		      extract_pagination(images)
-		      set_state images: images
-		    end
+        query = state.search_query
+        query[:page] = page
+        make_query(query)
 		  end
+
+      def per_page_select(per_page_num)
+        query = state.search_query
+        query[:per_page] = per_page_num
+        query[:page] = 1
+        make_query(query)
+      end
 
       def on_create(image)
         state.images << image

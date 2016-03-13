@@ -7,13 +7,19 @@ module Forms
       super
     end
 
+    def get_initial_state
+      {
+        html: false
+      }
+    end
+
     def valid_or_not?
       if props.model.errors[:attr]
         "invalid"
       else 
         "valid"
       end
-    end\
+    end
 
 		def render
       @head_content_if_link = t(:p, {}, "choose link")
@@ -29,10 +35,16 @@ module Forms
           t(:div, {},
             t(Components::Images::Index, {request_on_mount: false, should_expose: {proc: ->(image){insert_image(image)}, button_value: "Copy link"}})
           )
+      @content_if_react_link =
+          t(:div, {}, 
+            t(:p, {}, "link"), 
+            t(:input, {type: "text", ref: "insert_link_value"}),
+            t(:button, {onClick: ->(){insert_react_link}}, "insert link")
+          )
 
-			t(:div, {},
+			t(:div, {className: 'wysi_textarea'},
         t(Shared::Modal, {ref: "modal"}),
-        t(:p, {}, props.attr),
+        t(:p, {}, props.show_name),
         *if props.model.errors[props.attr]
           splat_each(props.model.errors[props.attr]) do |er|
             t(:div, {},
@@ -44,14 +56,19 @@ module Forms
           end
         end,
 				t(:div, {id: "wysi_toolbar", style: {display: "none"}.to_n},
-					t(:a, {"data-wysihtml5-command" => "bold"}, "BOLD"),
-					t(:a, {"data-wysihtml5-action" => "change_view", "unselectable"=>"on"},
-						"switch to html"
+					t(:button, {className: 'btn btn-xs', "data-wysihtml5-command" => "bold"}, "BOLD"),
+					t(:button, {onClick: ->{set_state html: !state.html},className: 'btn btn-xs', "data-wysihtml5-action" => "change_view", "unselectable"=>"on"},
+						if state.html
+              "switch to non html"
+            else
+              'switch to html'
+            end
 					),
-          t(:button, {onClick: ->(){open_modal_for_link}}, "insert link"),
-          t(:button, {onClick: ->(){open_modal_for_image}}, "insert image")
+          t(:button, {className: 'btn btn-xs', onClick: ->{ open_modal_for_react_link } }, 'create react link'),
+          t(:button, {className: 'btn btn-xs', onClick: ->(){open_modal_for_link}}, "insert link"),
+          t(:button, {className: 'btn btn-xs', onClick: ->(){open_modal_for_image}}, "insert image")
 				),
-				t(:textarea, {className: "form-control", rows: "5", id: "wysi", defaultValue: props.model.attributes[props.attr]})
+				t(:textarea, {className: "form-control", rows: "30", id: "wysi", defaultValue: props.model.attributes[props.attr]})
 			)
 		end
 
@@ -67,6 +84,10 @@ module Forms
       ref(:modal).rb.open(@head_if_image, @content_if_image)
     end
 
+    def open_modal_for_react_link
+      ref(:modal).rb.open(@head_content_if_link, @content_if_react_link)
+    end
+
     def insert_link
       link = ref("insert_link_value").value
       @wysi_editor.composer.commands.exec("createLink", { href: link})
@@ -78,11 +99,19 @@ module Forms
       ref(:modal).rb.close
     end
 
+    def insert_react_link
+      text = `#{@wysi_editor.to_n}.composer.selection.getHtml()`
+      link = ref('insert_link_value').value
+      if text
+        @wysi_editor.composer.commands.exec("insertHTML", "<a class='react_link' href=#{link}>#{text}</a>")
+      end
+    end
+
 		def component_did_mount
 			@wysi_editor = Native(%x{
 				new wysihtml5.Editor("wysi", { 
-				  toolbar:      "wysi_toolbar",
-				  parserRules:  wysihtml5ParserRules
+				  toolbar: "wysi_toolbar",
+          parserRules:    wysihtml5ParserRules
 				})
 			})
 		end
@@ -90,7 +119,6 @@ module Forms
     def collect
       props.model.attributes[props.attr.to_sym] = @wysi_editor.getValue
     end
-
 
 	end
 end

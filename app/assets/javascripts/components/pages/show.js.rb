@@ -16,6 +16,14 @@ module Components
         end.fail do |resp|
           raise resp
         end
+        Element.find('.pages_show').on('click.reactive_link', 'a') do |e|
+          el = e.target
+          if el.has_class?('react_link')
+            e.prevent
+            href = e.target.attr('href')
+            Components::App::Router.history.pushState(nil, href)
+          end
+        end
       end
 
       def render
@@ -30,7 +38,11 @@ module Components
           end
         )
       end
-    end
 
+      def component_will_unmount
+        Element.find('.pages_show').off('click.reactive_link')
+      end
+
+    end
   end
 end

@@ -1,4 +1,3 @@
-
 module Components
   module Menues
     class Index < RW

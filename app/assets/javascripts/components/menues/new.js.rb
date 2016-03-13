@@ -18,9 +18,9 @@ module Components
       end
 
       def render
-        t(:div, {}, 
-          input(Forms::Input, state.form_model, :href, {type: "text", value: state.form_model.href}),
-          input(Forms::Input, state.form_model, :link_text, {type: "text", value: state.form_model.link_text}),
+        t(:div, {className: 'form'}, 
+          input(Forms::Input, state.form_model, :href, {type: "text", value: state.form_model.href, show_name: 'href link'}),
+          input(Forms::Input, state.form_model, :link_text, {type: "text", value: state.form_model.link_text, show_name: 'link text'}),
           t(:button, {onClick: ->{handle_inputs}}, "add menu item")
         )
       end

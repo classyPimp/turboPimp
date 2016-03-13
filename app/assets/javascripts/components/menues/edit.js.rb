@@ -13,9 +13,9 @@ module Components
       end
 
       def render
-        t(:div, {}, 
-          input(Forms::Input, state.form_model, :href, {type: "text"}),
-          input(Forms::Input, state.form_model, :link_text, {type: "text"}),
+        t(:div, {className: 'form'}, 
+          input(Forms::Input, state.form_model, :href, {type: "text", show_name: 'href link'}),
+          input(Forms::Input, state.form_model, :link_text, {type: "text", show_name: 'link text'}),
           t(:button, {onClick: ->{handle_inputs}}, "update!")
         )
       end

@@ -1,4 +1,4 @@
-module Components
+module Components  
   module Pages
     class New < RW
       expose 
@@ -25,10 +25,10 @@ module Components
             )
           else
             t(:div, {}, 
-              input(Forms::Input, state.form_model, :title, {type: "text"}),
-              input(Forms::Input, state.form_model, :m_title, {type: "text"}),
-              input(Forms::Input, state.form_model, :m_description, {type: "text"}),
-              input(Forms::Input, state.form_model, :m_keywords, {type: "text"}),
+              input(Forms::Input, state.form_model, :title, {type: "text", show_name: 'title'}),
+              input(Forms::Input, state.form_model, :m_title, {type: "text", show_name: 'meta title'}),
+              input(Forms::Input, state.form_model, :m_description, {type: "text", show_name: "meta description"}),
+              input(Forms::Input, state.form_model, :m_keywords, {type: "text", show_name: 'meta keywords'}),
               input(Forms::WysiTextarea, state.form_model, :body),
               t(:button, {onClick: ->(){@controller.handle_inputs_for_new}}, "create page")
             )

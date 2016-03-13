@@ -36,7 +36,6 @@ module Components
       end
 
       def make_query(_extra_params)
-
         @as_admin = state.current_user.has_role?([:admin]) ? {namespace: "admin"} : {}
         _extra_params[:per_page] = _extra_params[:per_page] || props.location.query.per_page || 1
         User.index({extra_params: _extra_params, component: self}.merge(@as_admin)).then do |users|
@@ -70,7 +69,7 @@ module Components
             t(:p, {}, 'search users who have this rights'),
             input(Forms::Select, state.search_model, :roles, {multiple: true, server_feed: {url: "/api/users/roles_feed"},
                                                                   option_as_model: 'role', s_value: "name", show_name: ''}),
-            t(:button, {onClick: ->{search}}, "search!")
+            t(:button, {className: 'btn btn-default search_button', onClick: ->{search}}, "search!")
           ),
           t(:div, {className: 'search_results row'},
             *splat_each(state.users) do |user|

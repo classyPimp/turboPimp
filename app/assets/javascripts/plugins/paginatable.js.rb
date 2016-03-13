@@ -1,7 +1,6 @@
 module Plugins
   #this plugin provides easy integration with will_paginate on Rails
-  #be warned that your base should implement the #pagination_switch_page which
-  #has to make a request with query string containing the page=<page arg>
+
   module Paginatable
 
     #Rails needs to append pagination info at last index of collection in following format:
@@ -20,7 +19,7 @@ module Plugins
     #                      offset: @images.offset}}
     #end
 
-    #also define a pagination model for easy managing
+    #also there is defined pagination model for easy managing
     #front_models/pagination:
 
   #class Pagination < Model
@@ -42,7 +41,39 @@ module Plugins
   # end
   #end
   #his will set state.pagination to your extracted pagination
-  #nd will make will_paginate element render proper values
+  #and will make will_paginate element render proper values
+  # #
+  #     paginatable supports two patterns of fetching resources corresponding to page
+  #     non url based where resource is fetched via #pagination_switch_page(page_number : String, event)
+  #     where event should be prevented and resource fetched manually
+  #     and #on_per_page_select should also handle per_page value
+
+  #     AND 
+
+  #     url based fetching where page is link_to, and component listents to #component_will_recieve_props(next_props)
+  #     where it compares props.location.query and if different will fetch corresponding resource
+
+
+  # FOR NON URL BASED state.non_url_pagination should be set to true
+  # and state.pagination_per_page should keep the number of per_page as well component should manually handle those.
+
+  # EXAMPLE FOR NON URL
+
+  #     def pagination_switch_page(page, event)
+  #       `#{event}.preventDefault()`
+  #       #Components::App::Router.history.pushState(nil, "#{props.location.pathname}?page=#{page}")
+  #       query = state.search_query
+  #       query[:page] = page
+  #       make_query(query)
+  #     end
+
+  #     def per_page_select(per_page_num)
+  #       query = state.search_query
+  #       query[:per_page] = per_page_num
+  #       query[:page] = 1
+  #       make_query(query)
+  #     end
+  # where #make_query has e.g. model.index(extra_params: query)
 
     def extract_pagination(collection)
       if x = (collection.data.pop if collection[-1].instance_of? Pagination)
@@ -55,10 +86,26 @@ module Plugins
     #used after pagination was extracted from response
 
     def href_for_page(page)
-      href = Hash.new(props.location.query.to_n)
-      href[:page] = page
-      href[:per_page] = state.per_page
-      href = props.history.createHref(props.location.pathname, href)
+      #for components that do not depend on url change for pagination switch page
+      #state.non_url_pagination shall be defined
+      #moreover if such defined, please provide #paginaition_switch_page(page_num, event)
+      #that prevents the passed events and fetches resource manually
+      if !state.non_url_pagination
+        href = Hash.new(props.location.query.to_n)
+        href[:page] = page
+        href[:per_page] = state.per_page
+        href = props.history.createHref(props.location.pathname, href)
+      else
+        href = '#'
+      end
+    end
+
+    def current_per_page
+      if !state.non_url_pagination
+        props.location.query.per_page
+      else
+        state.pagination_per_page
+      end
     end
 
     # def prev_next(direction)
@@ -79,8 +126,9 @@ module Plugins
 
     def will_paginate
 
-      cur_p = state.pagination.current_page
-        
+      if state.pagination
+        cur_p = state.pagination.current_page
+      end
       
       t(:div, {className: 'pagination_main'},    
         *if p_n = state.pagination
@@ -89,7 +137,7 @@ module Plugins
               t(:li, {className: x = "#{p_n.current_page == 1 ? "disabled" : ""}", 
                       style: {cursor: "pointer"}.to_n},
                 unless x == "disabled"
-                  link_to('<<', href_for_page(cur_p - 1), {}, onClick: ->{pagination_switch_page(cur_p - 1)}) 
+                  link_to('<<', href_for_page(cur_p - 1), {}, onClick: ->(e){pagination_switch_page((cur_p - 1), e)}) 
                 end
               ),         
               *(to_return = [] 
@@ -102,7 +150,7 @@ module Plugins
                 else
                   to_add = t(:li, {},
                     #t(:span, {}, "#{page}")
-                    link_to(page, href_for_page(page), {}, onClick: ->{pagination_switch_page(page)})
+                    link_to(page, href_for_page(page), {}, onClick: ->(e){pagination_switch_page(page, e)})
                   )
                 end
                 to_return << to_add
@@ -111,13 +159,13 @@ module Plugins
               t(:li, {className: x = "#{p_n.current_page == p_n.total_pages ? 'disabled' : ''}",
                       style: {cursor: "pointer"} },
                 unless x == "disabled"
-                  link_to('>>', href_for_page(cur_p + 1), {}, onClick: ->{pagination_switch_page(cur_p + 1)}) 
+                  link_to('>>', href_for_page(cur_p + 1), {}, onClick: ->(e){pagination_switch_page((cur_p + 1), e)}) 
                 end
               ),
               t(:li, {},
                 t(:span, {},
                   "per page", 
-                  t(:select, {ref: "pagination_select", onChange: ->(e){per_page_select(`#{e}.target.value`)}, value: "#{props.location.query.per_page}"},
+                  t(:select, {ref: "pagination_select", onChange: ->(e){per_page_select(`#{e}.target.value`)}, value: "#{current_per_page}"},
                     t(:option, {value: '1'}, '1'),
                     t(:option, {value: '25'}, "25"),
                     t(:option, {value: '50'}, "50"),
@@ -164,7 +212,7 @@ module Plugins
     #   on_per_page_select(@_per_page)
     # end
 
-    def pagination_switch_page(page)
+    def pagination_switch_page(page, event)
       raise "#{self} must implement #pagination_switch_page(page, per_page) refer to #{self.class} for info"
     end
 

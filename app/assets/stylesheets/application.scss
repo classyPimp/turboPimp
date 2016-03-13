@@ -744,6 +744,10 @@ body {
     width: 60%;
     margin: auto;
 
+    .search_button {
+      margin-top: 1rem;
+    }
+
     .search_bar {
       input {
         width: 100%;
@@ -766,6 +770,8 @@ body {
         vertical-align: center;
         display: inline-block;
       }
+
+      
     }
     
   } 
@@ -807,3 +813,57 @@ body {
 
 /*END APP WIDE PAGINATION*/
 
+/*MENU_INDEX_EDIT*/
+.menu_edit_index {
+  margin: 2rem;
+  h3 {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+
+  .edit_box {
+    margin-top: 12rem;
+    text-align: center;
+  }
+
+  .form {
+
+    button {
+      margin: 1rem;
+    }
+  }
+
+  .controll_buttons {
+    margin: 1rem;
+  }
+  
+}
+
+/*END MENU_INDEX_EDIT*/
+
+/*IMAGES_INDEX*/
+
+.images_index {
+  
+  .search_results {
+    
+    display: flex;
+
+    .image_holder {
+      text-align: center;
+      border: 1px solid $main-border-color;
+      border-radius: $main-border-radius;
+      margin: 0.5rem;
+
+      .image {
+        width: 120px;
+      }
+        
+    }
+    
+  }
+
+}
+
+
+/*END IMAGES_INDEX*/
