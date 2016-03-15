@@ -886,4 +886,32 @@ body {
   }
 }
 
+
 /*END BLOGGER_LAST_TEN*/
+.appointment_proposal_index {
+   
+  th {
+    text-align: center;
+    padding: 0 1rem;
+  }
+
+  td {
+    padding: 0.5rem 1rem;
+    
+    .unregistered_disclaimer {
+      text-align: right;
+      margin: 0;
+      span {
+        font-size: smaller;
+        border: 1px solid black;
+        padding: 0.1rem;      
+      }
+    }
+
+    
+
+  }
+
+}
+
+/*APPOINTMENT_PROPOSAL_INDEX*/

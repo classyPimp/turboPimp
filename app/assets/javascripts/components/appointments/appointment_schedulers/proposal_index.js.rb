@@ -24,7 +24,7 @@ module Components
         def render
           @dates_and_doctors_ids = Hash.new { |hash, key| hash[key] = [] }
 
-          t(:div, {},
+          t(:div, {className: 'appointment_proposal_index'},
             modal,
             t(:table, {className: 'table-bordered table-striped table-responsive'},
               t(:thead, {},
@@ -36,8 +36,6 @@ module Components
                   t(:th, {}, 'note from patient'),
                   t(:th, {}, "chosen dates and doctors"),
                   t(:th, {}, ""),
-                  t(:th, {}, ""),
-                  t(:th, {}, "")
                 )
               ),
               t(:tbody, {},
@@ -52,19 +50,19 @@ module Components
                     ),
                     t(:td, {},
                       if appointment.patient.attributes[:registered]
-                        t(:p, {}, appointment.patient.profile.try('name'))
+                        t(:p, {className: 'patient_name'}, appointment.patient.profile.try('name'))
                       else
                         t(:div, {},
-                          t(:p, {}, "unregistered user"),
-                          t(:p, {}, appointment.patient.profile.try('name')),
-                          t(:p, { onClick: ->{delete_unregistered_users_with_proposals(appointment.patient)} }, 'delete this user and all his proposals')
+                          t(:p, {className: 'unregistered_disclaimer'}, t(:span, {}, "*unregistered user")),
+                          t(:p, {className: 'patient_name'}, appointment.patient.profile.try('name')),
+                          t(:button, {className: 'btn btn-xs delete_unregistered_btn', onClick: ->{delete_unregistered_users_with_proposals(appointment.patient)} }, 'delete this user and all his proposals')
                         )
                       end
                     ),
-                    t(:td, {},
+                    t(:td, {className: 'appointments_contacts'},
                       t(:p, {}, appointment.patient.profile.try(:phone_number))
                     ),
-                    t(:td, {}, 
+                    t(:td, {className: 'appointment_details'}, 
                       t(:p, {},
                         appointment.appointment_detail.extra_details
                       )
@@ -81,13 +79,9 @@ module Components
                         )
                       end
                     ),
-                    t(:td, {}, 
-                      t(:button, { onClick: ->{ open_appointment_schedulers_index(appointment) } }, 'browse availability')
-                    ),
-                    t(:td, {}, 
-                      t(:button, { onClick: ->{ init_new_from_proposal(appointment, Moment.new(appointment.start_date).startOf('day')) } }, 'schedule')
-                    ),
-                    t(:td, {}, 
+                    t(:td, {className: 'controll_btns'}, 
+                      t(:button, { onClick: ->{ open_appointment_schedulers_index(appointment) } }, 'browse availability'),
+                      t(:button, { onClick: ->{ init_new_from_proposal(appointment, Moment.new(appointment.start_date).startOf('day')) } }, 'schedule'),
                       t(:button, { onClick: ->{ delete_an_appointment(appointment) } }, 'delete')
                     )
                   )

@@ -571,5 +571,19 @@ body {
     border-top: 1px solid black; }
 
 /*END BLOGGER_LAST_TEN*/
+.appointment_proposal_index th {
+  text-align: center;
+  padding: 0 1rem; }
+.appointment_proposal_index td {
+  padding: 0.5rem 1rem; }
+  .appointment_proposal_index td .unregistered_disclaimer {
+    text-align: right;
+    margin: 0; }
+    .appointment_proposal_index td .unregistered_disclaimer span {
+      font-size: smaller;
+      border: 1px solid black;
+      padding: 0.1rem; }
+
+/*APPOINTMENT_PROPOSAL_INDEX*/
 
 /*# sourceMappingURL=application.css.map */

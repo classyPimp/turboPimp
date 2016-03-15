@@ -63,7 +63,10 @@ module Components
                 t(:div, {className: 'roles_block'},
                   t(:p, {className: 'role_category'}, "actions for appointment scheduler"),
                   t(:ul, {},
-                    t(:li, { onClick: ->{init_appointment_schedulers_appointments_proposal_index} }, "appointments requests"),
+                    link_to('', '/users/dashboard/appointments_proposals') do
+                      t(:li, {}, "appointments requests")  
+                    end,
+                    
                     t(:li, { onClick: ->{ init_appointment_schedulers_appointments_index } }, "browse schedule"),
                     t(:li, { onClick: ->{ init_user_appointment_schedulers_new } }, 'register patient'),
                     t(:li, { onClick: ->{ init_user_appointment_schedulers_index } }, 'manage patients'),
