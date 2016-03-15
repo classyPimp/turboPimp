@@ -93,7 +93,7 @@ module Plugins
       if !state.non_url_pagination
         href = Hash.new(props.location.query.to_n)
         href[:page] = page
-        href[:per_page] = state.per_page
+        href[:per_page] = current_per_page
         href = props.history.createHref(props.location.pathname, href)
       else
         href = '#'

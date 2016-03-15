@@ -5,32 +5,44 @@ module Components
       expose
 
       include Plugins::Paginatable
+      include Plugins::DependsOnCurrentUser
+
+      set_roles_to_fetch :blogger
 
       def init
         @namespace = {}
-        if props.as_blogger
+        if CurrentUser.user_instance.has_role?([:blogger])
           @namespace = {namespace: "blogger"}
         end
       end
 
       def get_initial_state
         {
-          blogs: ModelCollection.new
+          blogs: ModelCollection.new,
+          pagination_per_page: 1
         }
       end
 
-      def component_will_mount
-        extra_params = {}
-        (x = props.location.query.page) ? (extra_params[:page] = x) : nil
-        extra_params[:per_page] = (x = props.location.query.per_page) ? x : 25
-        extra_params[:search_query] = (x = props.location.query.search_query) ? x : nil
-        make_query(extra_params) 
+      def component_did_mount
+        x = Hash.new(props.location.query.to_n)
+        unless x.empty?
+          make_query(x)
+        end
       end
 
-      def make_query(extra_params)
-        Blog.index({component: self, extra_params: extra_params}.merge(@namespace)).then do |blogs|
+      def component_will_receive_props(next_props)
+        n_q = Hash.new(Native(next_props).location.query.to_n)
+        c_q = Hash.new(props.location.query.to_n)  
+        if n_q != c_q
+          make_query(n_q)
+        end      
+      end
+
+      def make_query(_extra_params)
+        #_extra_params[:per_page] = _extra_params[:per_page] || props.location.query.per_page || 1
+        Blog.index({component: self, extra_params: _extra_params}.merge(@namespace)).then do |blogs|
           extract_pagination(blogs)
-          set_state blogs: blogs
+          set_state blogs: blogs, pagination_per_page: _extra_params[:per_page]
         end
       end
 
@@ -48,7 +60,7 @@ module Components
               if blog.attributes[:author].is_a? Model
                 t(:p, {}, "author: #{blog.attributes[:author].name}")
               end,
-              if props.as_blogger
+              if CurrentUser.user_instance.has_role?([:blogger])
                 t(:div, {},
                   if blog.published
                     t(:button, {onClick: ->{toggle_publish(blog)}}, "upublish")
@@ -63,17 +75,17 @@ module Components
               link_to("show this blog", "/blogs/show/#{blog.slug}")
             )
           end,
-          will_paginate(true),
+          will_paginate,
           t(:br, {})
         )
       end
 
       def pagination_switch_page(_page, per_page)
-        Blog.index({extra_params: {page: _page, per_page: per_page}}.merge(@namespace)).then do |blogs|
-          Components::App::Router.history.replaceState(nil, props.location.pathname, {page: _page, per_page: per_page})
-          extract_pagination(blogs)
-          set_state blogs: blogs
-        end
+        # Blog.index({extra_params: {page: _page, per_page: per_page}}.merge(@namespace)).then do |blogs|
+        #   Components::App::Router.history.replaceState(nil, props.location.pathname, {page: _page, per_page: per_page})
+        #   extract_pagination(blogs)
+        #   set_state blogs: blogs
+        # end
       end
 
       def search
@@ -81,9 +93,16 @@ module Components
         pathname = props.location.pathname
         query = Hash.new(props.location.query.to_n)
         query[:search_query] = to_search
-        query
-        make_query(query)
+        query[:page] = 1
+        query[:per_page] = state.pagination_per_page
         props.history.pushState(nil, pathname, query)
+      end
+
+      def per_page_select(value) #from Plugins::Paginatable
+        c_q = Hash.new(props.location.query.to_n)
+        c_q[:per_page] = value
+        c_q[:page] = 1
+        props.history.pushState(nil, props.location.pathname, c_q)
       end
 
       #*//////////////********** AS_BLOGGER

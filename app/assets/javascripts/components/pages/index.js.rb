@@ -91,7 +91,7 @@ module Components
         pathname = props.location.pathname
         query = Hash.new(props.location.query.to_n)
         query[:search_query] = to_search
-        query
+        #query
         #make_query(query)
         props.history.pushState(nil, pathname, query)
       end

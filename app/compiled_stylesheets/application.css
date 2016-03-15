@@ -558,5 +558,18 @@ body {
       width: 120px; }
 
 /*END IMAGES_INDEX*/
+/*BLOGGER_LAST_TEN*/
+.blogger_last_ten {
+  border: 1px solid #A7DFF2;
+  border-radius: 1.5rem; }
+  .blogger_last_ten .title {
+    margin-left: 4rem; }
+  .blogger_last_ten .body {
+    margin: 2rem;
+    height: 25rem;
+    overflow-Y: scroll;
+    border-top: 1px solid black; }
+
+/*END BLOGGER_LAST_TEN*/
 
 /*# sourceMappingURL=application.css.map */

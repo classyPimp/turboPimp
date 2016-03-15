@@ -38,6 +38,10 @@ module Components
                 t(`Route`, {path: 'create_page', component: Components::Pages::New.create_class}),
                 t(`Route`, {path: 'pages_index', component: Components::Pages::Index.create_class}),
                 t(`Route`, {path: 'edit_price_list', component: Components::Admin::Prices::Index.create_class}),
+                t(`Route`, {path: 'create_blog', component: Components::Blogs::New.create_class}),
+                t(`Route`, {path: 'last_blogs', component: Components::Blogger::Blogs::LastTen.create_class}),
+                t(`Route`, {path: 'blogs_index', component: Components::Blogs::Index.create_class}),
+                t(`Route`, {path: 'doctor_appointments', component: Components::Appointments::Doctors::Index.create_class})
               ),
               t(`Route`, {path: "show/:id", component: Users::Show.create_class}),
               t(`Route`, {path: ":id/edit", component: Users::Edit.create_class})
@@ -64,7 +68,7 @@ module Components
             t(`Route`, {path: "/blogs", component: Components::Blogs::Main.create_class},
               t(`Route`, {path: "index", component: Components::Blogs::Index.create_class}),
               # t(`Route`, {path: "new", component: Components::Blogs::New.create_class}),
-              t(`Route`, {path: ":id/edit", component: Components::Blogs::Edit.create_class})
+              t(`Route`, {path: "edit/:id", component: Components::Blogs::Edit.create_class})
             ),
 
             t(`Route`, {path: "/appointments", component: Components::Appointments::Main.create_class},

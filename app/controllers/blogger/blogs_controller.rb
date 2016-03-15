@@ -6,10 +6,10 @@ class Blogger::BlogsController < ApplicationController
     auth! @perms.blogger_last_ten
 
     render json: @perms.model  
-  end
+  end 
 
   def index  
-    perms_for :Blog
+    perms_for Blog
     auth! @perms.blogger_index
     render json: @perms.model
   end

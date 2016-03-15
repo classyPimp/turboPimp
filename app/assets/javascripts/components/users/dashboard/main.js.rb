@@ -37,9 +37,15 @@ module Components
                 t(:div, {className: 'roles_block'},
                   t(:p, {className: 'role_category'}, "actions for blogger"),
                   t(:ul, {},
-                    t(:li, {onClick: ->{init_components_blogs_new}}, "create new blog post"),
-                    t(:li, {onClick: ->{init_blogger_blogs_last_ten}}, "browse my last ten blog posts"),
-                    t(:li, {onClick: ->{init_blogs_index}}, "list and search my blogs")
+                    link_to('', '/users/dashboard/create_blog') do
+                      t(:li, {}, "create new blog post")  
+                    end,
+                    link_to('', '/users/dashboard/last_blogs') do
+                      t(:li, {}, "browse my last ten blog posts")  
+                    end,
+                    link_to('', '/users/dashboard/blogs_index') do
+                      t(:li, {}, "list and search my blogs")
+                    end
                   )
                 )
               end,
@@ -47,7 +53,9 @@ module Components
                 t(:div, {className: 'roles_block'},
                   t(:p, {className: 'role_category'}, "actions for doctor"),
                   t(:ul, {},
-                    t(:li, {onClick: ->{init_doctor_appointments_index}}, "my appointments")
+                    link_to('', '/users/dashboard/doctor_appointments') do
+                      t(:li, {}, "my appointments")
+                    end
                   )
                 )
               end,

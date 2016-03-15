@@ -21,31 +21,52 @@ module Components
         end
 
         def render
-          t(:div, {},
-            t(:div, {className: 'new_category_form'},
-              t(:p, {}, 'add new category'),
-              t(Components::Admin::PriceCategories::New, {on_price_category_created: event(->(price_category){on_price_category_created(price_category)})})
-            ),
-            t(:div, {className: 'price_list'},
-              *splat_each(state.price_categories) do |price_category|
-                t(:div, {className: 'price_category_wrapper'},
-                  t(:h1, {}, price_category.name),
-                  if state.price_items_to_add_to[price_category.id]
-                    t(Components::Admin::PriceItems::New, {on_price_item_created: event(->(price_item){on_price_item_created(price_item)}), on_price_item_new_cancel: event(->(price_category){on_price_item_new_cancel(price_category)}), price_category: price_category})
-                  else
-                    t(:div, {},
-                      t(:button, { onClick: ->{init_price_item_new(price_category)} }, 'add new price item'),
-                      t(:button, { onClick: ->{destroy_price_category(price_category)} }, 'destroy category')
-                    )
-                  end,
-                  *splat_each(price_category.price_items) do |price_item|
-                    t(:div, {className: 'price_item_list_wrapper'},
-                      t(:p, {}, "#{price_item.name} :::::::: #{price_item.price}"),
-                      t(:button, {onClick: ->{delete_price_item(price_item)}}, "delete this")
-                    )
-                  end
-                )
-              end
+          t(:div, {className: 'pricelist container'}, 
+            t(:p, {className: 'disclaimer'}, 'the prices are not final and depend on patients condition'),
+            t(:div, {className: 'table-responsive'}, 
+              t(:table, {className: 'table table-striped table-condensed'}, 
+                t(:thead, {}, 
+                  t(:tr, {}, 
+                    t(:th, {}, 'service'),
+                    t(:th, {}, 'price')
+                  )
+                ),
+                t(:tbody, {}, 
+
+                  splat_each(state.price_categories) do |price_category|              
+                    [ 
+                    t(:tr, {className: 'category_name'},
+                      t(:td, {colSpan: 2}, 
+                        "#{price_category.name}"
+                      )
+                    ),
+                    if state.price_items_to_add_to[price_category.id]
+                      t(:tr, {}, 
+                        t(:td, {},
+                          t(Components::Admin::PriceItems::New, {on_price_item_created: event(->(price_item){on_price_item_created(price_item)}), on_price_item_new_cancel: event(->(price_category){on_price_item_new_cancel(price_category)}), price_category: price_category})
+                        )
+                      )
+                    else
+                      t(:tr, {colSpan: 2},
+                        t(:td, {},
+                          t(:button, {className: 'btn btn-xs', onClick: ->{init_price_item_new(price_category)} }, 'add new price item'),
+                          t(:button, {className: 'btn btn-xs', onClick: ->{destroy_price_category(price_category)} }, 'destroy category')
+                        )
+                      )
+                    end,    
+                    *splat_each(price_category.price_items) do |price_item|
+                      t(:tr, {className: 'price_item'}, 
+                        t(:td, {}, 
+                          t(:button, {className: 'btn btn-xs' ,onClick: ->{delete_price_item(price_item)}}, "delete"),
+                          "#{price_item.name}"
+                        ),
+                        t(:td, {}, "#{price_item.price}")
+                      )
+                    end
+                    ]
+                  end                  
+                ) 
+              )
             )
           )
         end

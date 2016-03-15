@@ -867,3 +867,23 @@ body {
 
 
 /*END IMAGES_INDEX*/
+
+/*BLOGGER_LAST_TEN*/
+
+.blogger_last_ten {
+  border: 1px solid $main-border-color;
+  border-radius: $main-border-radius;
+
+  .title {
+    margin-left: 4rem;
+  }
+
+  .body {
+    margin: 2rem;
+    height: 25rem;
+    overflow-Y: scroll;
+    border-top: 1px solid black;
+  }
+}
+
+/*END BLOGGER_LAST_TEN*/

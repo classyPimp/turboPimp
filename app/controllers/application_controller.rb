@@ -12,7 +12,7 @@ class ApplicationController < ActionController::Base
   #will paginate. To not manually type this repeating stuff
   def extract_pagination_hash(model)
 
-    {pagination: {current_page: model.current_page, total_entries: model.total_entries, total_pages: model.total_pages}}#,
+    {pagination: {current_page: model.current_page,  total_pages: model.total_pages}}#,total_entries: model.total_entries,
               #offset: model.offset}}    
   end
 

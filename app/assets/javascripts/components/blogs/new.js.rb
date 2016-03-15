@@ -16,14 +16,14 @@ module Components
       def render
         t(:div, {},
           if state.current_user.has_role? :blogger
-            t(:div, {}, 
-              input(Forms::Input, state.form_model, :title, {type: "text"}),
-              input(Forms::Input, state.form_model, :m_title, {type: "text"}),
-              input(Forms::Input, state.form_model, :m_description, {type: "text"}),
-              input(Forms::Input, state.form_model, :m_keywords, {type: "text"}),
+            t(:div, {className: 'blogs_new'}, 
+              input(Forms::Input, state.form_model, :title, {type: "text", show_name: 'title'}),
+              input(Forms::Input, state.form_model, :m_title, {type: "text", show_name: 'meta title'}),
+              input(Forms::Input, state.form_model, :m_description, {type: "text", show_name: 'meta description'}),
+              input(Forms::Input, state.form_model, :m_keywords, {type: "text", show_name: 'meta keywords'}),
               input(Forms::WysiTextarea, state.form_model, :body),
-              input(Forms::Checkbox, state.form_model, :published),
-              t(:button, {onClick: ->(){handle_inputs}}, "create blog")
+              input(Forms::Checkbox, state.form_model, :published, {show_name: 'publish'}),
+              t(:button, {className: 'btn btn-primary', onClick: ->(){handle_inputs}}, "create blog")
             )
           end
         )
@@ -43,7 +43,7 @@ module Components
                                               ))
               Components::App::Main.instance.ref(:flash).rb.add_message(msg)
               state.form_model = model
-              set_state blog_saved: true
+              props.history.pushState(nil, '/users/dashboard')
             end
           end
         else

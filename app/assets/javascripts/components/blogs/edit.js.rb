@@ -22,13 +22,13 @@ module Components
         t(:div, {},
           spinner,
           if state.form_model
-            t(:div, {},
-              input(Forms::Input, state.form_model, :title, {type: "text"}),
-              input(Forms::Input, state.form_model, :m_title, {type: "text"}),
-              input(Forms::Input, state.form_model, :m_description, {type: "text"}),
-              input(Forms::Input, state.form_model, :m_keywords, {type: "text"}),
+            t(:div, {className: 'blogs_edit'},
+              input(Forms::Input, state.form_model, :title, {type: "text", show_name: 'title'}),
+              input(Forms::Input, state.form_model, :m_title, {type: "text", show_name: 'meta title'}),
+              input(Forms::Input, state.form_model, :m_description, {type: "text", show_name: 'meta desrciption'}),
+              input(Forms::Input, state.form_model, :m_keywords, {type: "text", show_name: 'meta keywords'}),
               input(Forms::WysiTextarea, state.form_model, :body),
-              input(Forms::Checkbox, state.form_model, :published, {checked: state.form_model.published}),  
+              input(Forms::Checkbox, state.form_model, :published, {checked: state.form_model.published, show_name: 'published'}),  
               t(:button, {onClick: ->{handle_inputs}}, "update blog")
             )
           end
