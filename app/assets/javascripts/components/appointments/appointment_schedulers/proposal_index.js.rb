@@ -26,6 +26,7 @@ module Components
 
           t(:div, {className: 'appointment_proposal_index'},
             modal,
+            t(:h3, {className: 'title'}, 'Appointment proposals'),
             t(:table, {className: 'table-bordered table-striped table-responsive'},
               t(:thead, {},
                 t(:tr, {},
@@ -94,8 +95,14 @@ module Components
         def init_new_from_proposal(appointment, date)
           modal_open(
             'schedule',
-            t(Components::Appointments::AppointmentSchedulers::NewFromProposal, {date: date, appointment: appointment} )
+            t(Components::Appointments::AppointmentSchedulers::NewFromProposal, {date: date, appointment: appointment, on_appointment_created: (event(->{on_appointment_created}))} ) 
           )
+        end
+
+        def on_appointment_created
+          modal_close
+          create_flash('appointment successfully created')
+          component_did_mount
         end
 
         def open_appointment_schedulers_index(appointment)
@@ -107,7 +114,7 @@ module Components
           modal_open(
             "browse",
             t(Components::Appointments::AppointmentSchedulers::Index, {date: start_date, uniq_profiles: uniq_profiles, 
-                                                                      appointment: appointment, from_proposal: true} )
+                                                                      appointment: appointment, from_proposal: true, on_appointment_created: event(->{on_appointment_created})} )
           )
         end
 

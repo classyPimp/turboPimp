@@ -13,7 +13,7 @@ class Admin::UsersController < ApplicationController
   def index
 
 
-    @perms = perms_for :User  
+    @perms = perms_for User  
 
     auth! @perms.admin_index
 

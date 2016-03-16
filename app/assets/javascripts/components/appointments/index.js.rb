@@ -400,6 +400,12 @@ module Components
         end
       end
 
+      def component_did_update(prev_props, prev_state)
+        if props.date.format != prev_props.date.format
+          component_did_mount
+        end     
+      end
+
       def render
         fetched_appointments = props.index.fetch_appointments(self, props.date.format("YYYY-MM-DD"))
 

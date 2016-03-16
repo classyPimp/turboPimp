@@ -66,11 +66,18 @@ module Components
                     link_to('', '/users/dashboard/appointments_proposals') do
                       t(:li, {}, "appointments requests")  
                     end,
-                    
-                    t(:li, { onClick: ->{ init_appointment_schedulers_appointments_index } }, "browse schedule"),
-                    t(:li, { onClick: ->{ init_user_appointment_schedulers_new } }, 'register patient'),
-                    t(:li, { onClick: ->{ init_user_appointment_schedulers_index } }, 'manage patients'),
-                    t(:li, { onClick: ->{ init_appointment_schedulers_chat_messages_index } }, 'browse chats')
+                    link_to('', '/users/dashboard/browse_schedule') do
+                      t(:li, {}, "browse schedule")
+                    end,
+                    link_to('', '/users/dashboard/register_patient') do
+                      t(:li, {}, 'register patient')  
+                    end,
+                    link_to('', '/users/dashboard/manage_patients') do
+                      t(:li, {}, 'manage patients')  
+                    end,
+                    link_to('', '/users/dashboard/browse_chats') do
+                      t(:li, {}, 'browse chats')
+                    end
                   )
                 ) 
               end

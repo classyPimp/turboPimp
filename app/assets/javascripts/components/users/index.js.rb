@@ -46,7 +46,6 @@ module Components
             `console.log(#{e})`
           end
         end
-
       end
 
       def render

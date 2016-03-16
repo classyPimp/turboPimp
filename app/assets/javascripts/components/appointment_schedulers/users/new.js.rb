@@ -11,7 +11,7 @@ module Components
 
         def prepare_new_user
           ->{
-            User.new(profile: {profile: {}}, avatar: {avatar: {}}, roles: [])
+            User.new(profile: Profile.new)
           }
         end
 
@@ -53,7 +53,8 @@ module Components
               if model.has_errors?
                 set_state form_model: model
               else
-                alert 'user created'
+                create_flash(link_to("new patient created", "/users/show/#{model.id}"))
+                props.history.pushState(nil, '/users/dashboard')
                 #props.on_create(model)
               end
             end

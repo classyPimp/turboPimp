@@ -68,7 +68,7 @@ module Components
 
             state.form_model.schedule_appointment(namespace: 'appointment_scheduler').then do |appointment|
               unless appointment.has_errors?
-                alert "success"
+                emit(:on_appointment_created)
               else
                 state.form_model.attributes.delete(:doctor_id)
                 set_state form_model: state.form_model

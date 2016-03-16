@@ -42,7 +42,11 @@ module Components
                 t(`Route`, {path: 'last_blogs', component: Components::Blogger::Blogs::LastTen.create_class}),
                 t(`Route`, {path: 'blogs_index', component: Components::Blogs::Index.create_class}),
                 t(`Route`, {path: 'doctor_appointments', component: Components::Appointments::Doctors::Index.create_class}),
-                t(`Route`, {path: 'appointments_proposals', component: Components::Appointments::AppointmentSchedulers::ProposalIndex.create_class}, )
+                t(`Route`, {path: 'appointments_proposals', component: Components::Appointments::AppointmentSchedulers::ProposalIndex.create_class} ),
+                t(`Route`, {path: 'browse_schedule', component: Components::Appointments::AppointmentSchedulers::Index.create_class}),
+                t(`Route`, {path: 'register_patient', component: Components::AppointmentSchedulers::Users::New.create_class}),
+                t(`Route`, {path: 'manage_patients', component: Components::AppointmentSchedulers::Users::Index.create_class}),
+                t(`Route`, {path: 'browse_chats', component: Components::AppointmentSchedulers::ChatMessages::Index.create_class})
               ),
               t(`Route`, {path: "show/:id", component: Users::Show.create_class}),
               t(`Route`, {path: ":id/edit", component: Users::Edit.create_class})

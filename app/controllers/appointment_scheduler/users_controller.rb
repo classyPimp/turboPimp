@@ -23,15 +23,49 @@ class AppointmentScheduler::UsersController < ApplicationController
 
   def index
     
-    perms_for User
+    @perms = perms_for User  
+
     auth! @perms.appointment_scheduler_index
 
+    page = params[:page] || 1
     per_page = params[:per_page] || 25
-    @users = User.includes(:si_profile1name_phone_number).all.paginate(page: params[:page], per_page: per_page)
+    search_query = params[:search_query]
+    registered_only = params[:registered_only]
+    unregistered_only = params[:unregistered_only]
 
-    @pagination_hash = extract_pagination_hash(@users)  
+    if !search_query.blank?
 
-    render json: @users.as_json(@perms.serialize_on_success) << @pagination_hash
+      @users = User.user_search(search_query).includes(:avatar, :profile, :si_profile1name_phone_number)
+
+    else
+
+      @users = User.all.includes(:avatar, :profile, :si_profile1name_phone_number)
+    
+    end
+
+
+    @users = @users.joins(:roles).where('roles.name = ?', 'patient')
+
+
+    unless registered_only.blank?
+
+      @users = @users.where(registered: true)
+
+    end
+
+    unless unregistered_only.blank?
+
+      @users = @users.where(registered: false)
+
+    end
+
+    @users = @users.select('users.id, users.email, users.registered')
+
+    @users = @users.paginate(per_page: per_page, page: page)
+
+    @users = @users.as_json(@perms.serialize_on_success) << self.extract_pagination_hash(@users)
+
+    render json: @users
 
   end
 
