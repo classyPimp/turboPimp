@@ -49,7 +49,12 @@ Rails.application.routes.draw do
     get "blogs/index_for_group_list" => 'blogs#index_for_group_list'
     resources :blogs, only: [:index, :create, :update, :destroy, :edit]
 
+    
+    namespace :appointments do
+      resources :availabilities
+    end
     resources :appointments
+
     resources :appointment_availabilities
 
     post "doctor/users/doctors_feed" => "doctor/users#doctors_feed"

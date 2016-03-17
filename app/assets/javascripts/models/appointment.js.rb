@@ -16,6 +16,8 @@ class Appointment < Model
 
   route "Proposal_index", get: "appointments/proposal_index"
   
+  route "Availabilities_index", get: "appointments/availabilities"
+
   def self.responses_on_proposal_index(r)
      self.responses_on_index(r)
   end
