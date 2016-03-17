@@ -76,10 +76,14 @@ module Forms
       if s_f = props.server_feed
         @options = []
         HTTP.post(s_f[:url], payload: s_f[:extra_params]).then do |response|
+          begin
           @options = response.json
           prepare_all
           @loaded = true
           set_state options: @options, selected: @selected
+          rescue Exception => e
+            p e
+          end
         end
       end
     end

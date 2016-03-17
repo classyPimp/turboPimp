@@ -24,6 +24,6 @@ class Profile < ActiveRecord::Base
 
   validates :name, presence: true
 
-  scope :patients_for_feed, ->{joins(user: [:roles]).where("roles.name = ? AND users.registered = ?", "patient", true).select(:user_id, :name)}
+  scope :patients_for_feed, ->{joins(user: [:roles]).where("roles.name = ?", "patient").select(:user_id, :name)} #AND users.registered = ?
 
 end

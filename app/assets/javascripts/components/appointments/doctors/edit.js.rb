@@ -19,6 +19,7 @@ module Components
             appointment.attributes[:start_date_s] = state.parsed_start.format('YYYY-MM-DDTHH:mm')
             appointment.attributes[:end_date_s] = state.parsed_end.format('YYYY-MM-DDTHH:mm')
             set_state form_model: appointment
+            p appointment.pure_attributes
           end
         end
 
@@ -54,8 +55,9 @@ module Components
                 set_state form_model: model
               else
                 begin
-                props.passed_appointment.attributes = model.attributes
-                props.on_appointment_updated(props.passed_appointment)
+                emit(:on_appointment_updated)
+                #props.passed_appointment.attributes = model.attributes
+                #props.on_appointment_updated(props.passed_appointment)
                 alert "updated successfully!"
               rescue Exception => e
                 p e

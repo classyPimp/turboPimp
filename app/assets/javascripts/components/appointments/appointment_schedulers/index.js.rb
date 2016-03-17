@@ -60,6 +60,24 @@ module Components
           )
         end
 
+        def init_appointments_show(appointment)
+          modal_open(
+            "appointment",
+            t(Components::Appointments::Doctors::Show, {appointment: appointment})
+          )
+        end
+
+        def init_appointments_edit(appointment)
+          modal_open(
+            'edit appointment',
+            t(Components::Appointments::Doctors::Edit, {id: appointment.id, on_appointment_updated: event(->{on_appointment_updated})})
+          )
+        end
+        def on_appointment_updated
+          modal_close
+          create_flash('updated')
+        end
+
         def on_appointment_created
           if props.from_proposal
             emit(:on_appointment_created)
@@ -125,16 +143,18 @@ module Components
 
         def prepare_appointments_tree(obj, users)
           tree_block = lambda{ |h, k| 
-            if k[0] == "2"
+            if k[0] == "_"
               h[k] = Hash.new(&tree_block)
             else
-              h[k] = []
+              h[k] = {doctor: nil, appointments: []}
             end
           }
           opts = Hash.new(&tree_block)
           users.each do |user|
+            #opts[Moment.new(appointment.start_date).format('_YYYY-MM-DD')][user.profile.name][:doctor] = user
             user.appointments.each do |appointment|
-              opts[Moment.new(appointment.start_date).format('YYYY-MM-DD')][user.profile.name] << appointment 
+              opts[Moment.new(appointment.start_date).format('_YYYY-MM-DD')][user.id][:appointments] << appointment
+              opts[Moment.new(appointment.start_date).format('_YYYY-MM-DD')][user.id][:doctor] = user
             end
           end
           obj.set_state appointments_for_dates: opts
@@ -200,22 +220,7 @@ module Components
           component_did_mount
         end
 
-        def prepare_appointments_tree(obj, users)
-          tree_block = lambda{ |h, k| 
-            if k[0] == "2"
-              h[k] = Hash.new(&tree_block)
-            else
-              h[k] = []
-            end
-          }
-          opts = Hash.new(&tree_block)
-          users.each do |user|
-            user.appointments.each do |appointment|
-              opts[Moment.new(appointment.start_date).format('YYYY-MM-DD')][user.profile.name] << appointment 
-            end
-          end
-          obj.set_state appointments_for_dates: opts
-        end
+        
 
       end
 
@@ -313,7 +318,7 @@ module Components
         expose
         #resolves dates that'll be used for querrying the apppointments
         def queries(date)
-          p date.format
+
           z = date.clone().startOf("week")
           #z = date.isBefore(x = Moment.new.set(hour: 0, min: 0)) ? x : z 
           x = {}
@@ -332,7 +337,11 @@ module Components
         # if something else except fetching is added move to other method beacause on update it calls #component_did_mount
         def component_did_mount
           Appointment.index(component: self, payload: queries(props.date).merge(doctor_ids: props.index.state.doctor_ids), namespace: 'appointment_scheduler').then do |users|
+            begin
             props.index.prepare_appointments_tree(self, users) 
+            rescue Exception => e
+              p e
+            end
           end
         end
 
@@ -380,15 +389,30 @@ module Components
                   end,
 
                     t(:div, {className: "day_body"},
-                      *splat_each(props.index.fetch_appointments(self, @track_day.format("YYYY-MM-DD"))) do |user_name, appointments|
-                        t(:div, {},
-                          t(:p, {}, user_name),
-                          *splat_each(appointments) do |appointment|
+                      *splat_each(props.index.fetch_appointments(self, t_d_a.format("_YYYY-MM-DD"))) do |k, h|
+                        t(:div, {className: 'appointments_for_doctor'},
+                          t(:p, {className: 'doctor_name'}, 
+                            "#{h[:doctor].profile.name}"
+                          ),
+                          *splat_each(h[:appointments]) do |appointment|
                             t(:div, {},
-                              t(:p, {}, "#{Moment.new(appointment.start_date).format('HH:mm')} : #{Moment.new(appointment.end_date).format('HH:mm')}")
+                              t(:p, {className: 'patient_name'},
+                                "#{appointment.patient.profile.name}"
+                              ),
+                              t(:a, {className: 'appointment_time', onClick: ->{props.index.init_appointments_show(appointment)}}, 
+                               "#{Moment.new(appointment.start_date).format("HH:mm")} - #{Moment.new(appointment.end_date).format("HH:mm")}"
+                              ),
+                              t(:div, {className: 'controlls'},
+                                t(:button, {className: 'btn btn-xs', onClick: ->{props.index.init_appointments_edit(appointment)}},
+                                  'edit'
+                                ),
+                                t(:button, {className: 'btn btn-xs', onClick: ->{props.index.destroy_appointment(appointment)}},
+                                  'delete'
+                                )
+                              )
                             )
                           end
-                        )                  
+                        )               
                       end                   
                     )
                 )
@@ -468,20 +492,23 @@ module Components
                 t(:button, { onClick: ->{emit(:init_appointments_new, props.date)} }, 'create new appointment')
               end,
               t(:div, {className: "day_body"},
-                *splat_each(props.index.fetch_appointments(self, props.date.clone.format("YYYY-MM-DD"))) do |user_name, appointments|
+                *splat_each(props.index.fetch_appointments(self, props.date.clone.format("_YYYY-MM-DD"))) do |k, h|
                   t(:div, {className: 'appointments_for_doctor'},
-                    t(:p, {className: 'patient_name'}, 
-                      "#{user_name}"
+                    t(:p, {className: 'doctor_name'}, 
+                      "#{h[:doctor].profile.name}"
                     ),
-                    *splat_each(appointments) do |appointment|
+                    *splat_each(h[:appointments]) do |appointment|
                       t(:div, {},
+                        t(:p, {className: 'patient_name'},
+                          "#{appointment.patient.profile.name}"
+                        ),
                         t(:p, {className: 'appointment_time'}, 
                          "#{Moment.new(appointment.start_date).format("HH:mm")} - #{Moment.new(appointment.end_date).format("HH:mm")}"
                         )
                       )
                     end
-                  )
-                end
+                  )                  
+                end     
               )
             ),
             t(:div, {className: 'col-lg-3'})

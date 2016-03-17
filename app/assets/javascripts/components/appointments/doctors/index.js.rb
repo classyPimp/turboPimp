@@ -52,6 +52,20 @@ module Components
           set_state date: state.date,current_controll_component: ->{Native(t(WeekDay, {ref: "day", date: state.date, index: self}))}, current_view: "day"
         end
 
+        def init_appointments_show(appointment)
+          modal_open(
+            "appointment",
+            t(Components::Appointments::Doctors::Show, {appointment: appointment})
+          )
+        end
+
+        def init_user_show(user_id)
+          modal_open(
+            'patient',
+            t(Components::Users::Show, {user_id: user_id})
+          )
+        end
+
         def current_view
           self.ref(state.current_view).rb
         end
@@ -286,11 +300,14 @@ module Components
 
                         *splat_each(fetch_appointments(@track_day.format("YYYY-MM-DD"))) do |appointment|
                           t(:div, {className: 'appointments_for_doctor'},
-                            t(:p, {className: 'patient_name'}, 
-                              "#{appointment.patient.profile.name}"
+                            t(:p, {className: 'patient_name', onClick: ->{props.index.init_user_show(appointment.patient.id)}}, 
+                              t(:a, {}, "#{appointment.patient.profile.name}")
                             ),
                             t(:p, {className: 'appointment_time'}, 
                               "#{Moment.new(appointment.start_date).format("HH:mm")} - #{Moment.new(appointment.end_date).format("HH:mm")}"
+                            ),
+                            t(:div, {className: 'controls'},
+                              t(:button, {className: 'btn btn-xs', onClick: ->{props.index.init_appointments_show(appointment)}}, "more...")
                             )
                           )
                         end                     
@@ -363,11 +380,14 @@ module Components
               t(:div, {className: "day_body"},
                 *splat_each(state.appointments) do |appointment|
                   t(:div, {className: 'appointments_for_doctor'},
-                    t(:p, {className: 'patient_name'}, 
-                      "#{appointment.patient.profile.name}"
+                    t(:p, {className: 'patient_name', onClick: ->{props.index.init_user_show(appointment.patient.id)}}, 
+                      t(:a, {}, "#{appointment.patient.profile.name}")
                     ),
                     t(:p, {className: 'appointment_time'}, 
                       "#{Moment.new(appointment.start_date).format("HH:mm")} - #{Moment.new(appointment.end_date).format("HH:mm")}"
+                    ),
+                    t(:div, {className: 'controls'},
+                      t(:button, {className: 'btn btn-xs', onClick: ->{props.index.init_appointments_show(appointment)}}, "more...")
                     )
                   )
                 end

@@ -124,7 +124,23 @@ module Perms
             { 
               si_appointments1as_doctor_all: 
               {
-                root: true
+                root: true,
+                include: 
+                [
+                  {
+                    patient: 
+                    {
+                      root: true,
+                      include: 
+                      {
+                        si_profile1id_name:
+                        {
+                          root: true
+                        }
+                      }
+                    }
+                  }
+                ]
               }
             },
             {

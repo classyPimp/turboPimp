@@ -37,7 +37,8 @@ class Doctor::AppointmentsController < ApplicationController
     to = Date.parse(params[:to])
     doctor_ids = params[:doctor_ids]
 
-    @appointments =  Appointment.joins(:appointment_detail, patient: [:profile]).where("appointments.start_date >= ? AND appointments.end_date <= ? AND appointments.doctor_id IN (?)", from, to, doctor_ids ).select("appointments.*, profiles.name AS sj_patient2user1sj_profile1name, appointment_details.note AS sj_appointment_detail1note")
+    @appointments =  Appointment.joins(:appointment_detail, patient: [:profile]).where("appointments.start_date >= ? AND appointments.end_date <= ? AND appointments.doctor_id IN (?)", from, to, doctor_ids ).select("appointments.*, profiles.name AS sj_patient2user1sj_profile1name, users.id AS sj_patient2user1id, appointment_details.note AS sj_appointment_detail1note")
+    #@appointment = Appointment.josin(:appointment_detail, patient: [:profile]).where("appointments.start_date >= ? AND appointments.end_date <= ? AND appointments.doctor_id IN (?)", from, to, doctor_ids )
     render json: @appointments.as_json
   end
 
