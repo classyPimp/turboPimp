@@ -23,7 +23,7 @@ class AppointmentScheduler::AppointmentsController < ApplicationController
     @user_ids_to_query = params[:doctor_ids]
     @users_with_appointments = User.where(id: @user_ids_to_query).includes({si_appointments1as_doctor_all: [{patient: [:si_profile1id_name]}]}, :si_profile1id_name).select(:id)
 
-    render json: @users_with_appointments.as_json(@perms.serialize_on_success)  
+    render json: @users_with_appointments.as_json(@perms.serialize_on_success)   
 
     User.arbitrary.delete(:from)
     User.arbitrary.delete(:to)

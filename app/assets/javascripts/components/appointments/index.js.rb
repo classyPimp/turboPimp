@@ -277,9 +277,9 @@ module Components
 
       def component_did_mount
         Appointment.availabilities_index(payload: queries(props.date)) do |apps|
-          p apps[0].pure_attributes
+          p apps
         end
-
+        return
         AppointmentAvailability.index(component: self, payload: queries(props.date)).then do |users|
           props.index.prepare_availability_tree(self, users)
         end

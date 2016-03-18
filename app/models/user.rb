@@ -170,6 +170,10 @@ class User < ActiveRecord::Base
 
   has_many :si_appointments1as_doctor_all, ->{ where("start_date >= ? AND end_date <= ?", User.arbitrary[:from], User.arbitrary[:to]) },
     class_name: 'Appointment', foreign_key: 'doctor_id'
+  
+  has_many :si_appointments1as_patient_all, ->{ where("appointments.start_date >= ? AND appointments.end_date <= ?", User.arbitrary[:from], User.arbitrary[:to]).select(:id, :start_date, :end_date, :doctor_id) },
+    class_name: 'Appointment', foreign_key: 'doctor_id'
+
   has_many :appointments_as_doctor, class_name: 'Appointment', foreign_key: 'doctor_id'
 
   has_many :si_appointments_as_patient1id, ->{select(:id)},class_name: 'Appointment',foreign_key: 'patient_id'

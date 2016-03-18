@@ -2,25 +2,34 @@ class Appointments::AvailabilitiesController < ApplicationController
 
   def index
 
-    from = Date.parse(params[:from])
-    to = Date.parse(params[:to])
+    User.arbitrary[:from] = params[:from]
+    User.arbitrary[:to] = params[:to] 
 
-    @appointments = User.joins(:roles, :appointments_as_doctor).where('roles.name = ?', 'doctor').where('appointments.start_date >= ? AND appointments.end_date <= ?', from, to).select(:id)
+    @users_with_appointments = User.joins(:appointments_as_doctor).where("appointments.start_date >= ? AND appointments.end_date <= ?", User.arbitrary[:from], User.arbitrary[:to]).select(:id).distinct#.includes(:si_appointments1as_patient_all, :profile_id_name, :avatar)
 
-    render json: @appointments.as_json(
+    render json: @users_with_appointments.as_json(
       {
         include: 
         [
           {
-            si_profile1id_name:
+            si_appointments1as_patient_all:
             {
               root: true
             }
           },
           {
-            appointments_as_doctor:
+            profile_id_name:
             {
               root: true
+            }
+          },
+          {
+            avatar:
+            {
+              methods:
+              [
+                :url
+              ]
             }
           }
         ]
