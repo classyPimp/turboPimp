@@ -56,10 +56,10 @@ module Components
                               "#{props.user_accessor[k].profile.name}"
                             )
                           ),
-                          *splat_each(v[0].map) do |av|
+                          *splat_each(v.map) do |av|
                             t(:div, {className: "checkbox_desc_group"},
                               input(Forms::PushCheckBox, state.form_model, :appointment_proposal_infos, 
-                                {className: 'checkbox', show_name: '',checked: false, push_value: AppointmentProposalInfo.new(primary: true, doctor_id: v[0].user_id, date_from: av[0].format, date_to: av[1].format)}
+                                {className: 'checkbox', show_name: '',checked: false, push_value: AppointmentProposalInfo.new(primary: true, doctor_id: k, date_from: av[0].format, date_to: av[1].format)}
                               ),
                               t(:div, {className: 'time_range'}, 
                                 t(:p, {}, "#{av[0].format('HH:mm')} - #{av[1].format('HH:mm')}")

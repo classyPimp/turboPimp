@@ -12,11 +12,11 @@ class ComposerFor::Appointment::Doctor::Update
     clear   
   end
 
-  def subscriptions_after_appointment_updated
-    if @appointment.start_date_or_end_date_changed?
-      subscribe(:on_appointment_updated, AppointmentAvailability)
-    end
-  end
+  # def subscriptions_after_appointment_updated
+  #   if @appointment.start_date_or_end_date_changed?
+  #     subscribe(:on_appointment_updated, AppointmentAvailability)
+  #   end
+  # end
 
   def compose
     
@@ -24,11 +24,11 @@ class ComposerFor::Appointment::Doctor::Update
       
       @appointment.update!(@attributes)
       
-      subscriptions_after_appointment_updated
+      #subscriptions_after_appointment_updated
 
     end
 
-    publish(:on_appointment_updated, @appointment)
+    #publish(:on_appointment_updated, @appointment)
     
     handle_transaction_success
 

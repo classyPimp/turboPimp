@@ -36,4 +36,27 @@ class Admin::PriceItemsController < ApplicationController
 
   end
 
+
+  def update
+
+    perms_for PriceItem
+
+    auth! @perms.admin_update
+
+    @price_item = PriceItem.find(params[:id])
+
+    cmpsr = ComposerFor::Admin::PriceItems::Update.new(@price_item, params[:price_item], self)
+
+    cmpsr.when(:ok) do |price_item|
+      render json: price_item.as_json(@perms.serialize_on_success)
+    end
+
+    cmpsr.when(:validation_error) do |price_item|
+      render json: price_item.as_json(@perms.serialize_on_error)
+    end
+
+    cmpsr.run
+
+  end
+
 end

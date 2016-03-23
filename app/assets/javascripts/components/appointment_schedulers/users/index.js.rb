@@ -14,7 +14,7 @@ module Components
         def get_initial_state
           {
             users: ModelCollection.new,
-            pagination_per_page: 1,
+            pagination_per_page: 25,
             search_model: User.new,
             disabled_inputs: {registered_only: false, unregistered_only: false}
           }
@@ -44,7 +44,7 @@ module Components
 
         def make_query(_extra_params)
           
-          _extra_params[:per_page] = _extra_params[:per_page] || props.location.query.per_page || 1
+          _extra_params[:per_page] = _extra_params[:per_page] || props.location.query.per_page || state.pagination_per_page
           User.index({extra_params: _extra_params, component: self, namespace: 'appointment_scheduler'}).then do |users|
             begin
             extract_pagination(users)
@@ -106,8 +106,13 @@ module Components
         def edit_selected_as_appointment_scheduler(user)
           modal_open(
             'edit user',
-            t(Components::AppointmentSchedulers::Users::Edit, {user: user})
+            t(Components::AppointmentSchedulers::Users::Edit, {user: user, on_user_updated: event(->(_user){on_user_updated(_user)})})
           )
+        end
+
+        def on_user_updated(user)
+          modal_close
+          component_did_mount
         end
 
         def delete_selected_as_appointment_scheduler(_user)
@@ -139,7 +144,7 @@ module Components
           ex_p = m.pure_attributes[:user]
           # ex_p.delete(:roles_attributes)
           # ex_p[:roles] = roles
-          ex_p[:per_page] = props.location.query.per_page || 1
+          ex_p[:per_page] = props.location.query.per_page || state.pagination_per_page
           p ex_p
 
           props.history.pushState(nil, props.location.pathname, ex_p)

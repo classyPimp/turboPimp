@@ -31,6 +31,7 @@ class ComposerFor::AppointmentScheduler::Users::Update
       ActiveRecord::Base.transaction do  
         begin 
           @user.arbitrary[:no_password_update] = true
+          @user.arbitrary[:skip_email_validation] = true
 
           @user.save!
 
@@ -59,7 +60,7 @@ class ComposerFor::AppointmentScheduler::Users::Update
   end
 
   def handle_transaction_fail(e)
-    
+    byebug
     case e
     when ActiveRecord::RecordInvalid
       publish(:fail, @user)

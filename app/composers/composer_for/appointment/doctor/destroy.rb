@@ -7,23 +7,23 @@ class ComposerFor::Appointment::Doctor::Destroy
   end
 
   def run
-    run_subscriptions
+    #run_subscriptions
     compose
     clear   
   end
 
-  def run_subscriptions
-    unless @appointment.proposal
-      subscribe(:on_appointment_destroyed, AppointmentAvailability)
-    end
-  end
+  # def run_subscriptions
+  #   unless @appointment.proposal
+  #     subscribe(:on_appointment_destroyed, AppointmentAvailability)
+  #   end
+  # end
 
   def compose
     ActiveRecord::Base.transaction do
       
       @appointment.destroy!
 
-      publish(:on_appointment_destroyed, @appointment)
+      #publish(:on_appointment_destroyed, @appointment)
      
     end
     

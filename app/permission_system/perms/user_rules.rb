@@ -239,6 +239,22 @@ module Perms
       end
     end
 
+    def appointment_scheduler_destroy
+      if @current_user && @current_user.has_role?(:appointment_scheduler)
+
+        unless @model.has_role?(:patient)
+          return false
+        end
+
+        if @model.has_any_role?(:admin, :blogger, :appointment_scheduler)
+          return false
+        end
+
+        true
+
+      end
+    end
+
     def doctors_feed
 
       if @current_user && @current_user.has_role?(:appointment_scheduler)

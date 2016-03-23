@@ -30,7 +30,7 @@
         @price_category.save!
 
         @transaction_success = true
-        
+          
       rescue Exception => e
         handle_transaction_fail(e)
       end

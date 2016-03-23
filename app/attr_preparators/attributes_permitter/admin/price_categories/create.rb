@@ -9,5 +9,5 @@ class AttributesPermitter::Admin::PriceCategories::Create
       permit(:name)
     @permitted_attributes
   end
-
+  
 end

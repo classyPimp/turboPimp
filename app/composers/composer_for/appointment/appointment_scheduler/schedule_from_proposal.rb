@@ -17,7 +17,7 @@ class ComposerFor::Appointment::AppointmentScheduler::ScheduleFromProposal
 
   def run
     validate
-    run_subscriptions
+    #run_subscriptions
     compose
     clear   
   end
@@ -26,9 +26,9 @@ class ComposerFor::Appointment::AppointmentScheduler::ScheduleFromProposal
     ModelValidator::Appointment::ScheduleFromProposal.validate!(@appointment)
   end
 
-  def run_subscriptions
-    subscribe(:on_appointment_created, AppointmentAvailability)
-  end
+  # def run_subscriptions
+  #   subscribe(:on_appointment_created, AppointmentAvailability)
+  # end
 
   def compose
     ActiveRecord::Base.transaction do  
@@ -37,7 +37,7 @@ class ComposerFor::Appointment::AppointmentScheduler::ScheduleFromProposal
 
       @appointment.save!
 
-      publish(:on_appointment_created, @appointment)
+      #publish(:on_appointment_created, @appointment)
 
       if @appointment.appointment_proposal_infos.destroy_all
         @transaction_success = true

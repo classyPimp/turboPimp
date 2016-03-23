@@ -10,7 +10,9 @@ module Components
         def get_initial_state
           {
             price_categories: ModelCollection.new,
-            price_items_to_add_to: {}
+            price_items_to_add_to: {},
+            current_edited_price_item: nil,
+            current_edited_price_category: nil
           }
         end
 
@@ -31,13 +33,26 @@ module Components
                     t(:th, {}, 'price')
                   )
                 ),
-                t(:tbody, {}, 
+                t(:tbody, {},
+
+                  t(:tr, {}, 
+                    t(:td, {colSpan: 2}, 
+                      t(Components::Admin::PriceCategories::New, {on_price_category_created: event(->(category){on_price_category_created(category)}), show_name: 'add new category'}, )
+                    )
+                  ), 
 
                   splat_each(state.price_categories) do |price_category|              
                     [ 
                     t(:tr, {className: 'category_name'},
-                      t(:td, {colSpan: 2}, 
-                        "#{price_category.name}"
+                      t(:td, {colSpan: 2},
+                        *if price_category.id == state.current_edited_price_category 
+                          t(Components::Admin::PriceCategories::Edit, {form_model: price_category, on_price_category_updated: event(->(_category){on_price_category_updated(_category)}), on_price_category_edit_cancel: event(->{on_price_category_edit_cancel})} )
+                        else
+                          [
+                          t(:button, {className: 'btn btn-xs', onClick: ->{init_price_category_edit(price_category)}}, 'edit category name'),
+                          "#{price_category.name}"
+                          ]
+                        end
                       )
                     ),
                     if state.price_items_to_add_to[price_category.id]
@@ -56,11 +71,22 @@ module Components
                     end,    
                     *splat_each(price_category.price_items) do |price_item|
                       t(:tr, {className: 'price_item'}, 
-                        t(:td, {}, 
-                          t(:button, {className: 'btn btn-xs' ,onClick: ->{delete_price_item(price_item)}}, "delete"),
-                          "#{price_item.name}"
-                        ),
-                        t(:td, {}, "#{price_item.price}")
+
+                        *if state.current_edited_price_item == price_item.id
+                          t(:td, {colSpan: 2}, 
+                            t(Components::Admin::PriceItems::Edit, {form_model: price_item, on_price_item_updated: event(->(_price_item){on_price_item_updated(_price_item)}), on_price_item_edit_cancel: event(->{on_price_item_edit_cancel})})
+                          )
+                          
+                        else
+                          [
+                            t(:td, {}, 
+                              t(:button, {className: 'btn btn-xs', onClick: ->{delete_price_item(price_item)}}, "delete"),
+                              t(:button, {className: 'btn btn-xs', onClick: ->{init_price_item_edit(price_item)}}, 'edit'),
+                              "#{price_item.name}"
+                            ),
+                            t(:td, {}, "#{price_item.price}")
+                          ]
+                        end
                       )
                     end
                     ]
@@ -100,6 +126,18 @@ module Components
           set_state price_items_to_add_to: state.price_items_to_add_to
         end
 
+        def init_price_item_edit(price_item)
+          set_state current_edited_price_item: price_item.id 
+        end
+
+        def on_price_item_updated(price_item)
+          set_state price_categories: state.price_categories, current_edited_price_item: nil
+        end
+
+        def on_price_item_edit_cancel
+          set_state current_edited_price_item: nil
+        end
+
         def delete_price_item(price_item)
           price_item.destroy(namespace: 'admin').then do |_price_item|
             begin
@@ -122,6 +160,20 @@ module Components
             state.price_categories.remove(price_category)
             set_state price_categories: state.price_categories
           end
+        end
+
+        def on_price_category_edit_cancel
+          set_state current_edited_price_category: nil
+        end
+
+        def init_price_category_edit(category)
+          set_state current_edited_price_category: category.id
+        end
+
+        def on_price_category_updated(category)
+
+          set_state price_categories: state.price_categories, current_edited_price_category: nil
+
         end
 
       end

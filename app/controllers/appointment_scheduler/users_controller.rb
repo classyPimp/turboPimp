@@ -101,4 +101,26 @@ class AppointmentScheduler::UsersController < ApplicationController
 
   end
 
+  def destroy
+    
+    @user = User.find(params[:id])
+
+    perms_for @user
+
+    auth! @perms.appointment_scheduler_destroy
+
+    cmpsr = ComposerFor::User::RegularDestroy.new(@user)
+
+    cmpsr.when(:ok) do |user|
+      render json: user.as_json(only: [:id])
+    end
+
+    cmpsr.when(:fail) do |user|
+      render json: user.as_json(only: [:id], methods: [:errors])
+    end
+
+    cmpsr.run
+
+  end
+
 end

@@ -1,7 +1,12 @@
 class AppointmentAvailability < ActiveRecord::Base  
   
   belongs_to :user
-  
+  #DEPRECATED 
+  #TODO DELETE
+  #LEAVING JUST IN CASE 
+  #NOT USED, previously when each appointment was either added updated or deleted appoinymentavailability for start date in appointment was also affected
+  #this model was used to give some feed on appointmnet availability for schedule browsing for patient to show the gaps where they can propose an appointment
+  #but later decided to get rid of this messy stuff, where needed it just grabs the appointments themself and on client those gaps are built and rendered.
   #================= PUBSUBBUS CLASS LEVEL
   #invoked from on_create callback from Appointment
   #finds or creates appointment

@@ -345,8 +345,6 @@ end
       #else it would be dafultly assumed as state.form_model 
       f_m = options[:form_model] ? options[:form_model] : :form_model
 
-      p "F_M: #{f_m}"
-
 	    state[f_m].validate(only: options[:validate_only]) unless (options[:validate] == false)
 	    #Model implements #validate method which does TADA validation!
 	    state[f_m]

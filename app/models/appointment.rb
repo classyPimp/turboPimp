@@ -20,6 +20,7 @@ class Appointment < ActiveRecord::Base
   has_one :si_appointment_detail1extra_details, ->{select(:id, :extra_details, :appointment_id)},class_name: 'AppointmentDetail'
 
   has_many :appointment_proposal_infos, dependent: :destroy
+  
   has_many :si_appointment_proposal_infos1all, class_name: "AppointmentProposalInfo"
 
 

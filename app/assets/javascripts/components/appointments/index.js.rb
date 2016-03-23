@@ -17,7 +17,7 @@ module Components
 
       def component_did_mount
         init_week_view
-      end
+      end  
 
       def render
         t(:div, {className: 'appointments_calendar'},
@@ -56,38 +56,58 @@ module Components
         self.ref(state.current_view).rb
       end
 
+      def build_availabilities(appointments, date)
+        appointments.unshift Appointment.new(start_date: Moment.new(date).set(hour: 9).format('YYYY-MM-DD:HH:mm'), end_date: Moment.new(date).set(hour: 9).format('YYYY-MM-DD:HH:mm'))
+        appointments.push Appointment.new(start_date: Moment.new(date).set(hour: 19).format('YYYY-MM-DD:HH:mm'), end_date: Moment.new(date).set(hour: 19).format('YYYY-MM-DD:HH:mm'))
+        i = 0
+        a_l = appointments.length
+        aps = appointments
+        av_map = []  
+        while i < (a_l - 1)
+          last_end = Moment.new(aps[i].end_date)
+          next_start = Moment.new(aps[i+1].start_date)
+          x = next_start.diff(last_end, 'minutes')
+          if next_start.diff(last_end, 'minutes') > 10
+            av_map << [last_end, next_start] 
+          end 
+          i += 1
+        end
+        AppointmentAvailability.new(map: av_map)
+      end
+
       #method is used and coupled to Week Month WeekDay
       #called from there by accessing through props.index, so self should be passed as index prop
       def fetch_appointments(obj, t_d)
-        x = (z = obj.state.appointment_availabilities[t_d]) ? z : {}
-        begining = Moment.new(t_d).set(hour: 9).format()
-        ending = Moment.new(t_d).set(hour: 19).format()
-        x.each do |k, v|
-          v.each do |av|
-            break if av.map.is_a? Array
-            p_av = JSON.parse(av.map).each_slice(2).to_a.sort {|x, y| x[1] <=> y[1]} unless av.map.length == 1
-            p_av.unshift([begining, begining])
-            p_av.push([ending, ending])
-            _map = []
-            i = 0
-            while i < (p_av.length - 1)
-              first = Moment.new p_av[i][1]
-              second = Moment.new p_av[i + 1][0]
-              d = second.diff(first, "minutes")
-              if d > 20
-                _map << [first, second]
-              end
-              i += 1
-            end
-            av.map = _map
-          end
-        end 
-        x
+        (z = obj.state.appointments_for_dates[t_d]) ? z : {}
+        # x = (z = obj.state.appointment_availabilities[t_d]) ? z : {}
+        # begining = Moment.new(t_d).set(hour: 9).format()
+        # ending = Moment.new(t_d).set(hour: 19).format()
+        # x.each do |k, v|
+        #   v.each do |av|
+        #     break if av.map.is_a? Array
+        #     p_av = JSON.parse(av.map).each_slice(2).to_a.sort {|x, y| x[1] <=> y[1]} unless av.map.length == 1
+        #     p_av.unshift([begining, begining])
+        #     p_av.push([ending, ending])
+        #     _map = []
+        #     i = 0
+        #     while i < (p_av.length - 1)
+        #       first = Moment.new p_av[i][1]
+        #       second = Moment.new p_av[i + 1][0]
+        #       d = second.diff(first, "minutes")
+        #       if d > 20
+        #         _map << [first, second]
+        #       end
+        #       i += 1
+        #     end
+        #     av.map = _map
+        #   end
+        # end 
+        # x
       end
 
-      def prepare_availability_tree(obj, users)
+      def prepare_availability_tree(obj, users_with_appointments)
         tree_block = lambda{|h,k| 
-          if k[0] == "2"
+          if k[4] == "-"
             h[k] = Hash.new(&tree_block)
           else
             h[k] = []
@@ -95,13 +115,34 @@ module Components
         }
         opts = Hash.new(&tree_block)
         user_accessor = {}
-        users.each do |user|
+        users_with_appointments.each do |user|
           user_accessor[user.id] = user
-          user.appointment_availabilities.each do |av|
-            opts[av.for_date][user.id] << av 
+          user.appointments.each do |appointment|
+            opts[Moment.new(appointment.start_date).format('YYYY-MM-DD')][user.id] << appointment 
           end
         end
-        obj.set_state appointment_availabilities: opts, user_accessor: user_accessor
+        opts.each do |date, user_and_apps|
+          user_and_apps.each do |user_id, appointments_array|
+            user_and_apps[user_id] = self.build_availabilities(appointments_array, date)
+          end
+        end
+        obj.set_state appointments_for_dates: opts, user_accessor: user_accessor
+        # tree_block = lambda{|h,k| 
+        #   if k[0] == "2"
+        #     h[k] = Hash.new(&tree_block)
+        #   else
+        #     h[k] = []
+        #   end 
+        # }
+        # opts = Hash.new(&tree_block)
+        # user_accessor = {}
+        # users.each do |user|
+        #   user_accessor[user.id] = user
+        #   user.appointment_availabilities.each do |av|
+        #     opts[av.for_date][user.id] << av 
+        #   end
+        # end
+        # obj.set_state appointment_availabilities: opts, user_accessor: user_accessor
       end
 
     end
@@ -260,7 +301,6 @@ module Components
       expose
 
       def queries(date)
-        p date.format
         z = date.clone().startOf("week")
         z = date.isBefore(x = Moment.new.set(hour: 0, min: 0)) ? x : z 
         x = {}
@@ -271,18 +311,24 @@ module Components
 
       def get_initial_state
         {
-          appointment_availabilities: {}
+          #appointment_availabilities: {}
+          appointments_for_dates: {}
         }
       end
 
       def component_did_mount
-        Appointment.availabilities_index(payload: queries(props.date)) do |apps|
-          p apps
+
+        Appointment.availabilities_index(component: self, payload: queries(props.date)).then do |users_with_appointments|
+          begin
+          props.index.prepare_availability_tree(self, users_with_appointments)
+          rescue Exception => e
+            p e
+          end
         end
-        return
-        AppointmentAvailability.index(component: self, payload: queries(props.date)).then do |users|
-          props.index.prepare_availability_tree(self, users)
-        end
+        # return
+        # AppointmentAvailability.index(component: self, payload: queries(props.date)).then do |users|
+        #   props.index.prepare_availability_tree(self, users)
+        # end
       end
 
       def component_did_update(prev_props, prev_state)
@@ -339,7 +385,6 @@ module Components
 
                   fetched_appointments = props.index.fetch_appointments(self, @track_day.format("YYYY-MM-DD"))
 
-
                   t(:div, {className: "day_body"},
                     t(:button, {className: 'init_appointment_btn btn btn-success center-block', onClick: ->{init_appointments_proposals_new(t_d_a)}},
                       'book appointment for this day'
@@ -347,14 +392,15 @@ module Components
                     *if fetched_appointments.empty?
                       t(:p, {className: 'any_time_appointment'}, 'there are appointments available for this day')
                     else
-                      splat_each(fetched_appointments) do |k, v|
+                      splat_each(fetched_appointments) do |user_id, appointment_availability|
+
                         t(:div, {className: 'appointments_for_doctor'},
-                          t(:img, {src: "#{state.user_accessor[k].avatar.url}", className: 'doctor_avatar'}),
+                          t(:img, {src: "#{state.user_accessor[user_id].avatar.url}", className: 'doctor_avatar'}),
                           t(:span, {className: 'doctor_name'}, 
-                            "#{state.user_accessor[k].profile.name}"
+                            "#{state.user_accessor[user_id].profile.name}"
                           ),
                           t(:br, {}),
-                          *splat_each(v[0].map) do |av|
+                          *splat_each(appointment_availability.map) do |av|
                             t(:p, {className: 'doctor_appointment'}, "#{av[0].format('HH:mm')} - #{av[1].format('HH:mm')}", t(:br, {}))
                           end,
                           t(:br, {})
@@ -394,13 +440,17 @@ module Components
 
       def get_initial_state
         {
-          appointment_availabilities: {}
+          appointments_for_dates: {}
         }
       end
 
       def component_did_mount
-        AppointmentAvailability.index(component: self, payload: {from: props.date.format('YYYY-MM-DD'), to: props.date.format('YYYY-MM-DD')}).then do |users|
-          props.index.prepare_availability_tree(self, users)
+        Appointment.availabilities_index(component: self, payload: {from: props.date.format('YYYY-MM-DD'), to: props.date.clone.add(1, 'days').format('YYYY-MM-DD')}).then do |users_with_appointments|
+          begin
+          props.index.prepare_availability_tree(self, users_with_appointments)
+          rescue Exception => e
+            p e
+          end
         end
       end
 
@@ -412,7 +462,6 @@ module Components
 
       def render
         fetched_appointments = props.index.fetch_appointments(self, props.date.format("YYYY-MM-DD"))
-
         t(:div, {className: "row "},
           spinner,
           modal,
@@ -445,7 +494,7 @@ module Components
                       "#{state.user_accessor[k].profile.name}"
                     ),
                     t(:br, {}),
-                    *splat_each(v[0].map) do |av|
+                    *splat_each(v.map) do |av|
                       t(:p, {className: 'doctor_appointment'}, "#{av[0].format('HH:mm')} - #{av[1].format('HH:mm')}", t(:br, {}))
                     end,
                     t(:br, {})

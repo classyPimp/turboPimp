@@ -8,14 +8,14 @@ class ComposerFor::Appointment::Doctor::Create
   end
 
   def run
-    run_subscriptions
-    compose
+   #run_subscriptions
+    compose  
     clear   
   end
 
-  def run_subscriptions
-    subscribe(:on_appointment_created, AppointmentAvailability)
-  end
+  # def run_subscriptions
+  #   subscribe(:on_appointment_created, AppointmentAvailability)
+  # end
 
   def compose
     ActiveRecord::Base.transaction do
@@ -23,7 +23,7 @@ class ComposerFor::Appointment::Doctor::Create
       @appointment.scheduled = true
       @appointment.save!
 
-      publish(:on_appointment_created, @appointment)
+      #publish(:on_appointment_created, @appointment)
      
     end
     

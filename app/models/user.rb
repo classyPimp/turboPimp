@@ -45,7 +45,8 @@ class User < ActiveRecord::Base
   with_options unless: ->{ User.arbitrary[:register_as_guest] } do |user|
     user.validates :email, presence: true, length: { maximum: 255 },
                     format: { with: VALID_EMAIL_REGEX },
-                    uniqueness: { case_sensitive: false }
+                    uniqueness: { case_sensitive: false },
+                    unless: -> {arbitrary[:skip_email_validation]}
   end
   
   validates :password, presence: true, 
@@ -82,7 +83,7 @@ class User < ActiveRecord::Base
 
 ########################################################
 
-  before_save :downcase_email, unless: ->{ User.arbitrary[:register_as_guest] }
+  before_save :downcase_email, unless: ->{ User.arbitrary[:register_as_guest] || arbitrary[:skip_email_validation] }
 
   before_create :create_activation_digest #ACTIVATION
 
@@ -149,12 +150,14 @@ class User < ActiveRecord::Base
   EXPOSABLE_ATTRIBUTES = [:id, :email, :created_at, :updated_at]
 
   has_one :profile, dependent: :destroy
+  has_one :avatar, dependent: :destroy
+  has_many :appointments_as_doctor, class_name: 'Appointment', foreign_key: 'doctor_id', dependent: :destroy
+  has_many :appointments_as_patient, class_name: 'Appointment', foreign_key: 'patient_id', dependent: :destroy
+
   has_one :profile_id_name, ->{ select(:id, :user_id, :name) }, class_name: :Profile
   has_one :si_profile1id_name, ->{select(:id, :name, :user_id)}, class_name: "Profile"
   has_one :si_profile1name_phone_number, ->{select(:id, :name, :user_id, :phone_number)}, class_name: 'Profile'
   has_one :si_profile1id_name_bio, ->{select(:id, :name, :user_id, :bio)}, class_name: 'Profile'
-
-  has_one :avatar, dependent: :destroy
 
   has_many :blogs
   has_many :pages
@@ -174,13 +177,13 @@ class User < ActiveRecord::Base
   has_many :si_appointments1as_patient_all, ->{ where("appointments.start_date >= ? AND appointments.end_date <= ?", User.arbitrary[:from], User.arbitrary[:to]).select(:id, :start_date, :end_date, :doctor_id) },
     class_name: 'Appointment', foreign_key: 'doctor_id'
 
-  has_many :appointments_as_doctor, class_name: 'Appointment', foreign_key: 'doctor_id'
+  
 
   has_many :si_appointments_as_patient1id, ->{select(:id)},class_name: 'Appointment',foreign_key: 'patient_id'
 
   has_many :chats, dependent: :destroy
 
-  has_many :chat_messages
+  has_many :chat_messages, dependent: :destroy
 
   has_many :chat_messages_as_recepient, class_name: 'ChatMessage', foreign_key: 'to_user'
 

@@ -3,6 +3,7 @@ Rails.application.routes.draw do
   get 'test_prerender' => "faker#test_prerender"
 
   scope "api" do
+
     post "users/current_user" => "users#expose_current_user"  
     # BASIC AUTH
     get "sign_up" => "users#new"

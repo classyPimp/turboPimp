@@ -17,7 +17,7 @@ class PriceCategory < Model
   route "Edit", {get: "price_categories/:id/edit"}
 
   def validate_name
-    unless name.length > 0
+    unless name == nil || name.length > 0
       add_error :name, 'name of the category should be provided'
     end
   end

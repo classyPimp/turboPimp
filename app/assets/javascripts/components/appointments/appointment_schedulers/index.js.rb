@@ -73,9 +73,17 @@ module Components
             t(Components::Appointments::Doctors::Edit, {id: appointment.id, on_appointment_updated: event(->{on_appointment_updated})})
           )
         end
+
+        def destroy_appointment(appointment)
+          appointment.destroy(namespace: 'doctor').then do |appointment|
+            ref(state.current_view).rb.component_did_mount
+          end
+        end
+
         def on_appointment_updated
           modal_close
           create_flash('updated')
+          ref(state.current_view).rb.component_did_mount
         end
 
         def on_appointment_created
@@ -113,6 +121,13 @@ module Components
             to_attach[:init_appointments_new] = event(->(date){init_appointments_new(date)})
           end
           to_attach
+        end
+
+        def init_patient_show(patient)
+          modal_open(
+            'patient',
+            t(Components::Users::Show, {user_id: patient.id})
+          )
         end
 
         def init_week_view(track_day)
@@ -396,8 +411,10 @@ module Components
                           ),
                           *splat_each(h[:appointments]) do |appointment|
                             t(:div, {},
-                              t(:p, {className: 'patient_name'},
-                                "#{appointment.patient.profile.name}"
+                              t(:a, {},
+                                t(:p, {className: 'patient_name', onClick: ->{props.index.init_patient_show(appointment.patient)}},
+                                  "#{appointment.patient.profile.name}"
+                                )
                               ),
                               t(:a, {className: 'appointment_time', onClick: ->{props.index.init_appointments_show(appointment)}}, 
                                "#{Moment.new(appointment.start_date).format("HH:mm")} - #{Moment.new(appointment.end_date).format("HH:mm")}"

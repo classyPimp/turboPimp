@@ -53,5 +53,5 @@ class AppointmentScheduler::AppointmentsController < ApplicationController
     cmpsr.run
 
   end
-
+  
 end

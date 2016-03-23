@@ -53,18 +53,19 @@ module Components
         end
 
         def handle_inputs
-          collect_inputs
+          collect_inputs(validate_only: [:phone_number, :bio])
           unless state.form_model.has_errors?
             state.form_model.update(namespace: 'appointment_scheduler').then do |model|
+
               unless model.has_errors?
-                alert "user udpated"
                 msg = Shared::Flash::Message.new(t(:div, {}, "updated successfully"))
                 Components::App::Main.instance.ref(:flash).rb.add_message(msg)
-                props.history.pushState({}, "/users/show/#{model.id}")
-                modal_close
+                emit(:on_user_updated, model)
               else
+
                 set_state form_model: model
               end
+
             end
           else
             set_state form_model: state.form_model

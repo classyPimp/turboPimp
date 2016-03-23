@@ -15,22 +15,9 @@ class ComposerFor::User::Unregistered::DestroyWithProposals
     appointments = Appointment.where(id: @user.si_appointments_as_patient1id.map(&:id))
 
     ActiveRecord::Base.transaction do
-        
-      appointments.each do |appointment|
-        @appointment_destroy_cmpsr = ComposerFor::Appointment::Doctor::Destroy.new(appointment)
-      end
-
-      @appointment_destroy_cmpsr.when(:ok) do |appointment|
-        @user.destroy!
-        @transaction_success = true
-      end
-
-      @appointment_destroy_cmpsr.when(:fail) do |appointment|
-        raise "unexpected"
-      end
       
-      @appointment_destroy_cmpsr.run
-
+      @user.destroy!
+      
     end
 
     handle_transaction_success
@@ -45,7 +32,7 @@ class ComposerFor::User::Unregistered::DestroyWithProposals
   end
 
   def handle_transaction_success
-    publish(:ok, @user) if @transaction_success
+    publish(:ok, @user)
   end
 
   def handle_transaction_fail(e)
