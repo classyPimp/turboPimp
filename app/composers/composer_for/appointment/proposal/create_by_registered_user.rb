@@ -16,8 +16,9 @@
 
   def prepare_attributes
     @appointment.attributes = @permitted_attributes
+    @appointment.arbitrary[:skip_validate_patient_id] = true
     @appointment.patient_id = @user_id
-    @appointment.proposal = true
+    @appointment.proposal = true 
     @appointment.scheduled = false
   end
 

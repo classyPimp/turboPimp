@@ -8,6 +8,19 @@ class Appointment < ActiveRecord::Base
   #add error in callback, which would allow to raise RecorInvalid on save! if !custom_errors.empty?
   include Services::CustomErrorable
 
+
+  @arbitrary = {}
+
+  class << self
+
+    attr_accessor :arbitrary
+
+  end
+
+  def arbitrary
+    @arbitrary ||= {}
+  end
+
   ###################################################
   #_--------------ASSOCIATIONS
   belongs_to :user
@@ -50,7 +63,7 @@ class Appointment < ActiveRecord::Base
 #===================VALIDATIONS
   
   validates :patient_id, presence: true, numericality: { only_integer: true }
-  validate :validate_patient_id
+  validate :validate_patient_id, unless: ->{ arbitrary[:skip_validate_patient_id] }
   validates :doctor_id, presence: true, numericality: {only_integer: true}, unless: -> { self.proposal } 
   validate :validate_doctor_id, unless: -> { self.proposal }
   validate :validate_start_date_to_be_valid_date, on: :create

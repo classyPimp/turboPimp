@@ -20,6 +20,7 @@
 
   def prepare_attributes
     User.arbitrary[:register_as_guest] = true
+    @user.arbitrary[:skip_email_validation] = true
     @user.attributes = @permitted_attributes.to_h
   end
 
