@@ -12,8 +12,8 @@ module Components
       def component_did_mount
         Blog.index_for_group_list.then do |blogs|
           begin
-          p blogs
           set_state blogs: blogs
+          component_ready
         rescue Exception => e
           p e
         end

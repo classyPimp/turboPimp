@@ -39,7 +39,7 @@ class ChatMessagesController < ApplicationController
     perms_for ChatMessage
     auth! @perms
 
-    @chat_messages = ChatMessage.where('id > ? and user_id = ?', params[:last_id], current_user.id)
+    @chat_messages = ChatMessage.where('id > ?', params[:last_id]).where('user_id = ? or to_user = ?', current_user.id, current_user.id)
     @user_ids_to_query = @chat_messages.map(&:user_id)
     @user_ids_to_query = @user_ids_to_query.uniq - [current_user.id]
     @users = User.where('id in (?)', @user_ids_to_query).select(:id).includes(:si_profile1id_name)

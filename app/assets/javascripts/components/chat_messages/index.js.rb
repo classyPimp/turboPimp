@@ -111,20 +111,19 @@ module Components
 
       def update_messages(messages_and_users)
         begin
-        p messages_and_users
+
         if messages_and_users[:chat_messages] && messages_and_users[:chat_messages].length > 0
-          p 'gon set last message'
+
           @last_message_id = messages_and_users[:chat_messages][-1].id
-          p "last message set to : #{@last_message_id}"
+
           # messages_and_users[:users].each do |user|
 
           # end
-          p "gon plus chats"
+
           state.chat.chat_messages = state.chat.chat_messages + messages_and_users[:chat_messages]
-          p "state cahtmesaages plussed"
-          p 'gon set state'
+
           set_state chat: state.chat
-          p 'state set'
+
         end
       rescue Exception => e
         p e
@@ -147,8 +146,8 @@ module Components
             right = chat_message.user_id
           end
         end
-        @side[:left] = true
-        @side[:right] = true
+        @side[:left] = left
+        @side[:right] = right
       end 
 
       def message_side(message)

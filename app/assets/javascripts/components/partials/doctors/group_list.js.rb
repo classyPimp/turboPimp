@@ -14,6 +14,7 @@ module Components
         def component_did_mount
           User.index_doctors_for_group_list(namespace: 'doctor').then do |users|
             set_state users: users
+            component_ready
           end
         end
 

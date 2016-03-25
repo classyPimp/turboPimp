@@ -5,7 +5,7 @@ class AttributesPermitter::AppointmentScheduler::ChatMessages::Create
   end
 
   def get_permitted
-    @permitted_attributes = @params.permit(:text, :chat_id)
+    @permitted_attributes = @params.permit(:text, :chat_id, :to_user)
     @permitted_attributes
   end
 

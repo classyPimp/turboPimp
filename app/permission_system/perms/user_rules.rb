@@ -211,7 +211,7 @@ module Perms
           only: [:id, :email],
           include:
           {
-            si_profile1name_phone_number: {root: true, only: [:id, :name, :bio, :user_id, :phone_number]}
+            profile: {root: true, only: [:id, :name, :bio, :user_id, :phone_number]}
           }
         }
       end

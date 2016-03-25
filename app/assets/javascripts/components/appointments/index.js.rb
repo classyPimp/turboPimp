@@ -343,16 +343,17 @@ module Components
         t_d = @track_day = props.date.clone().startOf('week').subtract(1, 'days')
         t(:div, {},
           spinner,
-          t(:div, {className: 'prev_next_controlls'}, 
-            t(:button, {onClick: ->{prev_week}}, "<"),
-            t(:button, {onClick: ->{next_week}}, ">"),
-          ),
-
           t(:div, {className: 'row'},
-            modal, 
-            t(:div, {className: "col-lg-1 week_day_panel #{$VIEW_PORT_KIND}"},
+            t(:div, {className: 'col-lg-4'},
               t(MonthBox, {date: props.date, index: props.index})
             ),
+            t(:div, {className: 'prev_next_controlls col-lg-8'}, 
+              t(:button, {onClick: ->{prev_week}}, "<"),
+              t(:button, {onClick: ->{next_week}}, ">"),
+            ),
+          ),
+          t(:div, {className: 'row'},
+            modal, 
             *splat_each(0..6) do |d|
 
               t_d_a = (@track_day.add(1, 'days')).clone()

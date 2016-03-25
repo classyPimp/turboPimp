@@ -42,38 +42,32 @@ module Components
         end
 
         def prepare_cache_holder_and_last_message(chats)
-          p "prepare_cache_holder_and_last_message: #{chats.data}"
+
           last_messages = []
           chats.each do |chat|
-            p "#{chat}"
             @cache_holder[chat.id] = chat
-            p 'chat.chat_messages: #{chat_messages}'
-            p 'chat.chat_messages: #{chat_messages.data}'
             last_messages << chat.chat_messages[-1].id
           end
           if last_messages.length > 0
             @last_message_id = last_messages.sort[-1]
           end
+
         end
 
         def update_messages(chats)
-          p "update_messages: #{chats}"
+
           chats.each do |chat|
-            p "chat: #{chat}"
             if @cache_holder[chat.id].chat_messages.length > 0
               @cache_holder[chat.id].chat_messages = @cache_holder[chat.id].chat_messages + chat.chat_messages
             else
               @cache_holder[chat.id] = chat
             end
-            p "passed"
-            p "-1: #{chat.chat_messages[-1]}"
             if @last_message_id < chat.chat_messages[-1].id
-              p 'in if condition'
               @last_message_id = chat.chat_messages[-1].id
             end
           end
           set_state chats: @cache_holder
-          p 'state set'
+
         end
 
         def component_will_unmount
@@ -82,12 +76,12 @@ module Components
 
    
         def render
-          p "in render"
+
           t(:div, {},
             t(:div, {className: 'row'},
               t(:div, {className: 'col-lg-4'},
                 *splat_each(state.chats) do |k, chat|
-                  p chat.attributes
+
                   t(:div, {},
                     t(:p, {}, "for #{chat.user.id}:"),
                     t(:p, {}, count_new_messages(chat.chat_messages)),

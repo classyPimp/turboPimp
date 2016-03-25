@@ -16,6 +16,7 @@
 
     @user = ::User.new
     User.arbitrary[:register_as_guest] = true
+    @user.arbitrary[:skip_email_validation] = true
     @user.handle_unregistered_user
     @user.registered = false
 

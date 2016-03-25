@@ -140,8 +140,11 @@ module Components
       #     set_state current_controll_component: ->{Native(t(Month, {ref: "month", index: self, date: state.date}.merge(events_to_attach)))}
       #   end
 
-        def init_day_view
+        def init_day_view(date = false)
           state.current_view = "day"
+          if date
+            state.date = date
+          end
           set_state current_controll_component: ->{Native(t(WeekDay, {ref: "day", date: state.date, index: self}.merge(events_to_attach)))}, current_view: "day"
         end
 
@@ -406,9 +409,11 @@ module Components
                     t(:div, {className: "day_body"},
                       *splat_each(props.index.fetch_appointments(self, t_d_a.format("_YYYY-MM-DD"))) do |k, h|
                         t(:div, {className: 'appointments_for_doctor'},
-                          t(:p, {className: 'doctor_name'}, 
-                            "#{h[:doctor].profile.name}"
-                          ),
+                          link_to('', "/users/show/#{h[:doctor].id}") do
+                            t(:p, {className: 'doctor_name'}, 
+                              "#{h[:doctor].profile.name}"
+                            )
+                          end,
                           *splat_each(h[:appointments]) do |appointment|
                             t(:div, {},
                               t(:a, {},

@@ -59,7 +59,6 @@ module Components
 
       def component_will_unmount
         @wy.destroy
-        p 'wayp destroyed'
       end
 
     end

@@ -13,6 +13,7 @@ module Components
         page_to_query = (x = props.page_id) ? x : props.params.id
         Page.show(wilds: {id: page_to_query}, component: self).then do |page|
           set_state page: page
+          component_ready
         end.fail do |resp|
           raise resp
         end

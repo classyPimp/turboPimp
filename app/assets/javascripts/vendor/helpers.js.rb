@@ -1,4 +1,5 @@
 require "./model"
+require '../services/phantom_yielder'
 
 module Helpers
   
@@ -80,6 +81,17 @@ module Helpers
 
 
     # END FLASH MESSAGES
+
+    #PHATNOM YIELDER
+    def set_up_phantom_yielder(components_count)
+      Services::PhantomYielder.instance = Services::PhantomYielder.new(components_count)
+    end
+
+    def component_ready
+      Services::PhantomYielder.instance.one_component_ready
+    end
+
+    #END PHANTOM YEILDER
   end
 
   class ::RequestHandler
