@@ -47,4 +47,6 @@ class AppointmentScheduler::ChatMessagesController < ApplicationController
 
   end
 
+ 
+
 end

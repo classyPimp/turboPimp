@@ -6,11 +6,13 @@ module Components
       include Plugins::Formable
       
       def get_initial_state
+        @chat_id = 0
         @last_message_id = 0
         {
           chat: Chat.new,
           form_model: ChatMessage.new,
-          expanded: false
+          expanded: false,
+          progress_bar: false
         }
       end
 
@@ -19,7 +21,7 @@ module Components
           ChatMessage.index.then do |chat|
             begin
             if chat
-              @last_message_id = chat.chat_messages[-1].id
+              @last_message_id = chat.chat_messages[-1].id || 0
               prepare_message_display_side(chat)
               set_state chat: chat  
             else
@@ -39,12 +41,14 @@ module Components
         t(:span, {className: "chat_messages_index #{state.expanded ? 'chat_expanded' : 'chat_not_expanded'}"},
           if state.expanded
             t(:div, {className: "client_chat_message_box well"},
+              if state.progress_bar
+                t(Shared::ThinProgressBar, {ref: 'progress_bar', interval: 500, className: 'chat_progress'})
+              end,
               *if state.chat.chat_messages.length > 0
                 [
                   t(:button, {className: 'btn btn-xs btn-primary', onClick: ->{chat_toggle_expand}}, 'X close'),
                   t(:div, {className: 'chat_messages_stack'},
                     *splat_each(state.chat.chat_messages) do |message|
-                      p message.pure_attributes
                       t(:div, {className: "message #{message_side(message)}"},
                         t(:p, {}, "#{message.text}"),
                         t(:p, {className: "message_time"}, "#{Moment.new(message.attributes[:created_at]).format('YY.MM.DD HH:mm')}")
@@ -59,7 +63,7 @@ module Components
                 ]
               end,
               t(:div, {className: 'input_and_submit_button'},
-                input(Forms::Input, state.form_model, :text),
+                input(Forms::Input, state.form_model, :text, {reset_value: true}),
                 t(:button, {className: 'btn btn-primary submit_button',onClick: ->{submit_message}}, 'submit')
               )
             )
@@ -79,8 +83,10 @@ module Components
             if model.has_errors?
               set_state form_model: model
             else
-              set_state form_model: ChatMessage.new(text: '')
+              set_state form_model: ChatMessage.new(text: ''), progress_bar: true
+              @chat_id = model.attributes[:chat_id]
               start_polling unless @message_poller
+              self.progress_bar.start_interval_update
             end
           rescue Exception => e
             p e
@@ -94,13 +100,15 @@ module Components
 
       def start_polling
         @message_poller = Services::MessagesPoller.new(3000) do
-          ChatMessage.poll_index(payload: {last_id: @last_message_id}).then do |messages_and_users|
+
+          ChatMessage.poll_index(payload: {last_id: @last_message_id, chat_id: @chat_id}).then do |messages_and_users|
             begin
             self.update_messages(messages_and_users)
-            rescue Exception => e
+            rescue Exception => e 
               p e
             end
           end
+
         end
         @message_poller.start
       end
@@ -112,10 +120,14 @@ module Components
       def update_messages(messages_and_users)
         begin
 
+        progress_bar.set_full_width if progress_bar
+
         if messages_and_users[:chat_messages] && messages_and_users[:chat_messages].length > 0
 
           @last_message_id = messages_and_users[:chat_messages][-1].id
+          @chat_id = messages_and_users[:chat_messages][-1].attributes[:chat_id]
 
+          p "last_message_id = #{@last_message_id}"
           # messages_and_users[:users].each do |user|
 
           # end
@@ -125,6 +137,9 @@ module Components
           set_state chat: state.chat
 
         end
+
+        progress_bar.reset_width if progress_bar
+
       rescue Exception => e
         p e
       end
@@ -157,6 +172,10 @@ module Components
         else
           side = 'right'
         end 
+      end
+
+      def progress_bar
+        ref('progress_bar').rb
       end
 
     end

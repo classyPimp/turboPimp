@@ -4,4 +4,7 @@ class Chat < Model
   has_many :chat_messages
   has_one :user
 
+  route "destroy", {delete: "chats/:id"}, {defaults: [:id]}
+
+
 end

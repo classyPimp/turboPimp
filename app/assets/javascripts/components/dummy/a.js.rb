@@ -20,13 +20,7 @@ module Components
         p "render"
         p state.form_model.pure_attributes
 
-        t(:div, {},
-
-          input(Forms::Selects::SinglePlain, state.form_model, :foo, {options: options}),
-
-          t(:button, {onClick: ->{collect}}, 'collect')
-
-        )
+        t(Components::Shared::ThinProgressBar, {interval: 500})
       end
 
       def collect

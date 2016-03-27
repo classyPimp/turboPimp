@@ -81,11 +81,21 @@ module Components
             t(:div, {className: 'row'},
               t(:div, {className: 'col-lg-4'},
                 *splat_each(state.chats) do |k, chat|
-
                   t(:div, {},
-                    t(:p, {}, "for #{chat.user.id}:"),
+                    t(:div, {className: "user_info"}, 
+                      t(:p, {}, "for #{chat.user.id}:"),
+                      if !chat.user.attributes[:registered]
+                        t(:p, {className: 'unregistered_disclaimer'}, 'unregistered')
+                      end,
+                      if chat.user.profile.try(:name)
+                        t(:p, {}, chat.user.profile.name)
+                      else
+                        t(:p, {}, '-')
+                      end
+                    ),
                     t(:p, {}, count_new_messages(chat.chat_messages)),
-                    t(:button, {onClick: ->{chat_with(chat)}}, 'chat')
+                    t(:button, {onClick: ->{chat_with(chat)}}, 'chat'),
+                    t(:button, {onClick: ->{destroy_chat(chat)}}, 'delete this chat')
                   )
                 end
               ),
@@ -119,6 +129,13 @@ module Components
           # should add immediately or better wait when by poller?
           # state.users_and_messages[message.user_id][:messages] << message
           # set_state users_and_messages: state.users_and_messages
+        end
+
+        def destroy_chat(chat)
+          chat.destroy(namespace: 'appointment_scheduler').then do |_chat|
+            state.chats.remove(chat)
+            set_state chats: state.chats
+          end
         end
 
       end
