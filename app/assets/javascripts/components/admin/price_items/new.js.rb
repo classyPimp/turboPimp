@@ -5,7 +5,7 @@ module Components
         expose
 
         include Plugins::Formable
-
+        
         def validate_props
           unless props.on_price_item_created && props.on_price_item_created.is_a?(ProcEvent)
             p "#{self.class.name}#{self} props.on_price_item_created should be of ProcEvent, instead #{props.on_price_item_created} was passed"
@@ -18,10 +18,10 @@ module Components
           unless props.price_category && props.price_category.is_a?(PriceCategory)
             p "#{self.class.name}#{self} props.price_category should be PriceCategory instance, instead #{props.price_category} was passed"
           end
+
         end
 
         def get_initial_state
-          p props.price_category.pure_attributes
           {
             form_model: PriceItem.new(price_category_id: "#{props.price_category.id}")
           }          

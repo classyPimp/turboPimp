@@ -16,6 +16,21 @@ module Components
           }
         end
 
+        #PROPS
+          #this is needed for #{reource}::new to grab the link of price item, or pass the price_item to set it as association
+          #or in any other way to pass price_item to component provided the as_model_procider : Boolean and props.add_asspciated_price_item : ProcEvent
+        #as_model_provider : Boolean -> used in conjucntion with props.add_associated_price_item
+        #add_associated_price_item : ProcEvent(price_item)
+        def validate_props
+          if props.as_model_provider && !props.add_associated_price_item
+            p "#{self.class.name}#{self} props.as_model_provider is true but no props.add_associated_price_item ProcEvent given"
+          end
+
+          if (props.add_associated_price_item && !props.as_model_provider) || !props.add_associated_price_item.is_a?(ProcEvent)
+            p "#{self.class.name}#{self} props.add_associated_price_item was passed but it is either not ProceEvent or no props.as_model_provider was provided"
+          end
+        end
+
         def component_did_mount
           PriceCategory.index(namespace: 'admin').then do |price_categories|
             set_state price_categories: price_categories
@@ -82,6 +97,12 @@ module Components
                             t(:td, {}, 
                               t(:button, {className: 'btn btn-xs', onClick: ->{delete_price_item(price_item)}}, "delete"),
                               t(:button, {className: 'btn btn-xs', onClick: ->{init_price_item_edit(price_item)}}, 'edit'),
+                              #this is needed for #{reource}::new to grab the link of price item, or pass the price_item to set it as association
+                              #or in any other way to pass price_item to component provided the as_model_procider : Boolean and props.add_asspciated_price_item : ProcEvent
+                              #for regular invocation this is unnecessary
+                              if props.as_model_provider
+                                t(:button, {className: 'btn btn-xs btn-primary'}, onClick: ->{ emit(:add_associated_price_item, price_item) })
+                              end,
                               "#{price_item.name}"
                             ),
                             t(:td, {}, "#{price_item.price}")

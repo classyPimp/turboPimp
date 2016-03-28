@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160209080154) do
+ActiveRecord::Schema.define(version: 20160328094046) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -119,6 +119,13 @@ ActiveRecord::Schema.define(version: 20160209080154) do
 
   add_index "chats", ["user_id"], name: "index_chats_on_user_id", using: :btree
 
+  create_table "foo_bars", force: :cascade do |t|
+    t.text     "foo"
+    t.text     "bar"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "friendly_id_slugs", force: :cascade do |t|
     t.string   "slug",                      null: false
     t.integer  "sluggable_id",              null: false
@@ -156,6 +163,20 @@ ActiveRecord::Schema.define(version: 20160209080154) do
 
   add_index "menu_items", ["menu_item_id"], name: "index_menu_items_on_menu_item_id", using: :btree
 
+  create_table "offered_services", force: :cascade do |t|
+    t.text     "body"
+    t.string   "title"
+    t.string   "m_title"
+    t.string   "m_description"
+    t.string   "m_keywords"
+    t.string   "slug"
+    t.integer  "user_id"
+    t.datetime "created_at",    null: false
+    t.datetime "updated_at",    null: false
+  end
+
+  add_index "offered_services", ["user_id"], name: "index_offered_services_on_user_id", using: :btree
+
   create_table "pages", force: :cascade do |t|
     t.string   "body"
     t.text     "title"
@@ -180,12 +201,14 @@ ActiveRecord::Schema.define(version: 20160209080154) do
   create_table "price_items", force: :cascade do |t|
     t.integer  "price_category_id"
     t.text     "name"
-    t.decimal  "price",             precision: 6, scale: 2
+    t.decimal  "price",              precision: 6, scale: 2
     t.text     "details"
-    t.datetime "created_at",                                null: false
-    t.datetime "updated_at",                                null: false
+    t.datetime "created_at",                                 null: false
+    t.datetime "updated_at",                                 null: false
+    t.integer  "offered_service_id"
   end
 
+  add_index "price_items", ["offered_service_id"], name: "index_price_items_on_offered_service_id", using: :btree
   add_index "price_items", ["price_category_id"], name: "index_price_items_on_price_category_id", using: :btree
 
   create_table "profiles", force: :cascade do |t|
@@ -245,7 +268,9 @@ ActiveRecord::Schema.define(version: 20160209080154) do
   add_foreign_key "chats", "users"
   add_foreign_key "images", "users"
   add_foreign_key "menu_items", "menu_items"
+  add_foreign_key "offered_services", "users"
   add_foreign_key "pages", "users"
+  add_foreign_key "price_items", "offered_services"
   add_foreign_key "price_items", "price_categories"
   add_foreign_key "profiles", "users"
 end

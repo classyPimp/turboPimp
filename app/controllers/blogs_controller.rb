@@ -18,9 +18,24 @@ class BlogsController < ApplicationController
   end
 
   def index  
-    perms_for :Blog
+    per_page = params[:per_page] || 25
+    search_query = params[:search_query]
+    page = params[:page] || 1
+    @model = Blog
+    perms_for @model
     auth! @perms
-    render json: @perms.model
+    if !search_query.blank?
+      @model = @model.search_by_title_body(search_query)
+    else
+      @model = @model.all
+    end
+    @model = @model.where(published: true)
+    
+    @model = @model.paginate(per_page: per_page, page: page)
+    
+    @model = @model.as_json(@perms.serialize_on_success) << extract_pagination_hash(@model)
+
+    render json: @model
   end
 
   def index_for_group_list
@@ -82,7 +97,7 @@ class BlogsController < ApplicationController
   def destroy
     @blog = Blog.find(params[:id])
     perms_for @blog
-    auth! @blog
+    auth! @perms
 
     if @blog.destroy
       render  json: @blog.as_json
@@ -90,9 +105,10 @@ class BlogsController < ApplicationController
   end
 
   def show
-    @blog = Blog.find(params[:id])
+    @blog = Blog.friendly.find(params[:id])
     perms_for @blog
-    render json: @blog.as_json
+    auth! @perms
+    render json: @blog.as_json(@perms.serialize_on_success)
   end
 
 

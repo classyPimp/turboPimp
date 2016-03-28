@@ -33,7 +33,9 @@ module Components
                   t(:span, {}, blog.user.profile.name)
                 )
               ),
-              t(:p, {}, blog.title),
+              link_to("", "/blogs/show/#{blog.slug}") do
+                t(:p, {}, blog.title)
+              end,
               t(:div, {dangerouslySetInnerHTML: {__html: blog.body}.to_n, style: {overflow: 'ellipsis'}}, 
               )
             )

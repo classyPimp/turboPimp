@@ -20,11 +20,11 @@ module Components
         t(:div, {className: 'container doctor_index'},
           *if props.children
             [
-              t(:div, {className: 'col-lg-8 doctor_show'},
-                children
-              ),
               t(:div, {className: 'col-lg-4 doctor_panel'},  
                 *self.doctor_partial.call
+              ),
+              t(:div, {className: 'col-lg-8 doctor_show'},
+                children
               )
             ]
           else

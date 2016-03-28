@@ -11,28 +11,39 @@ module Perms
 
     def index
 
-      
-        per_page = params[:per_page] || 25
+        @serialize_on_success =
+        {
+          include: 
+          [
+            {
+              si_user1id: 
+              {
+                root: true,
+                include: 
+                [
+                  {
+                    si_profile1id_name:
+                    {
+                      root: true
+                    }
+                  },
+                  {
+                    avatar:
+                    {
+                      root: true,
+                      methods: 
+                      [
+                        :url
+                      ]
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        }
 
-        search_query = params[:search_query] || false
-
-        page = params[:page]
-
-        @model = Blog.includes(:author).where(published: true)
-
-        if !search_query.blank?
-          @model = @model.search_by_title_body(search_query)
-        else
-          @model = @model.all
-        end
-
-        @model = @model.paginate(per_page: per_page, page: page)
-        
-        @model = @model.as_json(
-            include: [author: {root: true, only: [:name]}]
-          ) << @controller.extract_pagination_hash(@model)
-        
-      
+        return true
         
     end
 
@@ -77,7 +88,38 @@ module Perms
     end
 
     def show
+      
       if @model.published
+        @serialize_on_success = {
+          include: 
+          [
+            {
+              si_user1id: 
+              {
+                root: true,
+                include: 
+                [
+                  {
+                    si_profile1id_name:
+                    {
+                      root: true
+                    }
+                  },
+                  {
+                    avatar:
+                    {
+                      root: true,
+                      methods: 
+                      [
+                        :url
+                      ]
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        }
         return true
       else
         return true if @current_user.id == @model.user_id

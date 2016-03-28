@@ -6,6 +6,8 @@ class PriceItem < ActiveRecord::Base
 
   belongs_to :price_category
 
+  belongs_to :offered_service
+
   #====================== END ASSOCITAIONS =============
 
   def validate_name

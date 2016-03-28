@@ -48,7 +48,7 @@ Rails.application.routes.draw do
     end
 
     get "blogs/index_for_group_list" => 'blogs#index_for_group_list'
-    resources :blogs, only: [:index, :create, :update, :destroy, :edit]
+    resources :blogs
 
     
     namespace :appointments do
