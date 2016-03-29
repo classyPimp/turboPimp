@@ -11,7 +11,7 @@ module Components
 
         def get_initial_state
           {
-            form_model: OfferedService.new
+            form_model: OfferedService.new(avatar: OfferedServiceAvatar.new)
           }        
         end
 
@@ -24,7 +24,9 @@ module Components
                 input(Forms::Input, state.form_model, :m_title, {type: "text", show_name: 'meta title'}),
                 input(Forms::Input, state.form_model, :m_description, {type: "text", show_name: 'meta description'}),
                 input(Forms::Input, state.form_model, :m_keywords, {type: "text", show_name: 'meta keywords'}),
+                input(Forms::FileInputImgPreview, state.form_model.avatar, :avatar, {show_name: 'avatar'}),
                 input(Forms::WysiTextarea, state.form_model, :body),
+                t(:p, {}, 'associated price items'),
                 if !state.form_model.price_items.empty? 
                   t(:div, {}, 
                     *splat_each(state.form_model.price_items) do |price_item|
@@ -39,7 +41,7 @@ module Components
                     end
                   )
                 end,
-                t(:button, { onClick: ->{init_adding_associated_price_item}, className: 'btn btn-xs' }, '+add associated price item')
+                t(:button, { onClick: ->{init_adding_associated_price_item}, className: 'btn btn-xs' }, '+add associated price item'),
                 t(:button, {className: 'btn btn-primary', onClick: ->(){handle_inputs}}, "create blog")
               )
             end
@@ -49,7 +51,7 @@ module Components
         def handle_inputs
           collect_inputs
           unless state.form_model.has_errors?
-            state.form_model.create(name_space: 'admin').then do |model|
+            state.form_model.create(serialize_as_form: true, namespace: 'admin').then do |model|
               if model.has_errors?
                 set_state form_model: model
               else
@@ -84,12 +86,12 @@ module Components
         def init_adding_associated_price_item
           modal_open(
             'choose price item to associate',
-            t(Components::Admin::PriceItems::Edit, {as_model_provider: true, add_associated_price_item: event(->(price_item){add_associated_price_item(price_item)})})
+            t(Components::Admin::Prices::Index, {as_model_provider: true, add_associated_price_item: event(->(price_item){add_associated_price_item(price_item)})})
           )
         end
 
         def add_associated_price_item(price_item)
-          _price_item = PriceItem.new(id: price_item.id)
+          _price_item = PriceItem.new(id: price_item.id, name: price_item.name)
           state.form_model.price_items << _price_item
           set_state form_model: state.form_model
         end

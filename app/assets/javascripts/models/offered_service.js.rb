@@ -3,6 +3,7 @@ class OfferedService < Model
   attributes :id, :body, :title, :user_id,
              :m_title, :m_description, :m_keywords, :slug, :published, :published_at
   has_one :user
+  has_one :avatar
   has_many :price_items
 
   route "create", post: "offered_services"

@@ -39,6 +39,7 @@ Rails.application.routes.draw do
       resources :pages
       resources :price_categories
       resources :price_items
+      resources :offered_services
     end
 
     namespace :blogger do

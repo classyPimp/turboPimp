@@ -101,7 +101,7 @@ module Components
                               #or in any other way to pass price_item to component provided the as_model_procider : Boolean and props.add_asspciated_price_item : ProcEvent
                               #for regular invocation this is unnecessary
                               if props.as_model_provider
-                                t(:button, {className: 'btn btn-xs btn-primary'}, onClick: ->{ emit(:add_associated_price_item, price_item) })
+                                t(:button, {className: 'btn btn-xs btn-primary', onClick: ->{ emit(:add_associated_price_item, price_item) }}, 'add this')
                               end,
                               "#{price_item.name}"
                             ),

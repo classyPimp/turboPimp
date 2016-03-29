@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160328094046) do
+ActiveRecord::Schema.define(version: 20160329111722) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -163,6 +163,18 @@ ActiveRecord::Schema.define(version: 20160328094046) do
 
   add_index "menu_items", ["menu_item_id"], name: "index_menu_items_on_menu_item_id", using: :btree
 
+  create_table "offered_service_avatars", force: :cascade do |t|
+    t.integer  "offered_service_id"
+    t.datetime "created_at",          null: false
+    t.datetime "updated_at",          null: false
+    t.string   "avatar_file_name"
+    t.string   "avatar_content_type"
+    t.integer  "avatar_file_size"
+    t.datetime "avatar_updated_at"
+  end
+
+  add_index "offered_service_avatars", ["offered_service_id"], name: "index_offered_service_avatars_on_offered_service_id", using: :btree
+
   create_table "offered_services", force: :cascade do |t|
     t.text     "body"
     t.string   "title"
@@ -268,6 +280,7 @@ ActiveRecord::Schema.define(version: 20160328094046) do
   add_foreign_key "chats", "users"
   add_foreign_key "images", "users"
   add_foreign_key "menu_items", "menu_items"
+  add_foreign_key "offered_service_avatars", "offered_services"
   add_foreign_key "offered_services", "users"
   add_foreign_key "pages", "users"
   add_foreign_key "price_items", "offered_services"
