@@ -30,7 +30,7 @@ module Components
               {
                 eight: 
                 [
-                  t(Components::Pages::Show, {page_id: 'about-us'})
+                  t(Components::Pages::Show, {page_id: 'about-us'})  
                 ],
                 four: 
                 [

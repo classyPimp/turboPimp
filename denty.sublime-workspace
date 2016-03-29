@@ -520,66 +520,34 @@
 	"buffers":
 	[
 		{
-			"file": "app/assets/javascripts/vendor/model.js.rb",
+			"file": "app/assets/javascripts/components/app/router.js.rb",
 			"settings":
 			{
-				"buffer_size": 29591,
-				"line_ending": "Windows"
-			}
-		},
-		{
-			"file": "app/controllers/appointment_scheduler/chat_messages_controller.rb",
-			"settings":
-			{
-				"buffer_size": 1385,
+				"buffer_size": 7005,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "app/controllers/appointment_scheduler/chats_controller.rb",
+			"file": "app/assets/javascripts/components/app/index_route.js.rb",
 			"settings":
 			{
-				"buffer_size": 267,
+				"buffer_size": 278,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "app/assets/javascripts/models/chat_message.js.rb",
+			"file": "app/assets/javascripts/components/specific_pages/home.js.rb",
 			"settings":
 			{
-				"buffer_size": 529,
-				"line_ending": "Windows"
-			}
-		},
-		{
-			"file": "app/permission_system/perms/chat_message_rules.rb",
-			"settings":
-			{
-				"buffer_size": 2181,
-				"line_ending": "Windows"
-			}
-		},
-		{
-			"file": "app/permission_system/perms/chat_rules.rb",
-			"settings":
-			{
-				"buffer_size": 219,
+				"buffer_size": 1690,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "app/assets/javascripts/models/chat.js.rb",
+			"file": "app/assets/javascripts/components/menues/index.js.rb",
 			"settings":
 			{
-				"buffer_size": 162,
-				"line_ending": "Windows"
-			}
-		},
-		{
-			"file": "app/assets/javascripts/models/page.js.rb",
-			"settings":
-			{
-				"buffer_size": 489,
+				"buffer_size": 3343,
 				"line_ending": "Unix"
 			}
 		}
@@ -640,21 +608,23 @@
 		"/home/classypimp/dev/denty",
 		"/home/classypimp/dev/denty/app",
 		"/home/classypimp/dev/denty/app/assets",
-		"/home/classypimp/dev/denty/app/assets/javascripts/components",
-		"/home/classypimp/dev/denty/app/assets/javascripts/components/dummy",
-		"/home/classypimp/dev/denty/app/assets/javascripts/components/shared",
-		"/home/classypimp/dev/denty/app/permission_system",
-		"/home/classypimp/dev/denty/app/permission_system/perms",
-		"/home/classypimp/dev/denty/public/styles"
+		"/home/classypimp/dev/denty/app/permission_system/perms"
 	],
 	"file_history":
 	[
+		"/home/classypimp/dev/denty/config/routes.rb",
+		"/home/classypimp/dev/denty/app/assets/javascripts/models/page.js.rb",
+		"/home/classypimp/dev/denty/app/assets/javascripts/vendor/model.js.rb",
+		"/home/classypimp/dev/denty/app/controllers/appointment_scheduler/chat_messages_controller.rb",
+		"/home/classypimp/dev/denty/app/controllers/appointment_scheduler/chats_controller.rb",
+		"/home/classypimp/dev/denty/app/assets/javascripts/models/chat_message.js.rb",
+		"/home/classypimp/dev/denty/app/permission_system/perms/chat_message_rules.rb",
+		"/home/classypimp/dev/denty/app/permission_system/perms/chat_rules.rb",
+		"/home/classypimp/dev/denty/app/controllers/faker_controller.rb",
+		"/home/classypimp/dev/denty/app/assets/javascripts/models/chat.js.rb",
+		"/home/classypimp/dev/prerender.js",
 		"/home/classypimp/dev/denty/app/models/user.rb",
 		"/home/classypimp/dev/denty/app/assets/javascripts/components/appointment_schedulers/chat_messages/index.js.rb",
-		"/home/classypimp/dev/denty/app/controllers/appointment_scheduler/chat_messages_controller.rb",
-		"/home/classypimp/dev/denty/app/permission_system/perms/chat_message_rules.rb",
-		"/home/classypimp/dev/denty/app/assets/javascripts/models/chat.js.rb",
-		"/home/classypimp/dev/denty/app/assets/javascripts/vendor/model.js.rb",
 		"/home/classypimp/dev/denty/app/assets/javascripts/components/appointments/appointment_schedulers/index.js.rb",
 		"/home/classypimp/dev/denty/app/assets/stylesheets/application.scss",
 		"/home/classypimp/dev/denty/app/views/layouts/application.html.erb",
@@ -688,7 +658,6 @@
 		"/home/classypimp/dev/denty/app/composers/composer_for/appointment_scheduler/users/update.rb",
 		"/home/classypimp/dev/denty/app/assets/javascripts/plugins/formable.js.rb",
 		"/home/classypimp/dev/denty/app/assets/javascripts/application.js.rb",
-		"/home/classypimp/dev/denty/config/routes.rb",
 		"/home/classypimp/dev/denty/Gemfile",
 		"/home/classypimp/dev/denty/app/controllers/mesbusses_controller.rb",
 		"/home/classypimp/dev/denty/config/initializers/message_bus.rb",
@@ -770,13 +739,7 @@
 		"/home/classypimp/dev/denty/app/assets/javascripts/components/doctors/show.js.rb",
 		"/home/classypimp/dev/denty/app/models/avatar.rb",
 		"/home/classypimp/dev/denty/.sass-cache/43ea3dd099ceab22cb4a56b972d480bea90c1116/application.scssc",
-		"/home/classypimp/dev/denty/app/assets/javascripts/components/users/login_info.js.rb",
-		"/home/classypimp/dev/denty/app/controllers/price_lists_controller.rb",
-		"/home/classypimp/dev/denty/app/assets/javascripts/components/layouts/eight_four.js.rb",
-		"/home/classypimp/dev/denty/app/assets/javascripts/components/app/index_route.js.rb",
-		"/home/classypimp/dev/denty/app/assets/javascripts/models/blog.js.rb",
-		"/home/classypimp/dev/denty/app/assets/javascripts/components/blogs/_group_list.js.rb",
-		"/home/classypimp/dev/denty/app/models/blog.rb"
+		"/home/classypimp/dev/denty/app/assets/javascripts/components/users/login_info.js.rb"
 	],
 	"find":
 	{
@@ -896,24 +859,24 @@
 	"groups":
 	[
 		{
-			"selected": 5,
+			"selected": 3,
 			"sheets":
 			[
 				{
 					"buffer": 0,
-					"file": "app/assets/javascripts/vendor/model.js.rb",
+					"file": "app/assets/javascripts/components/app/router.js.rb",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 29591,
+						"buffer_size": 7005,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								16091,
-								16091
+								0,
+								0
 							]
 						],
 						"settings":
@@ -921,11 +884,21 @@
 							"BracketHighlighterBusy": false,
 							"bh_regions":
 							[
-								"bh_angle",
-								"bh_angle_center",
-								"bh_angle_open",
-								"bh_angle_close",
-								"bh_angle_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
 								"bh_curly",
 								"bh_curly_center",
 								"bh_curly_open",
@@ -936,6 +909,26 @@
 								"bh_c_define_open",
 								"bh_c_define_close",
 								"bh_c_define_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
 								"bh_regex",
 								"bh_regex_center",
 								"bh_regex_open",
@@ -945,77 +938,56 @@
 								"bh_double_quote_center",
 								"bh_double_quote_open",
 								"bh_double_quote_close",
-								"bh_double_quote_content",
-								"bh_round",
-								"bh_round_center",
-								"bh_round_open",
-								"bh_round_close",
-								"bh_round_content",
-								"bh_single_quote",
-								"bh_single_quote_center",
-								"bh_single_quote_open",
-								"bh_single_quote_close",
-								"bh_single_quote_content",
-								"bh_unmatched",
-								"bh_unmatched_center",
-								"bh_unmatched_open",
-								"bh_unmatched_close",
-								"bh_unmatched_content",
-								"bh_square",
-								"bh_square_center",
-								"bh_square_open",
-								"bh_square_close",
-								"bh_square_content",
-								"bh_default",
-								"bh_default_center",
-								"bh_default_open",
-								"bh_default_close",
-								"bh_default_content",
-								"bh_tag",
-								"bh_tag_center",
-								"bh_tag_open",
-								"bh_tag_close",
-								"bh_tag_content"
+								"bh_double_quote_content"
 							],
 							"syntax": "Packages/Ruby/Ruby.tmLanguage",
 							"tab_size": 2,
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 8346.0,
+						"translation.y": 171.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 6,
+					"stack_index": 3,
 					"type": "text"
 				},
 				{
 					"buffer": 1,
-					"file": "app/controllers/appointment_scheduler/chat_messages_controller.rb",
+					"file": "app/assets/javascripts/components/app/index_route.js.rb",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 1385,
+						"buffer_size": 278,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								1379,
-								1379
+								0,
+								0
 							]
 						],
 						"settings":
 						{
 							"BracketHighlighterBusy": false,
-							"auto_complete": false,
 							"bh_regions":
 							[
-								"bh_angle",
-								"bh_angle_center",
-								"bh_angle_open",
-								"bh_angle_close",
-								"bh_angle_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
 								"bh_curly",
 								"bh_curly_center",
 								"bh_curly_open",
@@ -1026,6 +998,26 @@
 								"bh_c_define_open",
 								"bh_c_define_close",
 								"bh_c_define_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
 								"bh_regex",
 								"bh_regex_center",
 								"bh_regex_open",
@@ -1035,129 +1027,11 @@
 								"bh_double_quote_center",
 								"bh_double_quote_open",
 								"bh_double_quote_close",
-								"bh_double_quote_content",
-								"bh_round",
-								"bh_round_center",
-								"bh_round_open",
-								"bh_round_close",
-								"bh_round_content",
-								"bh_single_quote",
-								"bh_single_quote_center",
-								"bh_single_quote_open",
-								"bh_single_quote_close",
-								"bh_single_quote_content",
-								"bh_unmatched",
-								"bh_unmatched_center",
-								"bh_unmatched_open",
-								"bh_unmatched_close",
-								"bh_unmatched_content",
-								"bh_square",
-								"bh_square_center",
-								"bh_square_open",
-								"bh_square_close",
-								"bh_square_content",
-								"bh_default",
-								"bh_default_center",
-								"bh_default_open",
-								"bh_default_close",
-								"bh_default_content",
-								"bh_tag",
-								"bh_tag_center",
-								"bh_tag_open",
-								"bh_tag_close",
-								"bh_tag_content"
+								"bh_double_quote_content"
 							],
 							"syntax": "Packages/Ruby/Ruby.tmLanguage",
 							"tab_size": 2,
 							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 5,
-					"type": "text"
-				},
-				{
-					"buffer": 2,
-					"file": "app/controllers/appointment_scheduler/chats_controller.rb",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 267,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								122,
-								122
-							]
-						],
-						"settings":
-						{
-							"BracketHighlighterBusy": false,
-							"auto_complete": false,
-							"bh_regions":
-							[
-								"bh_angle",
-								"bh_angle_center",
-								"bh_angle_open",
-								"bh_angle_close",
-								"bh_angle_content",
-								"bh_curly",
-								"bh_curly_center",
-								"bh_curly_open",
-								"bh_curly_close",
-								"bh_curly_content",
-								"bh_c_define",
-								"bh_c_define_center",
-								"bh_c_define_open",
-								"bh_c_define_close",
-								"bh_c_define_content",
-								"bh_regex",
-								"bh_regex_center",
-								"bh_regex_open",
-								"bh_regex_close",
-								"bh_regex_content",
-								"bh_double_quote",
-								"bh_double_quote_center",
-								"bh_double_quote_open",
-								"bh_double_quote_close",
-								"bh_double_quote_content",
-								"bh_round",
-								"bh_round_center",
-								"bh_round_open",
-								"bh_round_close",
-								"bh_round_content",
-								"bh_single_quote",
-								"bh_single_quote_center",
-								"bh_single_quote_open",
-								"bh_single_quote_close",
-								"bh_single_quote_content",
-								"bh_unmatched",
-								"bh_unmatched_center",
-								"bh_unmatched_open",
-								"bh_unmatched_close",
-								"bh_unmatched_content",
-								"bh_square",
-								"bh_square_center",
-								"bh_square_open",
-								"bh_square_close",
-								"bh_square_content",
-								"bh_default",
-								"bh_default_center",
-								"bh_default_open",
-								"bh_default_close",
-								"bh_default_content",
-								"bh_tag",
-								"bh_tag_center",
-								"bh_tag_open",
-								"bh_tag_close",
-								"bh_tag_content"
-							],
-							"syntax": "Packages/Ruby/Ruby.tmLanguage"
 						},
 						"translation.x": 0.0,
 						"translation.y": 0.0,
@@ -1167,20 +1041,20 @@
 					"type": "text"
 				},
 				{
-					"buffer": 3,
-					"file": "app/assets/javascripts/models/chat_message.js.rb",
+					"buffer": 2,
+					"file": "app/assets/javascripts/components/specific_pages/home.js.rb",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 529,
+						"buffer_size": 1690,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								169,
-								169
+								1012,
+								1012
 							]
 						],
 						"settings":
@@ -1189,11 +1063,21 @@
 							"auto_complete": false,
 							"bh_regions":
 							[
-								"bh_angle",
-								"bh_angle_center",
-								"bh_angle_open",
-								"bh_angle_close",
-								"bh_angle_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
 								"bh_curly",
 								"bh_curly_center",
 								"bh_curly_open",
@@ -1204,96 +1088,26 @@
 								"bh_c_define_open",
 								"bh_c_define_close",
 								"bh_c_define_content",
-								"bh_regex",
-								"bh_regex_center",
-								"bh_regex_open",
-								"bh_regex_close",
-								"bh_regex_content",
-								"bh_double_quote",
-								"bh_double_quote_center",
-								"bh_double_quote_open",
-								"bh_double_quote_close",
-								"bh_double_quote_content",
-								"bh_round",
-								"bh_round_center",
-								"bh_round_open",
-								"bh_round_close",
-								"bh_round_content",
-								"bh_single_quote",
-								"bh_single_quote_center",
-								"bh_single_quote_open",
-								"bh_single_quote_close",
-								"bh_single_quote_content",
 								"bh_unmatched",
 								"bh_unmatched_center",
 								"bh_unmatched_open",
 								"bh_unmatched_close",
 								"bh_unmatched_content",
-								"bh_square",
-								"bh_square_center",
-								"bh_square_open",
-								"bh_square_close",
-								"bh_square_content",
-								"bh_default",
-								"bh_default_center",
-								"bh_default_open",
-								"bh_default_close",
-								"bh_default_content",
-								"bh_tag",
-								"bh_tag_center",
-								"bh_tag_open",
-								"bh_tag_close",
-								"bh_tag_content"
-							],
-							"syntax": "Packages/Ruby/Ruby.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 3,
-					"type": "text"
-				},
-				{
-					"buffer": 4,
-					"file": "app/permission_system/perms/chat_message_rules.rb",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 2181,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								2181,
-								2181
-							]
-						],
-						"settings":
-						{
-							"BracketHighlighterBusy": false,
-							"auto_complete": false,
-							"bh_regions":
-							[
 								"bh_angle",
 								"bh_angle_center",
 								"bh_angle_open",
 								"bh_angle_close",
 								"bh_angle_content",
-								"bh_curly",
-								"bh_curly_center",
-								"bh_curly_open",
-								"bh_curly_close",
-								"bh_curly_content",
-								"bh_c_define",
-								"bh_c_define_center",
-								"bh_c_define_open",
-								"bh_c_define_close",
-								"bh_c_define_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
 								"bh_regex",
 								"bh_regex_center",
 								"bh_regex_open",
@@ -1303,77 +1117,56 @@
 								"bh_double_quote_center",
 								"bh_double_quote_open",
 								"bh_double_quote_close",
-								"bh_double_quote_content",
-								"bh_round",
-								"bh_round_center",
-								"bh_round_open",
-								"bh_round_close",
-								"bh_round_content",
-								"bh_single_quote",
-								"bh_single_quote_center",
-								"bh_single_quote_open",
-								"bh_single_quote_close",
-								"bh_single_quote_content",
-								"bh_unmatched",
-								"bh_unmatched_center",
-								"bh_unmatched_open",
-								"bh_unmatched_close",
-								"bh_unmatched_content",
-								"bh_square",
-								"bh_square_center",
-								"bh_square_open",
-								"bh_square_close",
-								"bh_square_content",
-								"bh_default",
-								"bh_default_center",
-								"bh_default_open",
-								"bh_default_close",
-								"bh_default_content",
-								"bh_tag",
-								"bh_tag_center",
-								"bh_tag_open",
-								"bh_tag_close",
-								"bh_tag_content"
+								"bh_double_quote_content"
 							],
 							"syntax": "Packages/Ruby/Ruby.tmLanguage",
 							"tab_size": 2,
 							"translate_tabs_to_spaces": true
 						},
-						"translation.x": 0.0,
-						"translation.y": 969.0,
+						"translation.x": -0.0,
+						"translation.y": 342.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 1,
 					"type": "text"
 				},
 				{
-					"buffer": 5,
-					"file": "app/permission_system/perms/chat_rules.rb",
+					"buffer": 3,
+					"file": "app/assets/javascripts/components/menues/index.js.rb",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 219,
+						"buffer_size": 3343,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								215,
-								215
+								814,
+								814
 							]
 						],
 						"settings":
 						{
 							"BracketHighlighterBusy": false,
-							"auto_complete": false,
 							"bh_regions":
 							[
-								"bh_angle",
-								"bh_angle_center",
-								"bh_angle_open",
-								"bh_angle_close",
-								"bh_angle_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
 								"bh_curly",
 								"bh_curly_center",
 								"bh_curly_open",
@@ -1384,6 +1177,26 @@
 								"bh_c_define_open",
 								"bh_c_define_close",
 								"bh_c_define_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
 								"bh_regex",
 								"bh_regex_center",
 								"bh_regex_open",
@@ -1393,39 +1206,8 @@
 								"bh_double_quote_center",
 								"bh_double_quote_open",
 								"bh_double_quote_close",
-								"bh_double_quote_content",
-								"bh_round",
-								"bh_round_center",
-								"bh_round_open",
-								"bh_round_close",
-								"bh_round_content",
-								"bh_single_quote",
-								"bh_single_quote_center",
-								"bh_single_quote_open",
-								"bh_single_quote_close",
-								"bh_single_quote_content",
-								"bh_unmatched",
-								"bh_unmatched_center",
-								"bh_unmatched_open",
-								"bh_unmatched_close",
-								"bh_unmatched_content",
-								"bh_square",
-								"bh_square_center",
-								"bh_square_open",
-								"bh_square_close",
-								"bh_square_content",
-								"bh_default",
-								"bh_default_center",
-								"bh_default_open",
-								"bh_default_close",
-								"bh_default_content",
-								"bh_tag",
-								"bh_tag_center",
-								"bh_tag_open",
-								"bh_tag_close",
-								"bh_tag_content"
+								"bh_double_quote_content"
 							],
-							"open_with_edit": true,
 							"syntax": "Packages/Ruby/Ruby.tmLanguage",
 							"tab_size": 2,
 							"translate_tabs_to_spaces": true
@@ -1435,184 +1217,6 @@
 						"zoom_level": 1.0
 					},
 					"stack_index": 0,
-					"type": "text"
-				},
-				{
-					"buffer": 6,
-					"file": "app/assets/javascripts/models/chat.js.rb",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 162,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								131,
-								131
-							]
-						],
-						"settings":
-						{
-							"BracketHighlighterBusy": false,
-							"auto_complete": false,
-							"bh_regions":
-							[
-								"bh_angle",
-								"bh_angle_center",
-								"bh_angle_open",
-								"bh_angle_close",
-								"bh_angle_content",
-								"bh_curly",
-								"bh_curly_center",
-								"bh_curly_open",
-								"bh_curly_close",
-								"bh_curly_content",
-								"bh_c_define",
-								"bh_c_define_center",
-								"bh_c_define_open",
-								"bh_c_define_close",
-								"bh_c_define_content",
-								"bh_regex",
-								"bh_regex_center",
-								"bh_regex_open",
-								"bh_regex_close",
-								"bh_regex_content",
-								"bh_double_quote",
-								"bh_double_quote_center",
-								"bh_double_quote_open",
-								"bh_double_quote_close",
-								"bh_double_quote_content",
-								"bh_round",
-								"bh_round_center",
-								"bh_round_open",
-								"bh_round_close",
-								"bh_round_content",
-								"bh_single_quote",
-								"bh_single_quote_center",
-								"bh_single_quote_open",
-								"bh_single_quote_close",
-								"bh_single_quote_content",
-								"bh_unmatched",
-								"bh_unmatched_center",
-								"bh_unmatched_open",
-								"bh_unmatched_close",
-								"bh_unmatched_content",
-								"bh_square",
-								"bh_square_center",
-								"bh_square_open",
-								"bh_square_close",
-								"bh_square_content",
-								"bh_default",
-								"bh_default_center",
-								"bh_default_open",
-								"bh_default_close",
-								"bh_default_content",
-								"bh_tag",
-								"bh_tag_center",
-								"bh_tag_open",
-								"bh_tag_close",
-								"bh_tag_content"
-							],
-							"history_list_is_closing": true,
-							"syntax": "Packages/Ruby/Ruby.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 4,
-					"type": "text"
-				},
-				{
-					"buffer": 7,
-					"file": "app/assets/javascripts/models/page.js.rb",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 489,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								242,
-								242
-							]
-						],
-						"settings":
-						{
-							"BracketHighlighterBusy": false,
-							"bh_regions":
-							[
-								"bh_angle",
-								"bh_angle_center",
-								"bh_angle_open",
-								"bh_angle_close",
-								"bh_angle_content",
-								"bh_curly",
-								"bh_curly_center",
-								"bh_curly_open",
-								"bh_curly_close",
-								"bh_curly_content",
-								"bh_c_define",
-								"bh_c_define_center",
-								"bh_c_define_open",
-								"bh_c_define_close",
-								"bh_c_define_content",
-								"bh_regex",
-								"bh_regex_center",
-								"bh_regex_open",
-								"bh_regex_close",
-								"bh_regex_content",
-								"bh_double_quote",
-								"bh_double_quote_center",
-								"bh_double_quote_open",
-								"bh_double_quote_close",
-								"bh_double_quote_content",
-								"bh_round",
-								"bh_round_center",
-								"bh_round_open",
-								"bh_round_close",
-								"bh_round_content",
-								"bh_single_quote",
-								"bh_single_quote_center",
-								"bh_single_quote_open",
-								"bh_single_quote_close",
-								"bh_single_quote_content",
-								"bh_unmatched",
-								"bh_unmatched_center",
-								"bh_unmatched_open",
-								"bh_unmatched_close",
-								"bh_unmatched_content",
-								"bh_square",
-								"bh_square_center",
-								"bh_square_open",
-								"bh_square_close",
-								"bh_square_content",
-								"bh_default",
-								"bh_default_center",
-								"bh_default_open",
-								"bh_default_close",
-								"bh_default_content",
-								"bh_tag",
-								"bh_tag_center",
-								"bh_tag_open",
-								"bh_tag_close",
-								"bh_tag_content"
-							],
-							"syntax": "Packages/Ruby/Ruby.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 7,
 					"type": "text"
 				}
 			]
@@ -1666,6 +1270,30 @@
 		"last_filter": "",
 		"selected_items":
 		[
+			[
+				"menuindex",
+				"app/assets/javascripts/components/menues/index.js.rb"
+			],
+			[
+				"spechome",
+				"app/assets/javascripts/components/specific_pages/home.js.rb"
+			],
+			[
+				"indexroute",
+				"app/assets/javascripts/components/app/index_route.js.rb"
+			],
+			[
+				"router",
+				"app/assets/javascripts/components/app/router.js.rb"
+			],
+			[
+				"routes",
+				"config/routes.rb"
+			],
+			[
+				"fakercon",
+				"app/controllers/faker_controller.rb"
+			],
 			[
 				"apposchedchatscon",
 				"app/controllers/appointment_scheduler/chats_controller.rb"
@@ -1869,10 +1497,6 @@
 			[
 				"scheuserindex",
 				"app/assets/javascripts/components/appointment_schedulers/users/index.js.rb"
-			],
-			[
-				"routes",
-				"config/routes.rb"
 			],
 			[
 				"gem",
@@ -2107,10 +1731,6 @@
 				"app/assets/javascripts/components/admin/dashboards/main.js.rb"
 			],
 			[
-				"router",
-				"app/assets/javascripts/components/app/router.js.rb"
-			],
-			[
 				"appodoctorindex",
 				"app/assets/javascripts/components/appointments/doctors/index.js.rb"
 			],
@@ -2161,22 +1781,6 @@
 			[
 				"pagenew",
 				"app/assets/javascripts/components/pages/new.js.rb"
-			],
-			[
-				"menuedit",
-				"app/assets/javascripts/components/menues/edit.js.rb"
-			],
-			[
-				"userindex",
-				"app/assets/javascripts/components/users/index.js.rb"
-			],
-			[
-				"helper",
-				"app/assets/javascripts/vendor/helpers.js.rb"
-			],
-			[
-				"sharedfla",
-				"app/assets/javascripts/components/shared/flash/holder.js.rb"
 			]
 		],
 		"width": 0.0

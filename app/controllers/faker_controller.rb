@@ -43,6 +43,8 @@ class FakerController < ApplicationController
     x = fetch('http://localhost:8888/')
     
     render inline: x.body
+
+
   end
 
   def restricted_asset

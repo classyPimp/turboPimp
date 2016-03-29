@@ -19,10 +19,10 @@ module Components
       def component_did_mount
         menu = MenuItem.index.then do |_menu|
           self.set_state menu: _menu
-          x = ->{`if (typeof window.callPhantom === 'function') {
-            window.callPhantom('called it lol');
-          }`}
-          x.call
+          # x = ->{`if (typeof window.callPhantom === 'function') {
+          #   window.callPhantom('called it lol');
+          # }`}
+          # x.call
         end
       end
       
