@@ -268,9 +268,16 @@ class Model
   #TODO: depending if model has file defaultly make ajax data: formData returned from this method (can be done through validation)
   #UPDATE: above todos done
   #TODO: fallback for ie < 10 and other shitty versions via iframe. But is there a true neccessity in such? 
-    if val.is_a? Array
+    if val.is_a?(Array)
       val.each_with_index do |v, i| 
-        (track = track + "[]") unless (track[-2..-1] == "[]")
+        if i == 0
+          track = track + "[][#{i}]"
+        else
+          last_length = ((i - 1).to_s.length + 3)
+          substringed = track[0..-last_length]
+          track = substringed + "[#{i}]"
+        end
+        #(track = track + "[][#{i}]") unless (track[-((i - 1).to_s.length)..-1] == "[#{i-1}]")
         iterate_for_form(v, form_data, track)  
       end
     elsif val.is_a? Hash

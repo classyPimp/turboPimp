@@ -1,7 +1,7 @@
 class Admin::OfferedServicesController < ApplicationController
 
   def create
-    
+    byebug
     perms_for OfferedService
     auth! @perms.admin_create
     @offered_service = OfferedService.new

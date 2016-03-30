@@ -16,6 +16,17 @@ class ApplicationController < ActionController::Base
               #offset: model.offset}}    
   end
 
+  def convert_to_array_if_simulated_array!(_params)
+    if _params.is_a?(Array) && _params[0].is_a?(Hash)
+      if /\A\d+\z/.match(_params[0].keys[0])
+        h = _params.pop
+        h.each do |k, v|
+          _params << v
+        end
+      end
+    end 
+  end
+
  private
 
 	#this method is used for handling Pundit::NotAuthorizedError exception

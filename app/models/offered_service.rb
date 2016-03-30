@@ -4,7 +4,7 @@ class OfferedService < ActiveRecord::Base
 
   belongs_to :user
 
-  has_one :offered_service_avatar, dependent: :destroy
+  has_one :avatar, dependent: :destroy, class_name: 'OfferedServiceAvatar'
 
   has_many :price_items, dependent: :nullify
   #END ASSOCIATIONS

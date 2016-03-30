@@ -45,6 +45,7 @@ module Components
 
       def handle_inputs
         collect_inputs
+        p state.form_model.pure_attributes
         unless state.form_model.has_errors?
           state.form_model.create(serialize_as_form: true, namespace: "admin").then do |model|
             begin

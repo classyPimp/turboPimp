@@ -10,7 +10,7 @@ class OfferedServiceAvatar < ActiveRecord::Base
 
   #used in JSON serializing e/g/ @avatr.as_json(methods: [:url])
   def url 
-    self.file.url(:thumb)
+    self.avatar.url(:thumb)
   end 
 
 end
