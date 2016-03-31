@@ -7,6 +7,7 @@ class OfferedService < ActiveRecord::Base
   has_one :avatar, dependent: :destroy, class_name: 'OfferedServiceAvatar'
 
   has_many :price_items, dependent: :nullify
+  has_many :si_price_items1id_name_price, ->{select(:id, :name, :price)}, class_name: 'PriceItem'
   #END ASSOCIATIONS
 
   #FREINDLY ID

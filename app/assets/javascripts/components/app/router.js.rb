@@ -67,7 +67,10 @@ module Components
             t(`Route`, {path: "/admin", component: Components::Admin::Main.create_class, onEnter: ->(n, r, cb){check_role(n, r, cb, [:admin])}},
               t(`Route`, {path: "users/:id/edit", component: Components::Admin::Users::Edit.create_class}),
 
-              t(`Route`, {path: 'offered_services/new', component: Components::Admin::OfferedServices::New.create_class})
+              t(`Route`, {path: 'offered_services/new', component: Components::Admin::OfferedServices::New.create_class}),
+              t(`Route`, {path: 'offered_services/index', component: Components::Admin::OfferedServices::Index.create_class}),
+              t(`Route`, {path: 'offered_services/edit/:id', component: Components::Admin::OfferedServices::Edit.create_class})
+              
             ),
 
             t(`Route`, {path: "price_list", component: Components::PriceList::Index.create_class}),
@@ -81,6 +84,10 @@ module Components
 
             t(`Route`, {path: "/appointments", component: Components::Appointments::Main.create_class},
               t(`Route`, {path: "index", component: Components::Appointments::Index.create_class})
+            ),
+
+            t(`Route`, {path: "/offered_services", component: Components::OfferedServices::Main.create_class},
+              t(`Route`, {path: 'index', component: Components::OfferedServices::Index.create_class})
             ),
 
             # t(`Route`, {path: "/blogger", component: Components::Blogger::Blogs::Main.create_class},

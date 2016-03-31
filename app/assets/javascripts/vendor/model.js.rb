@@ -271,7 +271,7 @@ class Model
     if val.is_a?(Array)
       val.each_with_index do |v, i| 
         if i == 0
-          track = track + "[][#{i}]"
+          track = track + "[#{i}]"
         else
           last_length = ((i - 1).to_s.length + 3)
           substringed = track[0..-last_length]

@@ -38,7 +38,7 @@ module Perms
 
     def admin_create
       if @controller.current_user && @controller.current_user.has_any_role?(:admin, :root)
-        @controller.convert_to_array_if_simulated_array!(@controller.params[:roles_attributes])
+        byebug
         @permitted_attributes = @controller.params.require(:user).
               permit(:email, :password, :password_confirmation, avatar_attributes: [:file], 
                       profile_attributes: [:name, :bio], roles_attributes: [:name] )

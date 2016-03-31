@@ -16,14 +16,17 @@ class ApplicationController < ActionController::Base
               #offset: model.offset}}    
   end
 
-  def convert_to_array_if_simulated_array!(_params)
-    if _params.is_a?(Array) && _params[0].is_a?(Hash)
-      if /\A\d+\z/.match(_params[0].keys[0])
-        h = _params.pop
-        h.each do |k, v|
-          _params << v
+  def simulated_array_to_a(_params)
+    if _params.is_a?(Hash)
+      ary = []
+      if /\A\d+\z/.match(_params.keys[0])
+        _params.each do |k, v|
+          ary << v
         end
+        return ary
       end
+    else
+      return _params
     end 
   end
 

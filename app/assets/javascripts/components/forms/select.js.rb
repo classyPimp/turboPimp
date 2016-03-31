@@ -162,10 +162,14 @@ module Forms
     end
 
     def delete(selected)
-      if @option_as_model && props.destroy == false
+      p 'deleting'
+      p @option_as_model
+      if @option_as_model #&& props.destroy == false
         if selected.arbitrary[:initially_selected]
+          p selected.pure_attributes
           selected.attributes[:_destroy] = "1"
           state.options << selected
+          p selected.pure_attributes
         else
           state.options << state.selected.delete(selected)
         end

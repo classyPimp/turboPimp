@@ -82,6 +82,8 @@ Rails.application.routes.draw do
 
     resources :price_categories
 
+    resources :offered_services
+
   end
 
   get "/console" => "faker#console"

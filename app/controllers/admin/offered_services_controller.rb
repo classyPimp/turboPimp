@@ -20,5 +20,13 @@ class Admin::OfferedServicesController < ApplicationController
   end
 
 
+  def edit
+    @offered_service = OfferedService.find(params[:id])
+    perms_for @offered_service
+    auth! @perms.admin_edit
+    render json: @offered_service.as_json(@perms.serialize_on_success)
+
+  end
+
 
 end

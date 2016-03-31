@@ -83,8 +83,8 @@ class ComposerFor::OfferedService::AdminCreate
 
   def get_price_item_ids
     price_item_ids = []
-    @controller.convert_to_array_if_simulated_array!(@associated_price_item_params)
-    
+    @associated_price_item_params = @controller.simulated_array_to_a(@associated_price_item_params)
+    byebug
     @associated_price_item_params.each do |_price_item|
       if !_price_item['price_item']['_destroy'] && _price_item['price_item']['id']
         price_item_ids << _price_item['price_item']['id']
