@@ -29,6 +29,12 @@ module Components
                     end,
                     link_to('', '/users/dashboard/edit_price_list') do
                       t(:li, {}, 'browse and edit price list')  
+                    end,
+                    link_to('', '/users/dashboard/offered_services/new') do
+                      t(:li, {}, 'create new offered_service')
+                    end,
+                    link_to('', '/users/dashboard/offered_services/index') do
+                      t(:li, {}, 'manage offered_services')
                     end
                   )
                 )

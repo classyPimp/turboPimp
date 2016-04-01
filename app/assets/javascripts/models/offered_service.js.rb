@@ -5,6 +5,8 @@ class OfferedService < Model
   has_one :user
   has_one :avatar
   has_many :price_items
+  accepts_nested_attributes_for :avatar 
+
 
   route "create", post: "offered_services"
   route "Index", get: "offered_services"

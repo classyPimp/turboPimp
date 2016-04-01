@@ -35,6 +35,7 @@ module Components
                 input(Forms::Input, state.form_model, :m_title, {type: "text", show_name: 'meta title'}),
                 input(Forms::Input, state.form_model, :m_description, {type: "text", show_name: 'meta description'}),
                 input(Forms::Input, state.form_model, :m_keywords, {type: "text", show_name: 'meta keywords'}),
+                t(:img, {src: state.form_model.avatar.try(:url)}),
                 input(Forms::FileInputImgPreview, state.form_model.avatar, :avatar, {show_name: 'avatar'}),
                 input(Forms::WysiTextarea, state.form_model, :body),
                 t(:p, {}, 'associated price items'),

@@ -139,7 +139,8 @@ module Perms
     end
 
     def destroy
-      if @current_user && @current_user.has_role?(:blogger) && @current_user.id == @blog.id
+      byebug
+      if @current_user && @current_user.has_role?(:blogger) && @current_user.id == @model.user_id
         true
       end
     end

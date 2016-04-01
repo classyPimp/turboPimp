@@ -15,5 +15,6 @@ class Page < ActiveRecord::Base
 
 #VALIDATIONS
   validates :body, presence: true, length: { minimum: 6 }
-
+  validates :title, presence: true, length: { minimum: 2 }
+#END VALIDATIONS
 end

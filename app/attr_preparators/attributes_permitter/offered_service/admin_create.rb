@@ -6,7 +6,7 @@ class AttributesPermitter::OfferedService::AdminCreate
 
   def get_permitted
     @permitted_attributes = @params.
-      permit(:title, :body, :m_title, :m_description, :m_keywords)
+      permit(:title, :body, :m_title, :m_description, :m_keywords, avatar_attributes: [:id, :avatar])
     @permitted_attributes
   end
 

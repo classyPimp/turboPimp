@@ -23,14 +23,16 @@ module Components
         t(:div, {className: 'offered_services_index'},
           *splat_each(state.offered_services) do |offered_service|
             t(:div, {className: 'box'},
-              t(:img, {className: 'avatar', src: "#{offered_service.avatar.try(:file)}"}),
+              t(:img, {className: 'avatar', src: "#{offered_service.avatar.try(:url)}"}),
               t(:p, {}, offered_service.title),
               t(:div, {},
                 *splat_each(offered_service.price_items) do |price_item|
                   t(:p, {}, "#{price_item.name} : #{price_item.price}")
                 end
               ),
-              t(:button, {className: 'btn btn-xs'}, 'details')
+              link_to('', "/offered_services/show/#{offered_service.slug}") do
+                t(:button, {className: 'btn btn-xs'}, 'details')                
+              end
             )
           end
         )

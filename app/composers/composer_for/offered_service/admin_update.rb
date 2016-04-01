@@ -1,4 +1,4 @@
-class ComposerFor::OfferedService::AdminCreate   
+class ComposerFor::OfferedService::AdminUpdate  
 
   include Services::PubSubBus::Publisher
 
@@ -11,10 +11,15 @@ class ComposerFor::OfferedService::AdminCreate
   end
 
   def run
+    convert_simulated_arrays_in_params
     prepare_attributes
     #validate
     compose
     clear
+  end 
+
+  def convert_simulated_arrays_in_params
+    @associated_price_item_params = @controller.simulated_array_to_a(@associated_price_item_params)
   end
 
   def prepare_attributes
@@ -26,6 +31,7 @@ class ComposerFor::OfferedService::AdminCreate
     ActiveRecord::Base.transaction do
       
       assign_attributes
+
       @model.save!
 
     end
@@ -33,7 +39,6 @@ class ComposerFor::OfferedService::AdminCreate
     handle_transaction_success
 
     rescue Exception => e
-      
       handle_transaction_fail(e)
   end
 
@@ -48,7 +53,7 @@ class ComposerFor::OfferedService::AdminCreate
       @model.price_items << price_item
     end
 
-    @model.user_id = @controller.current_user.id
+    nullify_marked_price_items
 
   end
 
@@ -65,14 +70,33 @@ class ComposerFor::OfferedService::AdminCreate
 
   def get_price_item_ids
     price_item_ids = []
-    @associated_price_item_params = @controller.simulated_array_to_a(@associated_price_item_params)
+    
     
     @associated_price_item_params.each do |_price_item|
       if !_price_item['price_item']['_destroy'] && _price_item['price_item']['id']
         price_item_ids << _price_item['price_item']['id']
       end  
     end
+    
     price_item_ids
+  end
+
+  def nullify_marked_price_items
+    price_items_to_nullify = []
+
+    @associated_price_item_params.each do |_price_item|
+      if _price_item['price_item']['_destroy'] && _price_item['price_item']['id']
+        price_items_to_nullify << _price_item['price_item']['id']
+      end  
+    end
+
+    price_items = PriceItem.where('id in (?)', price_items_to_nullify).select(:id, :offered_service_id)
+
+    price_items.each do |price_item|
+      price_item.offered_service_id = nil
+      price_item.save!
+      
+    end
   end
 
   #END PRICE ITEM RELATED
