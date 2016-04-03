@@ -397,7 +397,7 @@ body {
     text-align: center; }
   .doctor_index .thumbnail {
     display: inline-block;
-    background-color: #6FC2DE;
+    background-color: #A7DFF2;
     margin: auto;
     max-width: 400px;
     margin-top: 1rem;
@@ -408,7 +408,7 @@ body {
     .doctor_index .thumbnail .profile_info {
       text-align: center;
       margin: 0.5rem 0;
-      border-top: 1px solid #BFD2D9; }
+      border-top: 1px solid white; }
 
 /*END DOCTOR INDEX*/
 /*menu_index animation*/
@@ -590,5 +590,39 @@ body {
       padding: 0.1rem; }
 
 /*APPOINTMENT_PROPOSAL_INDEX*/
+/*OFFERED SERVICES INDEX*/
+.offered_services_index h1 {
+  text-align: center; }
+.offered_services_index .box {
+  width: 300px;
+  float: left;
+  display: flex;
+  border-bottom: 1px solid #A7DFF2; }
+  .offered_services_index .box p {
+    margin-bottom: 0;
+    margin-top: 0; }
+  .offered_services_index .box .avatar img {
+    height: 50px; }
+  .offered_services_index .box div {
+    margin: 1rem; }
+
+/*END OFFERED SERVICES INDEX*/
+.scheduler_chat_messages_index .message {
+  font-size: small;
+  border: 1px solid white;
+  padding: 0 1rem;
+  margin-bottom: 0.5rem;
+  border-radius: 1rem; }
+  .scheduler_chat_messages_index .message .message_time {
+    text-align: right;
+    font-size: 8px; }
+.scheduler_chat_messages_index .right {
+  margin-left: 20%;
+  background-color: #CCF0FC; }
+.scheduler_chat_messages_index .left {
+  margin-right: 20%;
+  background-color: #D3DEBD; }
+.scheduler_chat_messages_index .chat_button {
+  right: 0; }
 
 /*# sourceMappingURL=application.css.map */

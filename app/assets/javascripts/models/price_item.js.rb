@@ -2,6 +2,8 @@ class PriceItem < Model
 
   attributes :id, :price, :name, :price_category_id
 
+  has_one :offered_service
+
   route "Show", get: "price_items/:id"
 
   route "update", {put: "price_items/:id"}, {defaults: [:id]}

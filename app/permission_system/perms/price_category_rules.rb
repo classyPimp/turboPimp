@@ -55,7 +55,16 @@ module Perms
           {
             price_items:
             {
-              root: true
+              root: true,
+              include:
+              [
+                {
+                  si_offered_service1id_slug:
+                  {
+                    root: true
+                  }
+                }
+              ]
             }
           }
         ]

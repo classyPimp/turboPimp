@@ -28,13 +28,15 @@ module Components
       end
 
       def render
-        t(:div, {className: 'offered_services_show'},
+        t(:div, {className: 'offered_services_show container'},
           spinner,
           if state.offered_service
             t(:div, {className: 'show_content'},
+              t(:img, {className: "avatar"}, offered_service.avatar.try(:url)),
+              t(:h1, {}, offered_service.title),
               t(:div, {dangerouslySetInnerHTML: {__html: state.offered_service.body}.to_n}),
               if !state.offered_service.price_items.empty?
-                t(:div, {},
+                t(:div, {className: 'prices'},
                   t(:p, {}, 'prices'),
                   *splat_each(state.offered_service.price_items) do |price_item|
                     t(:p, {}, "#{price_item.name} : #{price_item.price}")

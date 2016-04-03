@@ -35,7 +35,7 @@ module Components
                   end
                 ),
                 t(:button, {className: 'btn btn-xs'}, 'details'),
-                link_to('', "/admin/offered_services/edit/#{offered_service.id}") do
+                link_to('', "/users/dashboard/offered_services/edit/#{offered_service.id}") do
                   t(:buttin, {className: 'btn btn-xs'}, 'edit')                  
                 end,
                 t(:button, {className: 'btn btn-xs btn-danger', onClick: ->{destroy(offered_service)}}, 'destroy')

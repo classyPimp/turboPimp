@@ -18,7 +18,7 @@ module Components
             prepare_message_display_side(props.chat) 
           end
 
-          t(:div, {}, 
+          t(:div, {className: 'scheduler_chat_messages_index'}, 
             t(:p, {}, "user: #{props.chat.user.id}"),
 
             t(:div, {className: 'chat_messages_stack'},
@@ -29,7 +29,7 @@ module Components
                 )
               end
             ),
-            input(Forms::Input, state.form_model, :text, {reset_value: true}),
+            input(Forms::Input, state.form_model, :text, {}),
             t(:button, {onClick: ->{send_message}}, 'send')
           )          
         end 

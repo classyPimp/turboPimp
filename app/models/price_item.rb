@@ -7,6 +7,7 @@ class PriceItem < ActiveRecord::Base
   belongs_to :price_category
 
   belongs_to :offered_service
+  belongs_to :si_offered_service1id_slug, ->{select(:id, :slug)}, class_name: 'OfferedService', foreign_key: 'offered_service_id'
 
   #====================== END ASSOCITAIONS =============
 

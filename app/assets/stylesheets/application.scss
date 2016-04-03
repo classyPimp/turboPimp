@@ -15,9 +15,7 @@
  *= require_tree .
  *= require_self
  */
-
 /*VARS*/
-
 $main-border-color: #A7DFF2;
 $main-border-radius: 1.5rem;
 $main-input-border-color: #cccccc;
@@ -605,7 +603,7 @@ body {
     .thumbnail {
 
       display: inline-block;
-      background-color: #6FC2DE;
+      background-color: $main-border-color;
       margin: auto;
       max-width: 400px;
       margin-top: 1rem;
@@ -620,7 +618,7 @@ body {
       .profile_info {
         text-align: center;
         margin: 0.5rem 0;
-        border-top: 1px solid #BFD2D9; 
+        border-top: 1px solid white; 
       }
     }
   }
@@ -915,11 +913,71 @@ body {
       }
     }
 
-    
-
   }
 
 }
 
 /*APPOINTMENT_PROPOSAL_INDEX*/
+/*OFFERED SERVICES INDEX*/
+.offered_services_index {
 
+  h1 {
+    text-align: center;
+  }
+
+  .box {
+    
+    width: 300px;
+    float: left;
+
+    p {
+      margin-bottom: 0;
+      margin-top: 0;
+    }
+
+    .avatar {
+      img {
+        height: 50px;
+      }
+    }
+    display: flex;
+
+    div {
+      margin: 1rem;
+    }
+
+    border-bottom: 1px solid $main-border-color;
+  }
+}
+
+/*END OFFERED SERVICES INDEX*/
+
+.scheduler_chat_messages_index {
+  .message {
+    font-size: small;
+    border: 1px solid white;
+    padding: 0 1rem;
+    margin-bottom: 0.5rem;
+    border-radius: 1rem;
+
+    .message_time {
+      text-align: right;
+      font-size: 8px;
+    }
+  }
+
+  .right {
+    margin-left: 20%;
+    background-color: #CCF0FC;
+  }
+
+  .left {
+    margin-right: 20%;
+    background-color: #D3DEBD;
+  }
+   
+  .chat_button {
+    right: 0;
+  }
+
+}

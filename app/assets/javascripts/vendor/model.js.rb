@@ -78,7 +78,7 @@ by adding:
         end
       end
     end
-
+# above is optional and you can always just use root: true including include: models
 ********************************************************************
 
  
@@ -227,11 +227,11 @@ class Model
   #that way youll be able to access name but it wont be on profile model
   #so to handle that stuff so your frontend would handle the modelized way
   #for includes with speciffically selected fields
-  #follow this: e/g/ belongs_to :si_userXid_name_password, ->{select(:id, :name, :passowrd)}, classname: User, foreign_key: "user_id"
-  #so when serialized it'll pass it to client like {profile: {foo: "bar", si_userXid_name_password: {user: {id: 1, name: "q", password: "joe"}}}}
+  #follow this: e/g/ belongs_to :si_user1id_name_password, ->{select(:id, :name, :passowrd)}, classname: User, foreign_key: "user_id"
+  #so when serialized it'll pass it to client like {profile: {foo: "bar", si_user1id_name_password: {user: {id: 1, name: "q", password: "joe"}}}}
   #but on client it would serialize as it is regular e.g. {profile: {foo: "bar", user: {user: {id: 1, name: "q", password: "joe"}}}}
-  #for joins follow the same User.joins(:profile).select("users.*, profiles.name AS sj_profileXname")
-  #your server will {user: {foo: "bar", sj_profileXname: "the joe"}}
+  #for joins follow the same User.joins(:profile).select("users.*, profiles.name AS sj_profile1name")
+  #your server will {user: {foo: "bar", sj_profile1name: "the joe"}}
   #but client will serialize it to {user: {foo: "bar", profile: {profile: {name: "joe"}}}}
   #so no need to remember and use those arbitrary attr holders if follow this convention
   #plus you can nest sj_ as sj_user1sj_profile1name will let {foo: {user: {user: {profile: {profile: {name: "yay!"}}}}}}
@@ -259,25 +259,44 @@ class Model
     end
   end
 ## END THESE ARE NEEDED FOR PARSE CLASS METHOD
-
+  
+  #Model.itearate_for_form serializes opal hash to JS formData
+  #formData serialized nested arrays can't be serialized properly serverside (last item only will be in array)
+  #so it iterate_for_form serialize it to simulated array the way accepts_nested_attributes_for undersatands e.g
+  #{'1' => {foo: 'bar'}, '2' => {foo: bar}}
+  #but other xhr is serialized properly as JSON
+  #so it's needed for cases when you submit files only AND OU SHOULD NORMALIZE SIMULATED array to Array for compatibility
+  # e.g. you can use such method in ApplicationController
+  # def simulated_array_to_a(_params)
+  #   if _params.is_a?(Hash)
+  #     ary = []
+  #     if /\A\d+\z/.match(_params.keys[0])
+  #       _params.each do |k, v|
+  #         ary << v
+  #       end
+  #       return ary
+  #     end
+  #   else
+  #     return _params
+  #   end 
+  # end
   def self.iterate_for_form(val, form_data, track = nil)
   #new formData() wrapped in Native shall be passed
   #val is the normalized attributes (containing no models) of a model
   #result is populated formData object to be passed to HTTP request with all the pure_attributes attached to it
   #this is  necessary for sending file though xhr only
-  #TODO: depending if model has file defaultly make ajax data: formData returned from this method (can be done through validation)
-  #UPDATE: above todos done
+  #depending if model has file defaultly make ajax data: formData returned from this method (can be done through validation)
   #TODO: fallback for ie < 10 and other shitty versions via iframe. But is there a true neccessity in such? 
     if val.is_a?(Array)
       val.each_with_index do |v, i| 
         if i == 0
           track = track + "[#{i}]"
         else
+          #last length will grab the string depending on it's digits, eg [1], i 3 but [111] is not
           last_length = ((i - 1).to_s.length + 3)
           substringed = track[0..-last_length]
           track = substringed + "[#{i}]"
         end
-        #(track = track + "[][#{i}]") unless (track[-((i - 1).to_s.length)..-1] == "[#{i-1}]")
         iterate_for_form(v, form_data, track)  
       end
     elsif val.is_a? Hash
@@ -310,22 +329,17 @@ class Model
     #looks neatier for me
   end
 
+  #refer to #initialize for info
   def init
-    #refer to #initialize for info
+    
   end
 
-  # def attributes
-  #   #in case you need attributes as a hash with models (not their pure attributes) 
-  #   @attributes
-  # end
-
-
+  #for example you have a model {user: {id: 1, page: {page: {id: 2}}}}
+  #parsed it ll be user.@attributes {id: 1, <Page instance>}
+  #and you'll need it to pass to server, but @attributes will contain instantiated page not its attributes
+  #this way it will return the pure hash as -> kind of reverse of Model.parse
+  #BUG: CHANGES THE ACTUAL ATTRIBUTES! edit: changed a bit but behaviour needs examination UPDATE: i does not anymore 
   def pure_attributes(root = true)
-    #for example you have a model {user: {id: 1, page: {page: {id: 2}}}}
-    #parsed it ll be user.@attributes {id: 1, <Page instance>}
-    #and you'll need it to pass to server, but @attributes will contain instantiated page not its attributes
-    #this way it will return the pure hash as -> kind of reverse of Model.parse
-    #BUG: CHANGES THE ACTUAL ATTRIBUTES! edit: changed a bit but behaviour needs examination
     x = {}
     attributes.delete(:errors)
     attributes.each do |k,v| 
@@ -346,8 +360,8 @@ class Model
     end
   end
 
+  #THIS METHOD IS ONLY NEEDED FOR #pure_attributes
   def normalize_attributes(attrs, root = true)
-    #THIS METHOD IS ONLY NEEDED FOR #pure_attributes
     if attrs.is_a? Hash
       attrs.each do |k,v|
         if v.is_a? Model
@@ -434,8 +448,10 @@ class Model
     end
   end
   TODO: propbably shall be deleted beacuse association stuff can be done via routes, and no need in it on frontend
-  UPDATE: done sort of it just eave it be or now
+  UPDATE: done sort of it just leave it be or now
 =end
+  #defines method of making a request to server
+  # described in docs
   def self.route(name, method_and_url, options ={})
     if name[0] == name.capitalize[0]
       self.define_singleton_method(name.downcase) do |req_options = {}|#| wilds = {}, req_options = {}|
@@ -594,12 +610,11 @@ class Model
       end
     end 
   end
-
+  #attr_name model : Model <attr_name>, error : String
+  #this method is called in validate_#{attr_name} method if your
+  #attr has errors and you need to add it, but youre free to not use it
+  #refer to important! notice  
   def add_error(attr_name, error)
-    #attr_name model : Model <attr_name>, error : String
-    #this method is called in validate_#{attr_name} method if your
-    #attr has errors and you need to add it, but youre free to not use it
-    #refer to important! notice  
     (@errors[attr_name] ||= []) << error
   end
 
@@ -723,12 +738,12 @@ class RequestHandler
     @component = req_options[:component]
     #if you need to pass component to Http (e.g. turn on spinner before request, swith off after)
     #or any other sort of that
-    #pass component in first arg like
+    #pass component to it
     #user.some_route({component: self})
     #and youll have access to it in automatic response handlers (or anywhere in requesthandler)
     @should_yield_response = req_options[:yield_response]
     #handy if you need unprocessed response
-    #e.g. simply pass user.some_route({yield_response: true}, {}) {|response| unprocessed response}
+    #e.g. simply pass user.some_route({yield_response: true}) {|response| unprocessed response}
     @skip_before_handler = req_options[:skip_before_handler]
     #if you need to override defualts before request is made
     #pass this option to wild as {skip_before_handler: true}
@@ -741,10 +756,9 @@ class RequestHandler
     @http_method = method_and_url.keys[0]
     if @caller.respond_to?("on_before_#{@name.downcase}") && !@skip_before_handler
       @caller.send "on_before_#{@name.downcase}", self
-      #JUST BEGAN TO IMPLEMENT AND DIDN't plan yet how to do!
-      #the idea is to provide default prepare for ajax data (payload) on
+      #default prepare for ajax data (payload) on
       # rest actions e.g. save, update, destroy, etc/
-      #so you wont need to user.destroy({}, payload: user.pure_attributes),
+      #so you wont need to user.destroy(payload: user.pure_attributes),
       #and simply user.destroy and that's it!
       #and be like responses_on_route_name
       #EDIT: it kinda works now as of nov 17 2015, but needs reviewing

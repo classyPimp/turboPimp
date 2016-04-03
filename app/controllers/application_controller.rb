@@ -16,6 +16,13 @@ class ApplicationController < ActionController::Base
               #offset: model.offset}}    
   end
 
+
+  #Model.itearate_for_form serializes opal hash to JS formData
+  #formData serialized nested arrays can't be serialized properly serverside (last item only will be in array)
+  #so it iterate_for_form serialize it to simulated array the way accepts_nested_attributes_for undersatands e.g
+  #{'1' => {foo: 'bar'}, 2: {foo: bar}}
+  #but other xhr is serialized properly as JSON
+  #so it's needed for cases when you submit files only AND OU SHOULD NORMALIZE SIMULATED array to Array
   def simulated_array_to_a(_params)
     if _params.is_a?(Hash)
       ary = []

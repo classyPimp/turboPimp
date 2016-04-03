@@ -37,8 +37,7 @@ class RW
   def initialize(native)
     @native = native
     init
-    assign_controller
-    #validate props.
+    assign_controller #optional can safely delete as well as method itself
     #decided to user this for props validation, the validate_props should be implemented the way you want.
     validate_props
   end
@@ -173,8 +172,7 @@ class RW
   end
 
   def props
-   Native(`#{@native}.props`)
-  # Native(`#{@native.to_n}.props`)   
+   Native(`#{@native}.props`)  
   end
 
   def props_as_hash(prop)
@@ -183,7 +181,6 @@ class RW
 
   def state
     Native(`#{@native}.state`)
-    #Native(`#{@native.to_n}.state`)
   end
 
   def state_to_h
@@ -192,7 +189,6 @@ class RW
 
   def ref(ref)
     Native(`#{@native}.refs[#{ref}]`)
-    #Native(`#{@native.to_n}.refs[#{ref}]`)
   end
 
   def refs
@@ -210,7 +206,6 @@ class RW
       `#{x}[#{k}] = #{v}`
     end
     `#{@native}.setState(x)`
-    #`#{@native.to_n}.setState(#{x})`
   end
 
   def __set_state__(val)

@@ -37,7 +37,12 @@ module Components
                   ),
                   *splat_each(price_category.price_items) do |price_item|
                     t(:tr, {className: 'price_item'}, 
-                      t(:td, {}, "#{price_item.name}"),
+                      t(:td, {}, 
+                        "#{price_item.name}",
+                        if price_item.offered_service
+                          link_to('+more detatils', "/offered_services/show/#{price_item.offered_service.slug}")
+                        end
+                      ),
                       t(:td, {}, "#{price_item.price}")
                     )
                   end
