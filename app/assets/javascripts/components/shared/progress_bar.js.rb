@@ -12,14 +12,17 @@ module Shared
 
     def render 
       display = state.on ? '' : 'none'
+
       t(:div, {className: 'progress thin_progress', style: {display: display}.to_n}, 
         t(:div, {className: 'progress-bar', role: 'progressbar', style: {width: "#{state.width}%"}.to_n}, 
         )
       )
+
     end
 
     def component_will_unmount
       stop_interval if state.on
+      @intervaller = nil
     end
 
     def on

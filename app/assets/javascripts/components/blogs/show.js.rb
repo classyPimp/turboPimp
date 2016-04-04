@@ -40,7 +40,7 @@ module Components
 
       def render
         t(:div, {className: 'row'},
-          spinner,
+          progress_bar,
           t(:div, {className: 'blogs_show col-lg-8 container'},
             
             *if state.blog

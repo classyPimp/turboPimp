@@ -209,7 +209,7 @@ module Perms
 
         @serialize_on_success = 
         {
-          only: [:id, :email],
+          only: [:id, :email, :registered],
           include:
           {
             profile: {root: true, only: [:id, :name, :bio, :user_id, :phone_number]}
@@ -270,6 +270,14 @@ module Perms
     def destroy_unregistered_user_with_proposals
       if @current_user && @current_user.has_any_role?(:admin, :appointment_scheduler)
         return true
+      end
+    end
+
+    def appointment_scheduler_transform_user_to_registered
+      if @current_user && @current_user.has_any_role?(:admin, :appointment_scheduler)
+        if @model.has_role?(:patient) && !@model.registered
+          true
+        end
       end
     end
 

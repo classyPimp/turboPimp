@@ -5,7 +5,7 @@ class AttributesPermitter::AppointmentScheduler::Users::Update
   end
 
   def get_permitted
-    @permitted_attributes = @params.permit(profile_attributes: [:phone_number, :id, :bio])
+    @permitted_attributes = @params.permit(:email, profile_attributes: [:phone_number, :id, :bio, :name])
     @permitted_attributes
   end
 

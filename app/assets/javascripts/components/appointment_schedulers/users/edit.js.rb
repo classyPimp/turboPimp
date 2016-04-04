@@ -26,7 +26,7 @@ module Components
         end
 
         def component_did_mount
-          User.edit({wilds: {id: props.user.id}, namespace: 'appointment_scheduler'}).then do |form_model|
+          User.edit({wilds: {id: props.user.id}, namespace: 'appointment_scheduler', component: self}).then do |form_model|
             begin
             set_state form_model: form_model
             rescue Exception => e
@@ -38,15 +38,22 @@ module Components
         def render
           t(:div, {},
             modal,
+            progress_bar,
             if state.form_model
               t(:div, {},
-                t(:h3, {}, state.form_model.profile.name ),
+                input(Forms::Input, state.form_model.profile, :name),
                 t(:hr, {style: {color: "grey", height: "1px", backgroundColor: "black"}.to_n }),
-                t(:p, {}, "email: #{state.form_model.email}"),
+                input(Forms::Input, state.form_model, :email),
                 input(Forms::Input, state.form_model.profile, :phone_number),
                 input(Forms::Input, state.form_model.profile, :bio),
                 t(:button, {onClick: ->{handle_inputs}}, "update"),
-                t(:button, {onClick: ->{cancel_edit}}, "cancel")
+                t(:button, {onClick: ->{cancel_edit}}, "cancel"),
+                if !state.form_model.attributes[:registered]
+                  t(:div, {},
+                    t(:p, {}, 'this user is unregistered'),
+                    t(:button, {onClick: ->{transform_user_to_registered(state.form_model)}}, 'register this user')
+                  )
+                end
               )
             end
           )
@@ -74,6 +81,15 @@ module Components
 
         def cancel_edit
           props.history.go(-1)
+        end
+
+        def transform_user_to_registered(user)
+          user.transform_user_to_registered(component: self).then do |user|
+            state.form_model.attributes[:registered] = user.attributes[:registered]
+            set_state form_model: state.form_model
+            emit(:on_user_updated, state.form_model)
+            alert 'user transformed to registered'
+          end
         end
 
 

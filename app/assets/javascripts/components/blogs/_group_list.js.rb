@@ -3,6 +3,10 @@ module Components
     class GroupList < RW
       expose
 
+      def init
+        yields_phantom_ready
+      end
+
       def get_initial_state
         {
           blogs: ModelCollection.new
@@ -13,7 +17,7 @@ module Components
         Blog.index_for_group_list.then do |blogs|
           begin
           set_state blogs: blogs
-          component_ready
+          component_phantom_ready
         rescue Exception => e
           p e
         end

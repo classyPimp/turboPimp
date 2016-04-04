@@ -123,4 +123,17 @@ class AppointmentScheduler::UsersController < ApplicationController
 
   end
 
+  def transform_user_to_registered
+    @user = User.find(params[:id])
+    perms_for @user
+    auth! @perms.appointment_scheduler_transform_user_to_registered
+    @user.registered = true
+    @role_to_destroy = @user.roles.where(name: 'from_proposal').first
+
+    @role_to_destroy.destroy if @role_to_destroy
+    @user.save
+
+    render json: @user.as_json(only: [:id, :registered])
+  end
+
 end

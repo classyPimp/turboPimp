@@ -42,7 +42,20 @@ module Helpers
       ref(:spinner).rb
     end
   #####   /SPINNER
+  ##### PROGRESS BAR
+    require "components/shared/progress_bar"
+    attr_accessor :has_progress_bar
 
+    def progress_bar
+      @has_progress_bar = true
+      t(Shared::ProgressBar, {ref: 'progress_bar'})
+    end
+
+    def progress_bar_instance
+      ref('progress_bar').rb
+    end
+
+  ##### END PROGRESS BAR
   #####     MODAL
     ### INCLUDES BOOTSTRAP MODAL HELPER
     # in render simply call modal({className: "something"}, 
@@ -83,12 +96,12 @@ module Helpers
     # END FLASH MESSAGES
 
     #PHATNOM YIELDER
-    def set_up_phantom_yielder(components_count)
-      Services::PhantomYielder.instance = Services::PhantomYielder.new(components_count)
+    def yields_phantom_ready
+      Components::App::Router.phantom_instance.increment_yielders_count
     end
 
-    def component_ready
-      Services::PhantomYielder.instance.one_component_ready
+    def component_phantom_ready
+      Components::App::Router.phantom_instance.one_component_ready
     end
 
     #END PHANTOM YEILDER
@@ -98,7 +111,8 @@ module Helpers
 
     def defaults_on_response
       authorize!
-      (@component.spinner_instance.off if @component.has_spinner) if @component
+      #(@component.spinner_instance.off if @component.has_spinner) if @component
+      (@component.progress_bar_instance.off if @component.has_progress_bar) if @component
       if @response.status_code == 404
         Components::App::Router.history.replaceState(nil, "/404")
       elsif @response.status_code == 500
@@ -109,7 +123,8 @@ module Helpers
     end
 
     def defaults_before_request
-      (@component.spinner_instance.on if @component.has_spinner) if @component
+      #(@component.spinner_instance.on if @component.has_spinner) if @component
+      (@component.progress_bar_instance.on if @component.has_progress_bar) if @component
     end
 
     def authorize!

@@ -5,6 +5,10 @@ module Components
 
         expose
 
+        def init
+          yields_phantom_ready
+        end
+
         def get_initial_state
           {
             users: ModelCollection.new
@@ -14,7 +18,7 @@ module Components
         def component_did_mount
           User.index_doctors_for_group_list(namespace: 'doctor').then do |users|
             set_state users: users
-            component_ready
+            component_phantom_ready
           end
         end
 

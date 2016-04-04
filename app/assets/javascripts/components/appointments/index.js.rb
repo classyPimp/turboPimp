@@ -59,6 +59,9 @@ module Components
       def build_availabilities(appointments, date)
         appointments.unshift Appointment.new(start_date: Moment.new(date).set(hour: 9).format('YYYY-MM-DD:HH:mm'), end_date: Moment.new(date).set(hour: 9).format('YYYY-MM-DD:HH:mm'))
         appointments.push Appointment.new(start_date: Moment.new(date).set(hour: 19).format('YYYY-MM-DD:HH:mm'), end_date: Moment.new(date).set(hour: 19).format('YYYY-MM-DD:HH:mm'))
+        appointments.sort! do |a,b|
+          Moment.new(a.start_date).format('YYYY-MM-DD:HH:mm') <=> Moment.new(b.start_date).format('YYYY-MM-DD:HH:mm')
+        end
         i = 0
         a_l = appointments.length
         aps = appointments

@@ -28,6 +28,8 @@ class User < Model
  
   route 'Index_doctors_for_group_list', {get: 'users/index_doctors_for_group_list'}
 
+  route 'transform_user_to_registered', {post: 'appointment_scheduler/users/transform_user_to_registered/:id'}, {defaults: [:id]}
+
   has_one :profile, :avatar
   has_many :roles
   has_many :chat_messages
@@ -35,6 +37,10 @@ class User < Model
 
   def self.responses_on_index_doctors_for_group_list(r)
     self.responses_on_index(r)
+  end
+
+  def responses_on_transform_user_to_registered(r)
+    self.responses_on_update(r)
   end
 
   def responses_on_destroy_unregistered_user_with_proposals(r)

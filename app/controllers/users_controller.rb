@@ -15,7 +15,7 @@ class UsersController < ApplicationController
     auth! @perms #added !standart_auth
     #render json: @perms.permitted_attributes and return
     @user = User.new(@perms.permitted_attributes)
-
+    @user.add_role(:patient)
     if @user.save
       if User::ACTIVATABLE
         @user.send_activation_email

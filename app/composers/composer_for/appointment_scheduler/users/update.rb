@@ -31,7 +31,10 @@ class ComposerFor::AppointmentScheduler::Users::Update
       ActiveRecord::Base.transaction do  
         begin 
           @user.arbitrary[:no_password_update] = true
-          @user.arbitrary[:skip_email_validation] = true
+          
+          if @user.email.blank?
+            @user.arbitrary[:skip_email_validation] = true 
+          end
 
           @user.save!
 

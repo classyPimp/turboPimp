@@ -9,8 +9,12 @@ module Services
       @instance = val
     end
 
-    def initialize(component_count)
-      @not_ready_components_count = component_count
+    def initialize
+      @not_ready_components_count = 0
+    end
+
+    def increment_yielders_count
+      @not_ready_components_count += 1
     end
 
     def one_component_ready

@@ -4,11 +4,19 @@ module Components
     class Router < RW
 
       expose
+
+      class << self
+        attr_accessor :phantom_instance
+      end
       
       @@history = Native(`window.browserHistory()`)
 
       def self.history
         @@history
+      end
+
+      def init
+        self.class.phantom_instance = Services::PhantomYielder.new
       end
 
       def get_initial_state

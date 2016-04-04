@@ -3,6 +3,10 @@ module Components
     class Show < RW
       expose
 
+      def init
+        yields_phantom_ready
+      end
+
       def get_initial_state
         {
           page: false 
@@ -12,8 +16,12 @@ module Components
       def component_did_mount
         page_to_query = (x = props.page_id) ? x : props.params.id
         Page.show(wilds: {id: page_to_query}, component: self).then do |page|
+          begin
           set_state page: page
-          component_ready
+          component_phantom_ready
+          rescue Exception => e
+            p e
+          end
         end.fail do |resp|
           raise resp
         end
@@ -29,7 +37,7 @@ module Components
 
       def render
         t(:div, {className: 'pages_show'},
-          spinner,
+          progress_bar,
           if state.page
             t(:div, {className: 'pages_show_content'},
               t(:div, {dangerouslySetInnerHTML: {__html: state.page.body}.to_n})
