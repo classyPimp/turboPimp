@@ -79,6 +79,10 @@ Rails.application.routes.draw do
     end
 
 
+    namespace :patients do
+      resources :appointments
+    end
+
     post "patients/patients_feed" => "patients#patients_feed"
 
     resources :price_categories

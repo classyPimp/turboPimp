@@ -170,6 +170,39 @@ module Perms
       end
 
     end
+
+    def patients_index
+      if @current_user && @current_user.has_role?(:patient)
+        @serialize_on_success =
+        {
+          include: 
+          [
+            {
+              si_appointments1for_patient_id:
+              {
+                root: true
+              }
+            },
+            {
+              si_profile1id_name:
+              {
+                root: true
+              }
+            },
+            {
+              avatar:
+              {
+                root: true,
+                methods:
+                [
+                  :url
+                ]
+              }
+            }
+          ]
+        }
+      end
+    end
       
   end
 end

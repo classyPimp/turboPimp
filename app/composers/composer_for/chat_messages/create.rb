@@ -1,4 +1,4 @@
- class ComposerFor::ChatMessages::Create
+class ComposerFor::ChatMessages::Create
 
   include Services::PubSubBus::Publisher
 

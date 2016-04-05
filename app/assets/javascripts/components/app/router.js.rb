@@ -61,7 +61,8 @@ module Components
                 t(`Route`, {path: 'offered_services/index', component: Components::Admin::OfferedServices::Index.create_class}),
                 t(`Route`, {path: 'offered_services/edit/:id', component: Components::Admin::OfferedServices::Edit.create_class}),
 
-                t(`Route`, {path: 'patients/appointments/index', component: Components::Patients::Appointments::Index.create_class})
+                t(`Route`, {path: 'patients/appointments/index', component: Components::Patients::Appointments::Index.create_class}),
+                t(`Route`, {path: 'patients/chat_messages/index', component: Components::Patients::ChatMessages::Index.create_class}, )
                 
               ),
               t(`Route`, {path: "show/:id", component: Users::Show.create_class}),

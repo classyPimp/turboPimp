@@ -152,6 +152,7 @@ class User < ActiveRecord::Base
   has_one :profile, dependent: :destroy
   has_one :avatar, dependent: :destroy
   has_many :appointments_as_doctor, class_name: 'Appointment', foreign_key: 'doctor_id', dependent: :destroy
+  has_many :appointments_as_doctor_for_patient, ->{where(scheduled: true).select(User.arbitrary[:patient_id])}, class_name: 'Appointment', foreign_key: 'doctor_id', dependent: :destroy
   has_many :appointments_as_patient, class_name: 'Appointment', foreign_key: 'patient_id', dependent: :destroy
 
   has_one :profile_id_name, ->{ select(:id, :user_id, :name) }, class_name: :Profile
@@ -175,6 +176,9 @@ class User < ActiveRecord::Base
     class_name: 'Appointment', foreign_key: 'doctor_id'
   
   has_many :si_appointments1as_patient_all, ->{ where("appointments.start_date >= ? AND appointments.end_date <= ?", User.arbitrary[:from], User.arbitrary[:to]).select(:id, :start_date, :end_date, :doctor_id) },
+    class_name: 'Appointment', foreign_key: 'doctor_id'
+
+  has_many :si_appointments1for_patient_id, ->{ where("appointments.start_date >= ? AND appointments.end_date <= ?", User.arbitrary[:from], User.arbitrary[:to]).where("appointments.patient_id = ?", User.arbitrary[:patient_id]).select(:id, :start_date, :end_date, :doctor_id) },
     class_name: 'Appointment', foreign_key: 'doctor_id'
 
   

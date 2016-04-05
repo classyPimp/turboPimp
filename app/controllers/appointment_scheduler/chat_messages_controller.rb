@@ -31,9 +31,9 @@ class AppointmentScheduler::ChatMessagesController < ApplicationController
     
     perms_for ChatMessage
     auth! @perms.appointment_scheduler_create
-  
+    @chat = Chat.select(:id, :user_id).find(params[:chat_message][:chat_id])
     permitted_attributes = AttributesPermitter::AppointmentScheduler::ChatMessages::Create.new(params).get_permitted
-    cmpsr = ComposerFor::AppointmentScheduler::ChatMessages::Create.new(ChatMessage.new, permitted_attributes, current_user)
+    cmpsr = ComposerFor::AppointmentScheduler::ChatMessages::Create.new(ChatMessage.new, permitted_attributes, current_user, @chat)
 
     cmpsr.when(:ok) do |chat_message|
       render json: chat_message.as_json(@perms.serialize_on_success)

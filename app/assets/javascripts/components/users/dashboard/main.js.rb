@@ -94,17 +94,8 @@ module Components
                     link_to('', '/users/dashboard/patients/appointments/index') do
                       t(:li, {}, "my appointments")  
                     end,
-                    link_to('', '/users/dashboard/browse_schedule') do
-                      t(:li, {}, "browse schedule")
-                    end,
-                    link_to('', '/users/dashboard/register_patient') do
-                      t(:li, {}, 'register patient')  
-                    end,
-                    link_to('', '/users/dashboard/manage_patients') do
-                      t(:li, {}, 'manage patients')  
-                    end,
-                    link_to('', '/users/dashboard/browse_chats') do
-                      t(:li, {}, 'browse chats')
+                    link_to('', '/users/dashboard/patients/chat_messages/index') do
+                      t(:li, {}, "messages")
                     end
                   )
                 )
