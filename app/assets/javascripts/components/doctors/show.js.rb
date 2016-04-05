@@ -30,7 +30,7 @@ module Components
                 t(:image, {src: "#{state.user.try(:avatar).try(:url)}", style: {width: "100px", height: "100px"}.to_n })
               ),
               t(:h4, {className: 'name'}, "#{state.user.profile.try(:name)}"),
-              t(:div, {className: 'bio'},  "#{state.user.try(:profile).try(:bio)}")
+              t(:div, {className: 'bio', dangerouslySetInnerHTML: {__html: state.user.try(:profile).try(:bio)}.to_n})
             )
           end
         )

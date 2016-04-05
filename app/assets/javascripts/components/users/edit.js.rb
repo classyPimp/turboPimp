@@ -42,7 +42,7 @@ module Components
               input(Forms::Input, state.form_model.avatar, :file, {type: "file", has_file: true, preview_image: true}),
               t(:p, {}, "email: #{state.form_model.email}"),
               t(:button, {onClick: ->{init_auth_data_edit}}, "edit login credentials"),
-              input(Forms::Input, state.form_model.profile, :bio),
+              input(Forms::WysiTextarea, state.form_model.profile, :bio),
               if props.as_admin
                 input(Forms::Select, state.form_model, :roles, { multiple: true, server_feed: {url: "/api/users/roles_feed"},
                                                                   option_as_model: 'role', s_value: "name" })

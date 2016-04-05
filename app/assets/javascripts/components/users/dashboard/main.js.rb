@@ -86,6 +86,28 @@ module Components
                     end
                   )
                 ) 
+              end,
+              if state.current_user.has_role? [:patient]
+                t(:div, {className: 'roles_block'},
+                  t(:p, {className: 'role_category'}, "patient"),
+                  t(:ul, {},
+                    link_to('', '/users/dashboard/patients/appointments/index') do
+                      t(:li, {}, "my appointments")  
+                    end,
+                    link_to('', '/users/dashboard/browse_schedule') do
+                      t(:li, {}, "browse schedule")
+                    end,
+                    link_to('', '/users/dashboard/register_patient') do
+                      t(:li, {}, 'register patient')  
+                    end,
+                    link_to('', '/users/dashboard/manage_patients') do
+                      t(:li, {}, 'manage patients')  
+                    end,
+                    link_to('', '/users/dashboard/browse_chats') do
+                      t(:li, {}, 'browse chats')
+                    end
+                  )
+                )
               end
             ),
             t(:div, {className: "col-lg-10 content"},

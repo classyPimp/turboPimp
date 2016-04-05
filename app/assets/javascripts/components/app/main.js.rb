@@ -61,7 +61,9 @@ module Components
           t(:div, {className: 'below_menu'},
             children
           ),
-          t(Components::ChatMessages::Index, {}),
+          unless CurrentUser.user_instance.attributes[:registered]
+            t(Components::ChatMessages::Index, {})
+          end,
           modal
         )
       end
