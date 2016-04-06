@@ -1,4 +1,4 @@
-module Components
+module Components 
   module AppointmentSchedulers
     module ChatMessages
       class Index < RW
@@ -102,7 +102,7 @@ module Components
               t(:div, {className: 'col-lg-8'},
                 if state.active_chat_id
                   t(Components::AppointmentSchedulers::ChatMessages::ActiveChat, {chat: state.chats[state.active_chat_id],
-                                                                        on_message_sent: event(->(message){self.on_message_sent(message)})})
+                                                                        on_message_sent: event(->(message){self.on_message_sent(message)}, index: self)})
                 else
                   'no active chat'
                 end
@@ -118,7 +118,7 @@ module Components
         def count_new_messages(messages)
           counter = 0
           messages.each do |message|
-            if !message.read
+            if !message.read && !message.to_user
               counter += 1
             end
           end

@@ -54,6 +54,7 @@ module Components
       end
       
       def render
+        p CurrentUser.user_instance.attributes[:registered]
         t(:div, {},
           t(Components::Menues::Index, {ref: "menu"}),
           t(Shared::Flash::Holder, {ref: "flash"}),
@@ -61,7 +62,7 @@ module Components
           t(:div, {className: 'below_menu'},
             children
           ),
-          unless CurrentUser.user_instance.attributes[:registered]
+          if !CurrentUser.user_instance.attributes[:registered]
             t(Components::ChatMessages::Index, {})
           end,
           modal

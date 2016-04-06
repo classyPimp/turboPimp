@@ -64,9 +64,9 @@ class UsersController < ApplicationController
     roles_to_fetch = params[:roles] || []
     unless current_user == nil
       if roles_to_fetch.empty?
-        render json: current_user.as_json(only: [:id, :email], include: {roles: {root: true, only: [:name]}})
+        render json: current_user.as_json(only: [:id, :email, :registered], include: {roles: {root: true, only: [:name]}})
       elsif roles_to_fetch && current_user.has_any_role?(*roles_to_fetch)
-        render json: current_user.as_json(only: [:id, :email], include: {roles: {root: true, only: [:name]}})
+        render json: current_user.as_json(only: [:id, :email, :registered], include: {roles: {root: true, only: [:name]}})
       else
         head 403 and return
       end

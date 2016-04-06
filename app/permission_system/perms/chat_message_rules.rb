@@ -110,5 +110,11 @@ module Perms
       end
     end
 
+    def appointment_scheduler_set_read
+      if @current_user && @current_user.has_role?(:appointment_scheduler)
+        true
+      end
+    end
+
   end
 end

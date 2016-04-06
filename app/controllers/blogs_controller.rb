@@ -33,7 +33,7 @@ class BlogsController < ApplicationController
     
     @model = @model.paginate(per_page: per_page, page: page)
     
-    @model = @model.as_json(@perms.serialize_on_success) << extract_pagination_hash(@model)
+    @model = @model.as_json(@perms.serialize_on_success) << extract_pagination_hash(@model)  
 
     render json: @model
   end

@@ -71,6 +71,7 @@ Rails.application.routes.draw do
     post 'appointment_scheduler/appointments/schedule_from_proposal' => 'appointment_scheduler/appointments#schedule_from_proposal'
     get 'appointment_scheduler/appointments/proposal_index' => 'appointment_scheduler/appointments#proposal_index'
     post "appointment_scheduler/chat_messages/poll_index" => "appointment_scheduler/chat_messages#poll_index"
+    post "appointment_scheduler/chat_messages/set_read" => "appointment_scheduler/chat_messages/set_read"
     post "appointment_scheduler/users/transform_user_to_registered/:id" => 'appointment_scheduler/users#transform_user_to_registered'
     namespace :appointment_scheduler do
       resources :appointments

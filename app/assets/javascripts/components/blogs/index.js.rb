@@ -19,7 +19,7 @@ module Components
       def get_initial_state
         {
           blogs: ModelCollection.new,
-          pagination_per_page: 1
+          pagination_per_page: 50
         }
       end
 
@@ -47,21 +47,24 @@ module Components
       end
 
       def render
-        t(:div,{},
+        t(:div, {className: 'blogs_index'},
           spinner,
-          t(:div, {},
+          t(:h1, {}, 'All blogs'),
+          t(:div, {className: 'g_search_bar'},
             t(:input, {ref: "search"}),
             t(:button, {onClick: ->{search}}, "search!")
           ),
           *splat_each(state.blogs) do |blog|
-            t(:div, {key: "#{blog}"},
-              t(:p, {}, "metas: m_title: #{blog.m_title}, m_description: #{blog.m_description}, m_keywords: #{blog.m_keywords}"),
-              t(:p, {}, "title: #{blog.title}"),
+            t(:div, {key: "#{blog}", className: 'g_blog_box'},
+              link_to('', "/blogs/show/#{blog.slug}") do
+                t(:h3, {className: 'title'}, "title: #{blog.title}")
+              end,
               if blog.attributes[:author].is_a? Model
-                t(:p, {}, "author: #{blog.attributes[:author].name}")
+                t(:p, {className: 'author'}, "author: #{blog.attributes[:author].name}")
               end,
               if CurrentUser.user_instance.has_role?([:blogger])
-                t(:div, {},
+                t(:div, {className: 'blogger_box'},
+                  t(:p, {}, "metas: m_title: #{blog.m_title}, m_description: #{blog.m_description}, m_keywords: #{blog.m_keywords}"),
                   if blog.published
                     t(:button, {onClick: ->{toggle_publish(blog)}}, "upublish")
                   else
@@ -71,12 +74,10 @@ module Components
                   t(:button, {}, link_to("edit", "/blogs/edit/#{blog.id}"))
                 ) 
               end,
-              t(:div, {dangerouslySetInnerHTML: {__html: blog.body}.to_n}),
-              link_to("show this blog", "/blogs/show/#{blog.slug}")
+              t(:div, {className: 'content',dangerouslySetInnerHTML: {__html: blog.body}.to_n})
             )
           end,
           will_paginate,
-          t(:br, {})
         )
       end
 

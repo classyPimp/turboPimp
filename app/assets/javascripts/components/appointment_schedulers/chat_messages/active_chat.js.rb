@@ -24,6 +24,9 @@ module Components
             t(:div, {className: 'chat_messages_stack'},
               *splat_each(props.chat.chat_messages) do |message|
                 t(:div, {className: "message #{message_side(message)}"},
+                  if !message.to_user && !message.read
+                    t(:p, {}, 'new')
+                  end,
                   t(:p, {}, "#{message.text}"),
                   t(:p, {className: "message_time"}, "#{Moment.new(message.attributes[:created_at]).format('YY.MM.DD HH:mm')}")
                 )
@@ -32,6 +35,17 @@ module Components
             input(Forms::Input, state.form_model, :text, {}),
             t(:button, {onClick: ->{send_message}}, 'send')
           )          
+        end
+
+        def component_did_mount
+          messages_ids = props.chat.chat_messages.map(&:id)
+          ChatMessage.set_read(payload: {ids: messages_ids}, namespace: 'appointment_scheduler').then do
+            props.chat.chat_messages.each do |c_m|
+              if messages_ids.include?(c_m.id)
+                c_m.read = true
+              end 
+            end
+          end
         end 
 
         def send_message

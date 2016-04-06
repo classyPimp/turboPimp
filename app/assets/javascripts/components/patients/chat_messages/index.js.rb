@@ -12,7 +12,6 @@ module Components
           {
             chat: Chat.new,
             form_model: ChatMessage.new,
-            expanded: false,
             progress_bar: false
           }
         end
@@ -39,40 +38,32 @@ module Components
           if state.chat.chat_messages[0]
             prepare_message_display_side(state.chat) 
           end
-          t(:span, {className: "patient_chat_messages_index #{state.expanded ? 'chat_expanded' : 'chat_not_expanded'}"},
-            if state.expanded
-              t(:div, {className: "client_chat_message_box well"},
-                if state.progress_bar
-                  t(Shared::ThinProgressBar, {ref: 'progress_bar', interval: 500, className: 'chat_progress'})
-                end,
-                *if state.chat.chat_messages.length > 0
-                  [
-                    t(:button, {className: 'btn btn-xs btn-primary', onClick: ->{chat_toggle_expand}}, 'X close'),
-                    t(:div, {className: 'chat_messages_stack'},
-                      *splat_each(state.chat.chat_messages) do |message|
-                        t(:div, {className: "message #{message_side(message)}"},
-                          t(:p, {}, "#{message.text}"),
-                          t(:p, {className: "message_time"}, "#{Moment.new(message.attributes[:created_at]).format('YY.MM.DD HH:mm')}")
-                        )
-                      end
-                    )
-                  ]
-                else
-                  [
-                    t(:button, {className: 'btn btn-xs btn-primary pull-right', onClick: ->{chat_toggle_expand}}, 'X close'),
-                    t(:p, {}, 'no messages yet. Want to ask something? go ahed, our stuff will reply you')
-                  ]
-                end,
-                t(:div, {className: 'input_and_submit_button'},
-                  input(Forms::Input, state.form_model, :text, {reset_value: true}),
-                  t(:button, {className: 'btn btn-primary submit_button',onClick: ->{submit_message}}, 'submit')
-                )
+          t(:span, {className: "scheduler_chat_messages_index chat_expanded"},
+            t(:div, {className: "client_chat_message_box well"},
+              if state.progress_bar
+                t(Shared::ThinProgressBar, {ref: 'progress_bar', interval: 500, className: 'chat_progress'})
+              end,
+              *if state.chat.chat_messages.length > 0
+                [
+                  t(:div, {className: 'chat_messages_stack'},
+                    *splat_each(state.chat.chat_messages) do |message|
+                      t(:div, {className: "message #{message_side(message)}"},
+                        t(:p, {}, "#{message.text}"),
+                        t(:p, {className: "message_time"}, "#{Moment.new(message.attributes[:created_at]).format('YY.MM.DD HH:mm')}")
+                      )
+                    end
+                  )
+                ]
+              else
+                [
+                  t(:p, {}, 'no messages yet. Want to ask something? go ahed, our stuff will reply you')
+                ]
+              end,
+              t(:div, {className: 'input_and_submit_button'},
+                input(Forms::Input, state.form_model, :text, {reset_value: true}),
+                t(:button, {className: 'btn btn-primary submit_button',onClick: ->{submit_message}}, 'submit')
               )
-            else
-              t(:button, {className: 'btn btn-primary chat_button', onClick: ->{chat_toggle_expand}},
-                'press here to chat with us realtime'
-              )
-            end
+            )
           )
         end
 
@@ -146,10 +137,6 @@ module Components
         end
 
         end 
-
-        def chat_toggle_expand
-          set_state expanded: !state.expanded             
-        end    
 
         def prepare_message_display_side(chat)
           @side = {}

@@ -42,22 +42,23 @@ module Components
       end
 
       def render
-        t(:div,{className: 'blog_index container'},
+        t(:div,{className: 'blogs_index container'},
           spinner,
-          t(:div, {className: 'search_bar'},
+          t(:h1, {}, 'Blogs'),
+          t(:div, {className: 'g_search_bar'},
             t(:input, {ref: "search"}),
             t(:button, {onClick: ->{search}}, "search!")
           ),
           *splat_each(state.blogs) do |blog|
-            t(:div, {key: "#{blog}", className: 'box'},
-              t(:p, {}, "title: #{blog.title}"),
-              t(:p, {}, "author: #{blog.user.profile.name}"), 
-              t(:div, {dangerouslySetInnerHTML: {__html: blog.body}.to_n}),
-              link_to("show this blog", "/blogs/show/#{blog.slug}")
+            t(:div, {key: "#{blog}", className: 'g_blog_box'},
+              link_to('', "/blogs/show/#{blog.slug}") do
+                t(:h2, {}, "#{blog.title}")
+              end,
+              t(:p, {className: 'author'}, "author: #{blog.user.profile.name}"), 
+              t(:div, {className: 'content', dangerouslySetInnerHTML: {__html: blog.body}.to_n})
             )
           end,
-          will_paginate,
-          t(:br, {})
+          will_paginate
         )
       end
 
