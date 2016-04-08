@@ -14,7 +14,7 @@ module Components
       end
 
       def component_did_mount
-        Blog.index_for_group_list.then do |blogs|
+        Blog.index_for_group_list(component: self).then do |blogs|
           begin
           set_state blogs: blogs
           component_phantom_ready
@@ -26,6 +26,7 @@ module Components
 
       def render
         t(:div, {className: 'list-group'},
+          progress_bar,
           t(:p, {className: 'list-group-item'}, 
             'latest blogs'
           ), 
@@ -37,7 +38,7 @@ module Components
                   t(:span, {}, blog.user.profile.name)
                 )
               ),
-              link_to("", "/blogs/show/#{blog.slug}") do
+              link_to("", "/blogs/#{blog.slug}") do
                 t(:p, {}, blog.title)
               end,
               t(:div, {dangerouslySetInnerHTML: {__html: blog.body}.to_n, style: {overflow: 'ellipsis'}}, 

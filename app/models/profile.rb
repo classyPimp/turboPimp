@@ -22,7 +22,7 @@ class Profile < ActiveRecord::Base
 
   belongs_to :user
 
-  validates :name, presence: true
+  #validates :name, presence: true
 
   scope :patients_for_feed, ->{joins(user: [:roles]).where("roles.name = ?", "patient").select(:user_id, :name)} #AND users.registered = ?
 

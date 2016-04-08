@@ -101,11 +101,7 @@ module Plugins
     end
 
     def current_per_page
-      if !state.non_url_pagination
-        props.location.query.per_page
-      else
-        state.pagination_per_page
-      end
+      state.pagination_per_page
     end
 
     # def prev_next(direction)

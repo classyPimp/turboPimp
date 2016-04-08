@@ -6,6 +6,10 @@ module Components
 
       include Plugins::Paginatable
 
+      def init
+        yields_phantom_ready
+      end
+
       def get_initial_state
         {
           blogs: ModelCollection.new,
@@ -17,11 +21,13 @@ module Components
         x = Hash.new(props.location.query.to_n)
         unless x.empty?
           make_query(x)
+          component_phantom_ready
         else
           query = {}
           query[:page] = 1
           query[:per_page] = state.pagination_per_page
           make_query(query)
+          component_phantom_ready
         end
       end
 
@@ -43,7 +49,7 @@ module Components
 
       def render
         t(:div,{className: 'blogs_index container'},
-          spinner,
+          progress_bar,
           t(:h1, {}, 'Blogs'),
           t(:div, {className: 'g_search_bar'},
             t(:input, {ref: "search"}),
@@ -51,7 +57,7 @@ module Components
           ),
           *splat_each(state.blogs) do |blog|
             t(:div, {key: "#{blog}", className: 'g_blog_box'},
-              link_to('', "/blogs/show/#{blog.slug}") do
+              link_to('', "/blogs/#{blog.slug}") do
                 t(:h2, {}, "#{blog.title}")
               end,
               t(:p, {className: 'author'}, "author: #{blog.user.profile.name}"), 

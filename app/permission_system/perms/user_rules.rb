@@ -2,7 +2,7 @@ module Perms
   class UserRules < Perms::Base
 
     def create
-      @permitted_attributes = @controller.params.require(:user).permit(:email, :password, :password_confirmation, profile_attributes: [:name, :bio], avatar_attributes: [:id ,:file])      
+      @permitted_attributes = @controller.params.require(:user).permit(:email, :password, :password_confirmation, profile_attributes: [:name, :phone_number], avatar_attributes: [:id ,:file])      
     end
 
     def appointment_scheduler_create

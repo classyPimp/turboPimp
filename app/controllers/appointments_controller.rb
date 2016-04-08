@@ -6,6 +6,14 @@ class AppointmentsController < ApplicationController
     render json: @appointments.as_json
   end
 
+  def new
+    if current_user
+      render json: @current_user.as_json(only: [:id], include: [profile: {root: true, only: [:phone_number, :id]}])
+    else
+      render json: {user: {unregistered: true}}
+    end
+  end
+
   def create
 
     @appointment = Appointment.new 

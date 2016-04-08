@@ -32,8 +32,10 @@ Rails.application.routes.draw do
 
     post "users/roles_feed" => "users#roles_feed"
 
+    put "users/profiles/:id/update_phone_number" => "users/profiles#update_phone_number"
 
     delete 'users/destroy_unregistered_user_with_proposals/:id' => 'users#destroy_unregistered_user_with_proposals'
+    
     namespace :admin do
       resources :users
       resources :pages

@@ -88,11 +88,11 @@ module Components
 
             t(`Route`, {path: "price_list", component: Components::PriceList::Index.create_class}),
 
-            t(`Route`, {path: "/blogs", component: Components::Blogs::Main.create_class},
-              t(`Route`, {path: "index", component: Components::Blogs::UserIndex.create_class}),
+            t(`Route`, {path: "/blogs", component: Components::Blogs::Main.create_class},  
+              t(`IndexRoute`, {component: Components::Blogs::UserIndex.create_class}),
               # t(`Route`, {path: "new", component: Components::Blogs::New.create_class}),
-              t(`Route`, {path: "edit/:id", component: Components::Blogs::Edit.create_class}),
-              t(`Route`, {path: "show/:id", component: Components::Blogs::Show.create_class})
+              t(`Route`, {path: ":id/edit", component: Components::Blogs::Edit.create_class}),
+              t(`Route`, {path: ":id", component: Components::Blogs::Show.create_class})
             ),
 
             t(`Route`, {path: "/appointments", component: Components::Appointments::Main.create_class},
@@ -100,8 +100,8 @@ module Components
             ),
 
             t(`Route`, {path: "/offered_services", component: Components::OfferedServices::Main.create_class},
-              t(`Route`, {path: 'index', component: Components::OfferedServices::Index.create_class}),
-              t(`Route`, {path: 'show/:id', component: Components::OfferedServices::Show.create_class})
+              t(`IndexRoute`, {component: Components::OfferedServices::Index.create_class}),
+              t(`Route`, {path: ':id', component: Components::OfferedServices::Show.create_class})
             ),
 
             # t(`Route`, {path: "/blogger", component: Components::Blogger::Blogs::Main.create_class},
@@ -113,8 +113,6 @@ module Components
             t(`Route`, {path: "forbidden", component: Components::App::Forbidden.create_class}),
 
             t(`Route`, {path: "test", component: Components::Dummy::A.create_class}),
-
-            t(`Route`, {path: "calendar", component: Calendar.create_class}),
 
             t(`Route`, {path: '/personnel', component: Components::Doctors::Index.create_class},
               t(`Route`, {path: ':id', component: Components::Doctors::Show.create_class})

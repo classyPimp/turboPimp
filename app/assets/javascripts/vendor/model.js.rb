@@ -478,6 +478,12 @@ class Model
     end
   end
 
+  def self.responses_on_new_resource(r)
+    if r.response.ok?
+      r.promise.resolve Model.parse(r.response.json)
+    end
+  end
+
   def self.responses_on_index(r)
     if r.response.ok?
       r.promise.resolve self.parse(r.response.json)

@@ -16,6 +16,11 @@ class UsersController < ApplicationController
     #render json: @perms.permitted_attributes and return
     @user = User.new(@perms.permitted_attributes)
     @user.add_role(:patient)
+    
+    if (!@user.profile.phone_number.blank? && !(/\A[+-]?\d+\z/.match(@user.profile.phone_number)))
+      @user.profile.add_custom_error('phone_number', 'valid phone_number should be provided')
+    end 
+
     if @user.save
       if User::ACTIVATABLE
         @user.send_activation_email
@@ -26,7 +31,7 @@ class UsersController < ApplicationController
         render json: @user.as_json(only: [:id, :email])
       end
     else
-      render json: {user: {errors: @user.errors}}
+      render json: @user.as_json(only: [:email], methods: [:errors], include: [{profile: {only: [:phone_number], root: true, methods: [:errors]}}])
     end
   end
 

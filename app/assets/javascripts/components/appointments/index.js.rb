@@ -167,7 +167,7 @@ module Components
         t(:div, {},
           t(:div, {className: "month_box"},
             t(:div, {className: "row week_row"},
-              *splat_each(Calendar.wdays) do |wday_name| 
+              *splat_each(Services::Calendar.wdays) do |wday_name| 
                   t(:div, {className: "day"}, wday_name)
               end,
             ),
@@ -252,7 +252,7 @@ module Components
     #       t(:button, {onClick: ->{next_month}}, ">"),
     #       t(:div, {className: "table", style: {display: "table", fontSize:"10px!important"}.to_n },
     #         t(:div, {className: "row", style: {display: "table-row"}.to_n },
-    #           *splat_each(Calendar.wdays) do |wday_name| 
+    #           *splat_each(Services::Calendar.wdays) do |wday_name| 
     #               t(:div, {className: "col-lg-1", style: {display: "table-cell", width: "12%"}.to_n}, wday_name)
     #           end,
     #         ),
@@ -379,7 +379,7 @@ module Components
               t(:div, {className: "col-lg-1 week_day_panel #{$VIEW_PORT_KIND}"},
                 t(:div, {className: "day_heading #{passed_day}"}.merge(go_to_day_event), 
                   t(:h4, {className: 'wday_name'}, 
-                    Calendar.wdays[d]
+                    Services::Calendar.wdays[d]
                   ),
                   t(:p, {}, @track_day.date())
                 ),
@@ -479,7 +479,7 @@ module Components
             ),
             t(:div, {className: "day_heading"}, 
               t(:h4, {className: 'wday_name'}, 
-                Calendar.wdays[props.date.day()]
+                Services::Calendar.wdays[props.date.day()]
               ),
               t(:p, {}, props.date.format('DD'))
             ),

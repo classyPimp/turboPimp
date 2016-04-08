@@ -12,8 +12,10 @@ module Components
 
 
       def get_initial_state
+        user = User.new
+        user.profile = Profile.new
         {
-          form_model: User.new,
+          form_model: user,
           submitted: false
         }
       end
@@ -25,6 +27,7 @@ module Components
             t(:h3, {}, "Confirmation letter was sent to #{self.state.form_model.email} (NO LETTER WAS SEND USER::ACTIVATABLE == false")
           end,
           input(Forms::Input, state.form_model, :email, {type: "email"}),
+          input(Forms::Input, state.form_model.profile, :phone_number),
           input(Forms::Input, state.form_model, :password, {type: "password"}),
           input(Forms::Input, state.form_model, :password_confirmation, {}),
           t(:br, {} ),

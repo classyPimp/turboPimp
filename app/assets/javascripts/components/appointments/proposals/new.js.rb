@@ -25,77 +25,103 @@ module Components
           {
             form_model: @blank_appointment.call,
             step: 0,
-            any_time_toggled: false
+            any_time_toggled: false,
+            loaded: false,
+            no_contacts: true
           }
+        end
+
+        def component_did_mount
+          Appointment.new_resource(component: self).then do |user|
+            begin
+              if user.attributes[:unregistered]
+                set_state loaded: true
+              elsif user.is_a?(User) && user.profile.try(:phone_number) == ""
+                set_state no_contacts: true, loaded: true, step: 3, user_form_model: user
+              else
+                set_state loaded: true
+              end
+            rescue Exception => e
+              p e
+            end
+          end
         end
 
         def render
           t(:div, {className: 'appointment_proposal_new'},
-            modal,
-            if state.step == 0
-              t(:div, {},
-                if state.message
-                  t(:p, {}, state.message)
-                end,
-                t(:div, {className: "checkbox_desc_group"},
-                  t(:span, {onClick: ->{any_time_toggled}},
-                    input(Forms::PushCheckBox, state.form_model, :appointment_proposal_infos, {show_name: '',className: 'checkbox any_time', push_value: AppointmentProposalInfo.new(anytime_for_date: props.date.format('YYYY-MM-DD'))}),
-                  ),
-                  t(:div, {className: 'time_range'}, 
-                    t(:p, {}, "anytime for this date")
-                  )
-                ),
+            progress_bar,
+            if state.loaded
+              if state.step == 0
                 t(:div, {},
-                  unless state.any_time_toggled
-                    t(:span, {},
-                      *splat_each(props.appointment_availabilities) do |k, v|
-                        t(:div, {},
-                          t(:div, {className: "doc_name_and_avatar"},
-                            t(:img, {src: "#{props.user_accessor[k].avatar.url}", className: 'doctor_avatar'}),
-                            t(:span, {className: 'doctor_name'}, 
-                              "#{props.user_accessor[k].profile.name}"
-                            )
-                          ),
-                          *splat_each(v.map) do |av|
-                            t(:div, {className: "checkbox_desc_group"},
-                              input(Forms::PushCheckBox, state.form_model, :appointment_proposal_infos, 
-                                {className: 'checkbox', show_name: '',checked: false, push_value: AppointmentProposalInfo.new(primary: true, doctor_id: k, date_from: av[0].format, date_to: av[1].format)}
-                              ),
-                              t(:div, {className: 'time_range'}, 
-                                t(:p, {}, "#{av[0].format('HH:mm')} - #{av[1].format('HH:mm')}")
-                              )
-                            )
-                          end
-                        )
-                      end
-                    )
+                  if state.message
+                    t(:p, {}, state.message)
                   end,
-                  t(:div, {className: 'extra_details'},
-                    t(:p, {}, 'please provide the reason for visit, e.g. general consultation'),
-                    input(Forms::Textarea, state.form_model.appointment_detail, :extra_details, {show_name: '', className: 't_area'}),
+                  t(:div, {className: "checkbox_desc_group"},
+                    t(:span, {onClick: ->{any_time_toggled}},
+                      input(Forms::PushCheckBox, state.form_model, :appointment_proposal_infos, {show_name: '',className: 'checkbox any_time', push_value: AppointmentProposalInfo.new(anytime_for_date: props.date.format('YYYY-MM-DD'))}),
+                    ),
+                    t(:div, {className: 'time_range'}, 
+                      t(:p, {}, "anytime for this date")
+                    )
                   ),
-                  t(:button, {className: 'btn btn-primary',onClick: ->{handle_before_appointment_submit}}, "collect")
+                  t(:div, {},
+                    unless state.any_time_toggled
+                      t(:span, {},
+                        *splat_each(props.appointment_availabilities) do |k, v|
+                          t(:div, {},
+                            t(:div, {className: "doc_name_and_avatar"},
+                              t(:img, {src: "#{props.user_accessor[k].avatar.url}", className: 'doctor_avatar'}),
+                              t(:span, {className: 'doctor_name'}, 
+                                "#{props.user_accessor[k].profile.name}"
+                              )
+                            ),
+                            *splat_each(v.map) do |av|
+                              t(:div, {className: "checkbox_desc_group"},
+                                input(Forms::PushCheckBox, state.form_model, :appointment_proposal_infos, 
+                                  {className: 'checkbox', show_name: '',checked: false, push_value: AppointmentProposalInfo.new(primary: true, doctor_id: k, date_from: av[0].format, date_to: av[1].format)}
+                                ),
+                                t(:div, {className: 'time_range'}, 
+                                  t(:p, {}, "#{av[0].format('HH:mm')} - #{av[1].format('HH:mm')}")
+                                )
+                              )
+                            end
+                          )
+                        end
+                      )
+                    end,
+                    t(:div, {className: 'extra_details'},
+                      t(:p, {}, 'please provide the reason for visit, e.g. general consultation'),
+                      input(Forms::Textarea, state.form_model.appointment_detail, :extra_details, {show_name: '', className: 't_area'}),
+                    ),
+                    t(:button, {className: 'btn btn-primary',onClick: ->{handle_before_appointment_submit}}, "collect")
+                  )
                 )
-              )
-            elsif state.step == 1
-              t(:div, {className: 'not_logged_in_step'},  
-                t(:p, {}, "it looks like you are not a registered user or you didn't login, as though you don't need to register you're required to leave contact information"),
-                t(:p, {}, "you will become a registered user if you will leave your email and will fill in password, else you will not be registerd"),
-                t(:div, {className: 'login_button_group'}, 
-                  t(:button, {className: 'btn btn-success', onClick: ->{init_login}}, "i'ma registered user"),
-                  t(:button, {className: 'btn btn-success'}, "ok i will register NOT IMPLEMENTED"),
-                  t(:button, {className: 'btn btn-success', onClick: ->{ init_non_registered_user } }, "i won't register i'll just leave my contact info")
+              elsif state.step == 1
+                t(:div, {className: 'not_logged_in_step'},  
+                  t(:p, {}, "it looks like you are not a registered user or you didn't login, as though you don't need to register you're required to leave contact information"),
+                  #t(:p, {}, "you will become a registered user if you will leave your email and will fill in password, else you will not be registerd"),
+                  t(:div, {className: 'login_button_group'}, 
+                    t(:button, {className: 'btn btn-success', onClick: ->{init_login}}, "i'ma registered user"),
+                    #t(:button, {className: 'btn btn-success'}, "ok i will register NOT IMPLEMENTED"),
+                    t(:button, {className: 'btn btn-success', onClick: ->{ init_non_registered_user } }, "i won't register i'll just leave my contact info")
+                  )
                 )
-              )
-            elsif state.step == 2
-              t(:div, {className: 'guest_step'}, 
-                t(:div, {className: 'guest_appointment_form'}, 
-                  input(Forms::Input, state.user_form_model.profile, :name, {show_name: 'your name'}),
-                  input(Forms::Input, state.user_form_model.profile, :phone_number, {show_name: 'your phone_number'}),
-                  t(:button, { onClick: ->{submit_non_register_info} }, "submit"),
-                  t(:button, { onClick: ->{set_state(step: 1)} }, "back")
+              elsif state.step == 2
+                t(:div, {className: 'guest_step'}, 
+                  t(:div, {className: 'guest_appointment_form'}, 
+                    input(Forms::Input, state.user_form_model.profile, :name, {show_name: 'your name'}),
+                    input(Forms::Input, state.user_form_model.profile, :phone_number, {show_name: 'your phone_number'}),
+                    t(:button, { onClick: ->{submit_non_register_info} }, "submit"),
+                    t(:button, { onClick: ->{set_state(step: 1)} }, "back")
+                  )
                 )
-              )
+              elsif state.step == 3
+                t(:div, {className: 'udpate_phone_number'},
+                  t(:p, {}, "you didn't provide phone number on registration, to make appointment, please provide your phone number"),
+                  input(Forms::Input, state.user_form_model.profile, :phone_number, {show: 'name'}),
+                  t(:button, {onClick: ->{submit_phone_number}}, 'submit')
+                )
+              end
             end                  
           )           
         end
@@ -113,6 +139,8 @@ module Components
             set_state step: 0, form_model: state.form_model
           elsif !CurrentUser.logged_in
             set_state step: 1, user_form_model: User.new(profile: Profile.new)
+          elsif CurrentUser.logged_in && state.no_contacts
+            set_state step: 3, user_form_model: User.new(id: CurrentUser.user_instance.id, profile: Profile.new)
           else
             submit_appointment
           end
@@ -185,6 +213,26 @@ module Components
             set_state user_form_model: state.user_form_model
           end
           
+        end
+
+        def submit_phone_number
+          collect_inputs(form_model: 'user_form_model')
+          u = state.user_form_model
+          u.validate
+          
+
+          if u.has_errors?
+            set_state user_form_model: u
+          else
+            u.profile.update_phone_number(namespace: 'users').then do |profile|
+              unless profile.has_errors?
+                set_state step: 0, no_contacts: false
+              else
+                set_state user_form_model: u
+              end
+            end
+          end
+
         end
 
         def init_login

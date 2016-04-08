@@ -5,6 +5,10 @@ module Components
       expose
       include Helpers::UpdateOnSetStateOnly
 
+      def init
+        yields_phantom_ready
+      end
+
       def get_initial_state
         #Model.parse({menu_item: {menu_items: [{menu_item: {link_text: "users", menu_items: [{menu_item: {href: "/users/signup", link_text: "signup"}}, {menu_item: {href: "/users/login", link_text: "login"}}]}},
         #                        {menu_item: {link_text: "pages", menu_items: [{menu_item: {href: "/pages/new", link_text: "new"}}, {menu_item: {href: "/pages/index", link_text: "index"}}]}},
@@ -19,10 +23,7 @@ module Components
       def component_did_mount
         menu = MenuItem.index.then do |_menu|
           self.set_state menu: _menu
-          # x = ->{`if (typeof window.callPhantom === 'function') {
-          #   window.callPhantom('called it lol');
-          # }`}
-          # x.call
+          component_phantom_ready
         end
       end
       

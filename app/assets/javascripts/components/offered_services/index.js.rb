@@ -3,6 +3,10 @@ module Components
     class Index < RW
       expose
 
+      def init
+        yields_phantom_ready
+      end
+
       def get_initial_state
         {
           offered_services: ModelCollection.new
@@ -10,9 +14,10 @@ module Components
       end
 
       def component_did_mount
-        OfferedService.index.then do |offered_services|
+        OfferedService.index(component: self).then do |offered_services|
           begin
           set_state offered_services: offered_services
+          component_phantom_ready
           rescue Exception => e
             p e
           end
@@ -21,6 +26,7 @@ module Components
 
       def render
         t(:div, {className: 'offered_services_index container'},
+          progress_bar,
           t(:h1, {}, 'Our services'),
           t(:p, {}, 'click on details to know more'),
           *splat_each(state.offered_services) do |offered_service|
@@ -36,7 +42,7 @@ module Components
                     t(:p, {}, "#{price_item.name} : #{price_item.price}")
                   end
                 ),
-                link_to('', "/offered_services/show/#{offered_service.slug}") do
+                link_to('', "/offered_services/#{offered_service.slug}") do
                   t(:button, {className: 'btn btn-xs'}, 'details')                
                 end
               )

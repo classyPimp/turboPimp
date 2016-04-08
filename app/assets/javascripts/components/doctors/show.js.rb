@@ -3,6 +3,10 @@ module Components
     class Show < RW
       expose
 
+      def init
+        yields_phantom_ready
+      end
+
       def get_initial_state
         {
           user: false
@@ -12,6 +16,7 @@ module Components
       def component_did_mount
         User.show(namespace: 'doctor', wilds: {id: props.params.id}, component: self).then do |user|
           set_state user: user
+          component_phantom_ready
         end
       end
 

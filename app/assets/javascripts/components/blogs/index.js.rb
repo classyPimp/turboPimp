@@ -10,6 +10,7 @@ module Components
       set_roles_to_fetch :blogger
 
       def init
+        yields_phantom_ready
         @namespace = {}
         if CurrentUser.user_instance.has_role?([:blogger])
           @namespace = {namespace: "blogger"}
@@ -27,6 +28,7 @@ module Components
         x = Hash.new(props.location.query.to_n)
         unless x.empty?
           make_query(x)
+          component_phantom_ready
         end
       end
 
@@ -48,7 +50,7 @@ module Components
 
       def render
         t(:div, {className: 'blogs_index'},
-          spinner,
+          progress_bar,
           t(:h1, {}, 'All blogs'),
           t(:div, {className: 'g_search_bar'},
             t(:input, {ref: "search"}),
@@ -71,7 +73,7 @@ module Components
                     t(:button, {onClick: ->{toggle_publish(blog)}}, "publish")
                   end,
                   t(:button, {onClick: ->{destroy_blog(blog)}}, "delete this blog post"),
-                  t(:button, {}, link_to("edit", "/blogs/edit/#{blog.id}"))
+                  t(:button, {}, link_to("edit", "/blogs/#{blog.id}/edit"))
                 ) 
               end,
               t(:div, {className: 'content',dangerouslySetInnerHTML: {__html: blog.body}.to_n})

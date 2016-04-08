@@ -53,6 +53,7 @@ class User < ActiveRecord::Base
                       length: { minimum: 6 },
                       confirmation: true, unless: ->{arbitrary[:no_password_update] || password == nil}
 
+
   ########### VALIDATION METHODS
 
 

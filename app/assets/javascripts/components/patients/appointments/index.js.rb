@@ -96,7 +96,7 @@ module Components
           t(:div, {},
             t(:div, {className: "month_box"},
               t(:div, {className: "row week_row"},
-                *splat_each(Calendar.wdays) do |wday_name| 
+                *splat_each(Services::Calendar.wdays) do |wday_name| 
                     t(:div, {className: "day"}, wday_name)
                 end,
               ),
@@ -194,6 +194,7 @@ module Components
               *splat_each(0..6) do |d|
 
                 t_d_a = (@track_day.add(1, 'days')).clone()
+                fetched_appointments = props.index.fetch_appointments(self, @track_day.format("YYYY-MM-DD"))
 
                 if @track_day.format('YYYY-MM-DD') < current_day.format('YYYY-MM-DD')
                   passed_day = 'passed'
@@ -203,41 +204,32 @@ module Components
                   passed_day = 'not_passed'
                 end
 
-                
-               
-
                 t(:div, {className: "col-lg-1 week_day_panel #{$VIEW_PORT_KIND}"},
                   t(:div, {className: "day_heading #{passed_day}"}, 
                     t(:h4, {className: 'wday_name'}, 
-                      Calendar.wdays[d]
+                      Services::Calendar.wdays[d]
                     ),
                     t(:p, {}, @track_day.date())
                   ),
-                  if passed_day == 'passed'
-                    t(:div, {})
-                  else
 
-                    fetched_appointments = props.index.fetch_appointments(self, @track_day.format("YYYY-MM-DD"))
+                  t(:div, {className: "day_body"},
+                    *if !fetched_appointments.empty?
+                      splat_each(fetched_appointments) do |user_id, appointments|
 
-                    t(:div, {className: "day_body"},
-                      *if !fetched_appointments.empty?
-                        splat_each(fetched_appointments) do |user_id, appointments|
-
-                          t(:div, {className: 'appointments_for_doctor'},
-                            t(:img, {src: "#{state.user_accessor[user_id].avatar.url}", className: 'doctor_avatar'}),
-                            t(:span, {className: 'doctor_name'}, 
-                              "#{state.user_accessor[user_id].profile.name}"
-                            ),
-                            t(:br, {}),
-                            *splat_each(appointments) do |av|
-                              t(:p, {className: 'doctor_appointment'}, "#{Moment.new(av.start_date).format('HH:mm')} - #{Moment.new(av.end_date).format('HH:mm')}", t(:br, {}))
-                            end,
-                            t(:br, {})
-                          )
-                        end                     
-                      end
-                    )
-                  end
+                        t(:div, {className: 'appointments_for_doctor'},
+                          t(:img, {src: "#{state.user_accessor[user_id].avatar.url}", className: 'doctor_avatar'}),
+                          t(:span, {className: 'doctor_name'}, 
+                            "#{state.user_accessor[user_id].profile.name}"
+                          ),
+                          t(:br, {}),
+                          *splat_each(appointments) do |av|
+                            t(:p, {className: 'doctor_appointment'}, "#{Moment.new(av.start_date).format('HH:mm')} - #{Moment.new(av.end_date).format('HH:mm')}", t(:br, {}))
+                          end,
+                          t(:br, {})
+                        )
+                      end                     
+                    end
+                  )
                 )
               end
             )

@@ -3,14 +3,22 @@ class UsersController < BaseController
   def handle_signup_submit
     c.collect_inputs
     unless c.state.form_model.has_errors?
-      c.state.form_model.sign_up(yield_response: true, payload: {user: c.state.form_model.attributes}).then do |response|
-        if e = response.json[:user][:errors]
+      c.state.form_model.sign_up(yield_response: true, payload: c.state.form_model.pure_attributes).then do |response|
+        begin
+        if (e = response.json[:user][:errors])
           c.state.form_model.errors = e
-          c.set_state form_model: c.state.form_model 
+          c.set_state form_model: c.state.form_model
+          if e['profile.phone_number']
+            c.state.form_model.profile.errors = {phone_number: e['profile.phone_number']}
+            c.set_state form_model: c.state.form_model
+          end 
         else
           alert "signed in"
           CurrentUser.get_current_user
           Components::App::Router.history.pushState({}, "/users/show/#{response.json[:user][:id]}")
+        end
+        rescue Exception => e
+          p e
         end
       end.fail do |response|
         `console.log(#{response})`

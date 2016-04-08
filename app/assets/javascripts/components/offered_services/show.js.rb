@@ -3,6 +3,10 @@ module Components
     class Show < RW
       expose
 
+      def init
+        yields_phantom_ready
+      end
+
       def get_initial_state
         {
           offered_service: false
@@ -13,7 +17,7 @@ module Components
         offered_service_to_query = (x = props.offered_service_id) ? x : props.params.id
         OfferedService.show(wilds: {id: offered_service_to_query}, component: self).then do |offered_service|
           set_state offered_service: offered_service
-          component_ready
+          component_phantom_ready
         end.fail do |resp|
           raise resp
         end
@@ -29,7 +33,7 @@ module Components
 
       def render
         t(:div, {className: 'offered_services_show container'},
-          spinner,
+          progress_bar,
           if state.offered_service
             t(:div, {className: 'show_content'},
               t(:img, {className: "avatar"}, offered_service.avatar.try(:url)),
