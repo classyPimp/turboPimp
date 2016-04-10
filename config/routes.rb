@@ -79,6 +79,7 @@ Rails.application.routes.draw do
       resources :appointments
       resources :users
       resources :chat_messages
+      resources :chats
     end
 
 

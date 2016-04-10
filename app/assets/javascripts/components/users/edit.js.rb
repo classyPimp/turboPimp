@@ -37,7 +37,7 @@ module Components
             t(:div, {},
               t(:h3, {}, input(Forms::Input, state.form_model.profile, :name)),
               t(:hr, {style: {color: "grey", height: "1px", backgroundColor: "black"}.to_n }),
-              t(:image, {src: state.form_model.avatar.try(:url), style: {width: "60px", height: "60px"}.to_n }),
+              t(:img, {src: state.form_model.avatar.try(:url), style: {width: "60px", height: "60px"}.to_n }),
               t(:p, {}, "updload new avatar"),
               input(Forms::Input, state.form_model.avatar, :file, {type: "file", has_file: true, preview_image: true}),
               t(:p, {}, "email: #{state.form_model.email}"),

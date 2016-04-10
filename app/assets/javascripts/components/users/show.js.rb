@@ -29,7 +29,7 @@ module Components
               t(:p, {}, (state.message if state.message)),
       				t(:div, {},
                 t(:div, {},
-                  t(:image, {src: "#{state.user.try(:avatar).try(:url)}", style: {width: "100px", height: "100px"}.to_n }, )
+                  t(:img, {src: "#{state.user.try(:avatar).try(:url)}", style: {width: "100px", height: "100px"}.to_n }, )
                 ),
                 t(:p, {}, "name: #{state.user.try(:profile).try(:name)}"),
                 t(:p, {}, "email: #{state.user.email}"),

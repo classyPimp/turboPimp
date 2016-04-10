@@ -20,7 +20,7 @@ module Components
       end  
 
       def render
-        t(:div, {className: 'appointments_calendar'},
+        t(:div, {className: 'appointments_calendar row'},
           modal,
           #t(MonthBox, {date: state.date, ref: 'month_box', index: self}),
           t(:h2, {className: 'view_title_date'}, "#{state.date.month() + 1}.#{state.date.year()}"),

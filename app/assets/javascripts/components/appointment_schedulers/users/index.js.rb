@@ -79,7 +79,7 @@ module Components
             *splat_each(state.users) do |user|
               t(:div, {className: 'user_box'},
                 if user.avatar 
-                  t(:image, {src: user.avatar.url, style: {width: "60px", height: "60px"}.to_n })
+                  t(:img, {src: user.avatar.url, style: {width: "60px", height: "60px"}.to_n })
                 end,
                 t(:p, {},"email: #{user.email}"),
                 if user.profile

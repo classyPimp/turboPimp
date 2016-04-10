@@ -1,6 +1,6 @@
 class ChatMessage < Model
 
-  attributes :id, :user_id, :to_user, :text, :read, :chat_id
+  attributes :id, :user_id, :to_user, :text, :read, :chat_id, :created_at
 
   route "create", post: "chat_messages"
   route "Index", get: "chat_messages"

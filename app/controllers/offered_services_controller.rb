@@ -15,7 +15,7 @@ class OfferedServicesController < ApplicationController
     
     @offered_service = OfferedService.friendly.find(params[:id])
 
-    render json: @offered_service.as_json({include: [{avatar: {root: true}}, {si_price_items1id_name_price: {root: true}}]})
+    render json: @offered_service.as_json({include: [{avatar: {root: true, methods: [:url]}}, {si_price_items1id_name_price: {root: true}}]})
 
   end
 

@@ -6,6 +6,7 @@ module Components
         include Plugins::DependsOnCurrentUser
 
         def render
+          
           t(:div, {className: "row dashboard"},
             t(:div, {className: "col-lg-2 left_panel"},
               if state.current_user.has_role? [:admin] 

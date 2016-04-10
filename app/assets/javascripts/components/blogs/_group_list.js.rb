@@ -34,7 +34,7 @@ module Components
             t(:div, {className: 'list-group-item'}, 
               t(:p, {}, 
                 t(:span, {}, 
-                  t(:image, {src: blog.user.avatar.url, style: {hight: '50px', width: '50px'}.to_n}),
+                  t(:img, {src: blog.user.avatar.url, style: {hight: '50px', width: '50px'}.to_n}),
                   t(:span, {}, blog.user.profile.name)
                 )
               ),

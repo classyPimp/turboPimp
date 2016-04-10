@@ -49,6 +49,7 @@ body {
 /*END APP CONTAINER*/
 .below_menu {
   width: 100%;
+  min-height: 100%;
   position: absolute;
   top: 5rem;
   padding: 1rem 1.5rem; }
@@ -157,6 +158,10 @@ body {
     border-right-style: solid;
     border-width: 1px;
     border-right-color: #C4CCCF; }
+  .menu_index .navbar-collapse {
+    z-index: 0;
+    background-color: white;
+    overflow-Y: scroll; }
   .menu_index .login_info button {
     margin-left: 1rem; }
 
@@ -392,7 +397,7 @@ body {
 /*END PRICE LIST INDEX*/
 /*DOCTOR INDEX*/
 .doctor_index {
-  margin: auto; }
+  margin: 4rem auto; }
   .doctor_index .center-block {
     text-align: center; }
   .doctor_index .thumbnail {
@@ -408,7 +413,8 @@ body {
     .doctor_index .thumbnail .profile_info {
       text-align: center;
       margin: 0.5rem 0;
-      border-top: 1px solid white; }
+      border-top: 1px solid white;
+      transition: all 1s ease-out; }
 
 /*END DOCTOR INDEX*/
 /*menu_index animation*/
@@ -607,6 +613,7 @@ body {
     margin: 1rem; }
 
 /*END OFFERED SERVICES INDEX*/
+/*SCHEDULER CHAT INDEX*/
 .scheduler_chat_messages_index .message {
   font-size: small;
   border: 1px solid white;
@@ -624,5 +631,48 @@ body {
   background-color: #D3DEBD; }
 .scheduler_chat_messages_index .chat_button {
   right: 0; }
+
+/*SCHEDULER CHAT INDEX END*/
+/*PROGRESS BAR*/
+.progress {
+  height: 2px;
+  margin: 0;
+  z-index: 999;
+  padding: 0; }
+  .progress .progress-bar {
+    margin: 0;
+    padding: 0; }
+
+/*END PROGRESS BAR*/
+/*FOOTER RELATED*/
+.below_menu {
+  min-height: 120%; }
+
+.content {
+  margin-bottom: 18rem;
+  min-height: 100%; }
+
+footer {
+  position: absolute;
+  width: 100%;
+  bottom: 0;
+  height: 16rem;
+  background-color: #2A2D33;
+  color: #F1FFFF;
+  animation-name: example;
+  animation-duration: 1s;
+  animation-timing-function: linear; }
+
+.home_footer {
+  bottom: -22rem;
+  width: 100%;
+  margin: 0 15px 0; }
+
+.g_adress_bar {
+  margin: 2rem 2rem 0 3rem; }
+  .g_adress_bar p {
+    margin: 0; }
+
+/*FOOTER RELATED*/
 
 /*# sourceMappingURL=application.css.map */

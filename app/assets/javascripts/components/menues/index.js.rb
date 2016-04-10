@@ -47,7 +47,7 @@ module Components
                 t(:ul, {className: "nav navbar-nav after_login_info"},
                   *splat_each(state.menu.menu_items) do |menu_item|
                     if menu_item.menu_items.empty?
-                      t(:li, {}, 
+                      t(:li, {onClick: ->(){toggle_collapse()}}, 
                         link_to(menu_item.link_text, menu_item.href)
                       )
                     else
@@ -55,7 +55,7 @@ module Components
                                            ref: "d_d_#{menu_item.id}", text_val: "#{menu_item.link_text}"},
                         t(:ul, {className: "dropdown-menu"},
                           *splat_each(menu_item.menu_items) do |sub_item|
-                            t(:li, {}, 
+                            t(:li, {onClick: ->(){toggle_collapse()}}, 
                               link_to(sub_item.link_text, sub_item.href)
                             )
                           end

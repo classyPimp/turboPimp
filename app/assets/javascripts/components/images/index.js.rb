@@ -42,7 +42,7 @@ module Components
   		      *splat_each(state.images) do |image|
   		        t(:div, {key: "#{image}", className: 'image_holder' },
                 t(:p, {}, "alt: #{image.alt}, description: #{image.description}"),
-  		          t(:image, {src: image.url, className: 'image' }),
+  		          t(:img, {src: image.url, className: 'image' }),
                 t(:div, {className: 'btn_group'}, 
                   t(:button, {className: 'btn btn-xs', onClick: ->(){destroy(image)}}, "destroy this image"),
                   if props.should_expose

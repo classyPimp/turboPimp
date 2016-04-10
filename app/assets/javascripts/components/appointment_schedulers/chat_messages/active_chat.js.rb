@@ -33,26 +33,13 @@ module Components
               end
             ),
             input(Forms::Input, state.form_model, :text, {}),
-            t(:button, {onClick: ->{send_message}}, 'send')
+            t(:button, {onClick: ->{send_message}}, 'send'),
+            t(:button, { onClick: ->{set_messages_read} }, 'set messages as read')
           )          
         end
 
         def component_did_mount
-          messages_ids = props.chat.chat_messages.reduce([]) do |temp, c_m|
-            if !c_m.to_user && !c_m.read
-              temp << c_m.id
-            end
-            temp
-          end
-          unless messages_ids.empty?
-            ChatMessage.set_read(payload: {ids: messages_ids}, namespace: 'appointment_scheduler').then do
-              props.chat.chat_messages.each do |c_m|
-                if messages_ids.include?(c_m.id)
-                  c_m.read = true
-                end 
-              end
-            end
-          end
+          set_messages_read
         end 
 
         def send_message
@@ -96,6 +83,24 @@ module Components
           else
             side = 'right'
           end 
+        end
+
+        def set_messages_read
+          messages_ids = props.chat.chat_messages.reduce([]) do |temp, c_m|
+            if !c_m.to_user && !c_m.read
+              temp << c_m.id
+            end
+            temp
+          end
+          unless messages_ids.empty?
+            ChatMessage.set_read(payload: {ids: messages_ids}, namespace: 'appointment_scheduler').then do
+              props.chat.chat_messages.each do |c_m|
+                if messages_ids.include?(c_m.id)
+                  c_m.read = true
+                end 
+              end
+            end
+          end
         end
 
       end

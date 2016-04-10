@@ -1,0 +1,8 @@
+Description:
+    Explain the generator
+
+Example:
+    rails generate permission_rules Name
+
+    This will create:
+        what/will/it/create

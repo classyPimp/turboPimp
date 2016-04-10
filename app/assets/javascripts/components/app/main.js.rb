@@ -54,13 +54,17 @@ module Components
       end
       
       def render
-        p CurrentUser.user_instance.attributes[:registered]
         t(:div, {},
           t(Components::Menues::Index, {ref: "menu"}),
           t(Shared::Flash::Holder, {ref: "flash"}),
           spinner,
           t(:div, {className: 'below_menu'},
-            children
+            t(:div, {className: 'content'}, 
+              children
+            ),
+            unless props.location.pathname == '/'
+              t(Shared::Footer, {})  
+            end
           ),
           if !CurrentUser.user_instance.attributes[:registered]
             t(Components::ChatMessages::Index, {})

@@ -74,7 +74,7 @@ module Components
             *splat_each(state.users) do |user|
               t(:div, {className: 'user_box col-lg-5'},
                 if user.avatar 
-                  t(:image, {src: user.avatar.url, className: 'avatar'})
+                  t(:img, {src: user.avatar.url, className: 'avatar'})
                 end,
                 t(:p, {},"email: #{user.email}"),
                 t(:p, {}, (link_to("name: #{user.profile.name}", "/users/show/#{user.id}" ) if user.profile) ),

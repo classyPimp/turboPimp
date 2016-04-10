@@ -37,7 +37,7 @@ module Components
                   t(:div, {className: 'col-lg-4'},
                     if user.avatar
                       link_to('', "/personnel/#{user.id}") do
-                        t(:image, {src: user.avatar.url, className: 'user_avatar_in_group_list', style: {width: "60px", height: "60px"}.to_n})
+                        t(:img, {src: user.avatar.url, className: 'user_avatar_in_group_list', style: {width: "60px", height: "60px"}.to_n})
                       end
                     end
                   ),

@@ -3,6 +3,10 @@ module Components
     class Index < RW
       expose
 
+      def init
+        yields_phantom_ready
+      end
+
       def get_initial_state
         {
           price_categories: ModelCollection.new,
@@ -11,7 +15,13 @@ module Components
 
       def component_did_mount
         PriceCategory.index.then do |price_categories|
+
+          Services::MetaTagsContoller.new('pricelist for dental services', 'prices for our dental services', 'pricelist price dental service')
+
           set_state price_categories: price_categories
+          
+          component_phantom_ready
+
         end
       end
 

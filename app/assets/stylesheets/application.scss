@@ -61,10 +61,12 @@ body {
 
 .below_menu {
   width: 100%;
+  min-height: 100%;
   position: absolute;
   top: 5rem;
   padding: 1rem 1.5rem; 
 }
+
 
 /*jumbotron*/
 
@@ -197,7 +199,12 @@ body {
     border-width: 1px;
     border-right-color: #C4CCCF;
   }
-
+  
+  .navbar-collapse {
+    z-index: 0;
+    background-color: white;
+    overflow-Y: scroll;
+  }
   /*login_info (login/logout buton group)*/
 
   .login_info {
@@ -598,7 +605,7 @@ body {
       text-align: center;
     }
     
-    margin: auto;
+    margin: 4rem auto;
 
     .thumbnail {
 
@@ -608,7 +615,7 @@ body {
       max-width: 400px;
       margin-top: 1rem;
       margin-left: 1rem;
-
+      
       
       .avatar {
         height: 100px;
@@ -618,7 +625,8 @@ body {
       .profile_info {
         text-align: center;
         margin: 0.5rem 0;
-        border-top: 1px solid white; 
+        border-top: 1px solid white;
+        transition: all 1s ease-out; 
       }
     }
   }
@@ -997,3 +1005,41 @@ body {
 }
 
 /*END PROGRESS BAR*/
+
+/*FOOTER RELATED*/
+.below_menu {
+  min-height: 120%;
+}
+
+.content {
+  margin-bottom: 18rem;
+  min-height: 100%;
+}
+
+footer {
+  position: absolute;
+  width: 100%;
+  bottom: 0;
+  height: 16rem;
+  background-color: #2A2D33;
+  color: #F1FFFF; 
+  animation-name: example;
+  animation-duration: 1s;
+  animation-timing-function: linear;
+}
+
+.home_footer {
+  bottom: -22rem;
+  width: 100%;
+  margin: 0 15px 0;
+}
+
+.g_adress_bar {
+  margin: 2rem 2rem 0 3rem;
+  p {
+    margin: 0;
+  }
+
+}
+
+/*FOOTER RELATED*/

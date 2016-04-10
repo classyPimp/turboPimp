@@ -41,7 +41,7 @@ module Components
           splat_each(state.users) do |user|
             t(:div, {className: 'thumbnail'},
               if user.avatar 
-                t(:image, {src: user.avatar.url, className: 'avatar'})
+                t(:img, {src: user.avatar.url, className: 'avatar'})
               end,
               t(:div, {className: 'profile_info'}, 
                 t(:h3, {className: 'profile_name'}, user.profile.name ),

@@ -16,7 +16,8 @@ module Components
                 component
               end
             ) 
-          )
+          ),
+          t(Shared::Footer, {on_home_route: true})
         )
       end
 

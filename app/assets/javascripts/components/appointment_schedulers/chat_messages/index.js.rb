@@ -20,6 +20,8 @@ module Components
           ChatMessage.index(namespace: 'appointment_scheduler').then do |chats|
           begin
 
+            sort_chats_by_last_date_message(chats)
+
             self.prepare_cache_holder_and_last_message(chats)
 
             set_state chats: @cache_holder
@@ -42,7 +44,7 @@ module Components
         end
 
         def prepare_cache_holder_and_last_message(chats)
-
+          
           last_messages = []
           chats.each do |chat|
             @cache_holder[chat.id] = chat
@@ -57,6 +59,22 @@ module Components
         def update_messages(chats)
 
           chats.each do |chat|
+            #this part I tried to transform to array
+            # existing = false
+            
+            # state.chats.each do |c|
+            #   if c.id == chat.id
+            #     existing = c
+            #     break
+            #   end
+            # end
+
+            # if existing
+            #   existing.chat_messages += chat.chat_messages
+            # else
+            #   state.chats << chat
+            # end            
+
             if @cache_holder[chat.id].chat_messages.length > 0
               @cache_holder[chat.id].chat_messages = @cache_holder[chat.id].chat_messages + chat.chat_messages
             else
@@ -65,6 +83,7 @@ module Components
             if @last_message_id < chat.chat_messages[-1].id
               @last_message_id = chat.chat_messages[-1].id
             end
+
           end
           set_state chats: @cache_holder
 
@@ -133,8 +152,25 @@ module Components
 
         def destroy_chat(chat)
           chat.destroy(namespace: 'appointment_scheduler').then do |_chat|
-            state.chats.remove(chat)
+            begin
+            if state.active_chat_id == chat.id
+              set_state active_chat_id: false
+            end
+            state.chats.delete(chat.id)
+
             set_state chats: state.chats
+            rescue Exception => e
+              p e
+            end
+          end
+        end
+
+
+        def sort_chats_by_last_date_message(chats)
+          if chats.is_a?(ModelCollection) && !chats.data.empty?
+            chats.data.sort! do |a,b|
+              b.chat_messages[-1].try(:created_at) <=> a.chat_messages[-1].try(:created_at)
+            end
           end
         end
 
