@@ -19,6 +19,11 @@ module Components
 
       def component_did_mount
         x = Hash.new(props.location.query.to_n)
+        Services::MetaTagsController.new(
+          'blogs',
+          'blogs about dentistry how to keep mouth help and new methods of healing',
+          'blogs dentistry healing'
+        )
         unless x.empty?
           make_query(x)
           component_phantom_ready

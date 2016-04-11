@@ -18,7 +18,8 @@ module Components
         def render
           t(:div, {className: 'offered_services_new'},
             if state.current_user.has_role? :admin
-              t(:div, {}, 
+              t(:div, {},
+                progress_bar, 
                 modal,
                 input(Forms::Input, state.form_model, :title, {type: "text", show_name: 'title'}),
                 input(Forms::Input, state.form_model, :m_title, {type: "text", show_name: 'meta title'}),
@@ -52,7 +53,7 @@ module Components
           collect_inputs
           p state.form_model.pure_attributes
           unless state.form_model.has_errors?
-            state.form_model.create(serialize_as_form: true, namespace: 'admin').then do |model|
+            state.form_model.create(serialize_as_form: true, namespace: 'admin', component: self).then do |model|
               if model.has_errors?
                 set_state form_model: model
               else

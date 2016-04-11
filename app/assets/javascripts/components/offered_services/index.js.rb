@@ -17,6 +17,11 @@ module Components
         OfferedService.index(component: self).then do |offered_services|
           begin
           set_state offered_services: offered_services
+          Services::MetaTagsController.new(
+            'dental services', 
+            'ABS stom offers wide range of dental services in astana from curing caries to implants', 
+            'astana dental services'
+          )
           component_phantom_ready
           rescue Exception => e
             p e

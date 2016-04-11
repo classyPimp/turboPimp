@@ -3,6 +3,10 @@ module Components
     class IndexRoute < RW
 
       expose
+
+      def init
+        Services::MetaTagsController.new()
+      end
       
       def render
         t(:div, {},

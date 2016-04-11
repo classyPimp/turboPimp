@@ -1,5 +1,5 @@
 module Services
-  class MetaTagsContoller
+  class MetaTagsController
 
     def initialize( title = 'turboPimp', description = '', keywords = '' )
 

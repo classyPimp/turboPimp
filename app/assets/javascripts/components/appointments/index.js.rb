@@ -369,6 +369,9 @@ module Components
                 passed_day = 'not_passed'
               end
 
+              if @track_day.isoWeekday == 7
+                week_end = true  
+              end
               
               if passed_day != 'passed'
                 go_to_day_event = {onClick: ->{props.index.init_day_view(t_d_a)}}
@@ -383,7 +386,7 @@ module Components
                   ),
                   t(:p, {}, @track_day.date())
                 ),
-                if passed_day == 'passed'
+                if passed_day == 'passed' || week_end
                   t(:div, {})
                 else
 

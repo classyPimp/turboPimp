@@ -18,6 +18,11 @@ module Components
         OfferedService.show(wilds: {id: offered_service_to_query}, component: self).then do |offered_service|
           begin
           set_state offered_service: offered_service
+          Services::MetaTagsController.new(
+            offered_service.m_title,
+            offered_service.m_description,
+            offered_service.m_keywords
+          )
           component_phantom_ready
           rescue Exception => e
             p e

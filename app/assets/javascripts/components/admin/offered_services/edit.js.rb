@@ -31,6 +31,7 @@ module Components
             if state.current_user.has_role?(:admin) && state.form_model
               t(:div, {}, 
                 modal,
+                progress_bar,
                 input(Forms::Input, state.form_model, :title, {type: "text", show_name: 'title'}),
                 input(Forms::Input, state.form_model, :m_title, {type: "text", show_name: 'meta title'}),
                 input(Forms::Input, state.form_model, :m_description, {type: "text", show_name: 'meta description'}),
@@ -61,7 +62,7 @@ module Components
         def handle_inputs
           collect_inputs
           unless state.form_model.has_errors?
-            state.form_model.update(serialize_as_form: true, namespace: 'admin').then do |model|
+            state.form_model.update(serialize_as_form: true, namespace: 'admin', comoponent: self).then do |model|
               if model.has_errors?
                 set_state form_model: model
               else

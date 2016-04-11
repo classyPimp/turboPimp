@@ -28,6 +28,11 @@ module Components
         x = Hash.new(props.location.query.to_n)
         unless x.empty?
           make_query(x)
+          Services::MetaTagsController.new(
+            'blogs',
+            'blogs about dentistry how to keep mouth help and new methods of healing',
+            'blogs dentistry healing'
+          )
           component_phantom_ready
         end
       end
