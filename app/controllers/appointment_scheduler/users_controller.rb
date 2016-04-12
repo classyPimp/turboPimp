@@ -131,9 +131,14 @@ class AppointmentScheduler::UsersController < ApplicationController
     @role_to_destroy = @user.roles.where(name: 'from_proposal').first
 
     @role_to_destroy.destroy if @role_to_destroy
-    @user.save
-
-    render json: @user.as_json(only: [:id, :registered])
+    
+    @user.arbitrary[:skip_email_validation] = true
+    
+    if @user.save
+      render json: @user.as_json(only: [:id, :registered])
+    else
+      render json: @user.as_json(only: [:id, :registered], methods: [:errors], include: [{profile: {root: true, methods: [:errors]}}])
+    end
   end
 
 end

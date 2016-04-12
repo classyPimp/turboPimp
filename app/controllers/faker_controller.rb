@@ -17,8 +17,7 @@ class FakerController < ApplicationController
   end
 
 	def test
-    x = {options: ["foo", "bar", "baz", "cux"]}
-		render json: x
+    
 	end
 
   def test_prerender
@@ -54,4 +53,6 @@ class FakerController < ApplicationController
       head 403
     end
   end
+
+
 end

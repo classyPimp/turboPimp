@@ -1,6 +1,7 @@
 Rails.application.routes.draw do
   
   get 'test_prerender' => "faker#test_prerender"
+  get 'test' => 'faker#test'
 
   scope "api" do
 

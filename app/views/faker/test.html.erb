@@ -1,3 +1,15 @@
-<div class="container">
-	<%= react_component('Test', {}, {prerender: false}) %>
-</div>
+<% @user = User.find(1) %>
+
+
+<% cache(@user) do %>
+  <tr>
+    <td><%= @user.id %></td>
+    <td><%= @user.updated_at %></td>
+  </tr>
+
+  <% @user.chat_messages.each do |chat_message| %>
+    <% cache(chat_message) do %>
+      <p><%= chat_message.id %></p>
+    <% end %>
+  <% end %>
+<% end %>

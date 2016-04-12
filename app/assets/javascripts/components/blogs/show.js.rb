@@ -3,6 +3,10 @@ module Components
     class Show < RW
       expose
 
+      def init
+        yields_phantom_ready
+      end
+
       def get_initial_state
         {
           blog: false 
@@ -14,9 +18,9 @@ module Components
         begin
         Blog.show(wilds: {id: blog_to_query}, component: self).then do |blog|
           set_state blog: blog
-          p 'ok'
+          Services::MetaTagsController.new(blog.title, blog.m_description, blog.m_keywords)
+          component_phantom_ready
         end.fail do |resp|
-          p 'fail'
           raise resp
         end
         rescue Exception => e

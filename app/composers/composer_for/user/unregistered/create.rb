@@ -14,6 +14,7 @@
 
   def run
     prepare_attributes
+    validate
     compose
     clear   
   end
@@ -22,6 +23,12 @@
     User.arbitrary[:register_as_guest] = true
     @user.arbitrary[:skip_email_validation] = true
     @user.attributes = @permitted_attributes.to_h
+  end
+
+  def validate
+    if @user.profile.phone_number.blank?
+      @user.profile.add_custom_error(:phone_number, 'phone number must be provided')
+    end
   end
 
   def compose

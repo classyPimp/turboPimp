@@ -50,6 +50,7 @@ module Components
         def render
           t(:div, {className: 'appointment_proposal_new'},
             progress_bar,
+            modal,
             if state.loaded
               if state.step == 0
                 t(:div, {},
@@ -102,7 +103,9 @@ module Components
                   #t(:p, {}, "you will become a registered user if you will leave your email and will fill in password, else you will not be registerd"),
                   t(:div, {className: 'login_button_group'}, 
                     t(:button, {className: 'btn btn-success', onClick: ->{init_login}}, "i'ma registered user"),
-                    #t(:button, {className: 'btn btn-success'}, "ok i will register NOT IMPLEMENTED"),
+                    link_to('', '/users/signup') do
+                      t(:button, {className: 'btn btn-success', onClick: ->{Element.find('body').remove_class('modal-open')}}, "ok i will register")
+                    end,
                     t(:button, {className: 'btn btn-success', onClick: ->{ init_non_registered_user } }, "i won't register i'll just leave my contact info")
                   )
                 )
