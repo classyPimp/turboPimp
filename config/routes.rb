@@ -1,6 +1,7 @@
 Rails.application.routes.draw do
   
   get 'test_prerender' => "faker#test_prerender"
+
   get 'test' => 'faker#test'
 
   scope "api" do
@@ -97,8 +98,11 @@ Rails.application.routes.draw do
   end
 
   get "/console" => "faker#console"
+  
   root "faker#home"
+
   post "api/test" => "faker#test"
+
   get "/*path" => "faker#home"
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
