@@ -59,6 +59,10 @@ class FakerController < ApplicationController
 
   end
 
+  def not_found
+    head 404
+  end
+
   def restricted_asset
     if current_user
       send_file Rails.root + "app/assets/javascripts/foo.js.rb", type: "application/javascript"
