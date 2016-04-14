@@ -17,6 +17,7 @@ module Components
 
       def init
         self.class.phantom_instance = Services::PhantomYielder.new
+        Element.find('#initial-spinner').remove
       end
 
       def get_initial_state
