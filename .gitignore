@@ -14,6 +14,9 @@
 public/system/
 public/system/images/*
 
+.sass-cache
+.byebug_history
+
 # Ignore all logfiles and tempfiles.
 /log/*
 !/log/.keep
